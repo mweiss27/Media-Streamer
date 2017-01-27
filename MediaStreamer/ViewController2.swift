@@ -43,9 +43,9 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         
         do {
             print("Starting our SPTAudioStreamingController")
-            try player.start(withClientId: self.appDelegate?.clientID,
-                              audioController: audioController,
-                              allowCaching: true)
+            try player.start(withClientId: AppDelegate.clientID,
+                             audioController: audioController,
+                             allowCaching: true)
             print("Started")
         } catch let error {
             print("Error on start: " + error.localizedDescription)
@@ -64,6 +64,7 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         
     }
     
+    //Spotify Logged In
     func audioStreamingDidLogin(_ audioStreaming: SPTAudioStreamingController!) {
         print("SPOTIFY LOGIN")
         
@@ -71,21 +72,92 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         print("Player is initialized? " + player.initialized.description)
         
         player.playSpotifyURI("spotify:track:4kbDYMLy5qdn1UqaNiNWsM",
-                               startingWith: 0,
-                               startingWithPosition: 0) { (error) in
+                              startingWith: 0,
+                              startingWithPosition: 0) { (error) in
                                 if error != nil {
                                     print("Error on playSpotifyURI: \(error)")
                                 }
                                 print("Song is playing!")
                                 
         }
+        
+        SPTPlaylistList.playlists(forUser: "spaccount1", withAccessToken: SPTAuth.defaultInstance().session.accessToken) { (error, obj) in
+            if error != nil {
+                print("Error on getPlaylists: \(error?.localizedDescription)")
+                return
+            }
+            
+            if (obj == nil) {
+                print("There are no playlists for spaccount1")
+                return
+            }
+            
+            if obj is SPTPlaylistList {
+                let list = obj as! SPTPlaylistList
+                let playlists = list.items
+                for pl in playlists! {
+                    //print("Playlist! \(Mirror(reflecting: pl).subjectType)")
+                    if pl is SPTPartialPlaylist {
+                        let partial = pl as! SPTPartialPlaylist
+                        print("Playlist: \(partial.name)")
+                        print("\tTracks: \(partial.trackCount)")
+                        let uri = partial.playableUri
+                        if uri != nil {
+                            SPTPlaylistSnapshot.playlist(withURI: partial.playableUri, accessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
+                                if error != nil {
+                                    print("Error on playlist: \(error?.localizedDescription)")
+                                    return
+                                }
+                                if obj == nil {
+                                    print("Got a nil obj")
+                                    return
+                                }
+                                
+                                print("We got an obj: \(Mirror(reflecting: obj!).subjectType)")
+                                if obj is SPTPlaylistSnapshot {
+                                    let snapshot = obj as! SPTPlaylistSnapshot
+                                    let tracks = snapshot.tracksForPlayback()
+                                    for obj in tracks! {
+                                        if obj is SPTPlaylistTrack {
+                                            let track = obj as! SPTPlaylistTrack
+                                            print("Track: \(track.name) -- \(track.playableUri)")
+                                        }
+                                        else {
+                                            print("\(Mirror(reflecting: obj).subjectType)")
+                                        }
+                                    }
+                                }
+                                
+                            })
+                            
+                        }
+                        else {
+                            print("URI is nil :(")
+                        }
+                    }
+                }
+                
+                if list.hasNextPage {
+                    print("There's another page.")
+                }
+                else {
+                    print("No more pages.")
+                }
+            }
+            else {
+                print("Our object isn't an SPTPlaylistList")
+            }
+            
+        }
     }
     
+    //Start/Stop a track
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!,
                         didStartPlayingTrack trackUri: String!) {
         print("SPOTIFY STARTED A TRACK")
     }
     
+    //Playback Status Changed
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePlaybackStatus isPlaying: Bool) {
         print("Playback status changed. Playing? \(isPlaying.description)")
         var image: UIImage?
@@ -98,6 +170,7 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         playButton.setImage(image, for: UIControlState.normal)
     }
     
+    //Metadata changed
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChange metadata: SPTPlaybackMetadata!) {
         if metadata != nil {
             if let track = metadata.currentTrack {
@@ -114,7 +187,7 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
                     DispatchQueue.main.async {
                         self.albumArt.image = UIImage(data: data!)
                     }
-                }.resume()
+                    }.resume()
             }
             else {
                 print("currentTrack is nil")
@@ -125,7 +198,9 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         }
     }
     
+    //Position on track changed
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
+        
         let duration = (audioStreaming.metadata.currentTrack?.duration)!
         self.songProgress.progress = Float(position / duration)
     }

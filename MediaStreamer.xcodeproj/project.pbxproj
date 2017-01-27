@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */; };
 		C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D471E3295AF007446B0 /* AppDelegate.swift */; };
 		C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D491E3295AF007446B0 /* ViewController.swift */; };
 		C9439D4D1E3295AF007446B0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9439D4B1E3295AF007446B0 /* Main.storyboard */; };
@@ -32,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		C9439D441E3295AF007446B0 /* MediaStreamer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaStreamer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9439D471E3295AF007446B0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9439D491E3295AF007446B0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */,
 				C9439D781E36B650007446B0 /* SystemConfiguration.framework in Frameworks */,
 				C9439D761E36B64C007446B0 /* AVFoundation.framework in Frameworks */,
 				C9439D6E1E353054007446B0 /* SpotifyAudioPlayback.framework in Frameworks */,
@@ -120,6 +123,7 @@
 		C9439D6B1E353041007446B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */,
 				C9439D771E36B650007446B0 /* SystemConfiguration.framework */,
 				C9439D751E36B64C007446B0 /* AVFoundation.framework */,
 				C9439D6C1E353054007446B0 /* SpotifyAudioPlayback.framework */,

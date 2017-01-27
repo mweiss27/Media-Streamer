@@ -12,12 +12,12 @@ import SafariServices
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
     
-    let clientID = "2da635f7c6224a24b10cd8c2566b4e8b"
-    let redirectURL = "mediastreamer-spotify-auth://callback"
-    let requestedScopes = [ SPTAuthStreamingScope ]
+    static let clientID = "2da635f7c6224a24b10cd8c2566b4e8b"
+    static let redirectURL = "mediastreamer-spotify-auth://callback"
+    static let requestedScopes = [ SPTAuthStreamingScope, SPTAuthPlaylistReadPrivateScope, SPTAuthPlaylistReadCollaborativeScope ]
     
-    let tokenSwapURL = "http://localhost:1234/swap"
-    let tokenRefreshServiceURL = "http://localhost:1234/refresh"
+    static let tokenSwapURL = "http://localhost:1234/swap"
+    static let tokenRefreshServiceURL = "http://localhost:1234/refresh"
     
     var window: UIWindow?
     
@@ -25,6 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, SPTAudioStreamingDelegate
         // Override point for customization after application launch.
         
         print("Application init")
+        
+        SPTAuth.defaultInstance().redirectURL = URL(string: AppDelegate.redirectURL)
+        SPTAuth.defaultInstance().clientID = AppDelegate.clientID
+        SPTAuth.defaultInstance().requestedScopes = AppDelegate.requestedScopes
+        SPTAuth.defaultInstance().tokenSwapURL = URL(string: AppDelegate.tokenSwapURL)
+        SPTAuth.defaultInstance().tokenRefreshURL = URL(string: AppDelegate.tokenRefreshServiceURL)
+        
         print("init finished")
         return true
     }
@@ -32,8 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, SPTAudioStreamingDelegate
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         
         let b = SPTAuth.defaultInstance().canHandle(url)
+        print("application received url: \(url.absoluteString)")
         print("canHandle? " + String(b))
         SPTAuth.defaultInstance().handleAuthCallback(withTriggeredAuthURL: url, callback: { (error,  session) in
+            print("handleAuthCallBack has returned. Callback running")
             if error != nil {
                 print("Error: " + error!.localizedDescription)
             }

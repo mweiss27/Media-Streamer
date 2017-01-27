@@ -31,6 +31,25 @@ class ViewController: UIViewController {
                 print("[2] We have a valid session. We need to transition to the info view")
                 self.performSegue(withIdentifier: "loginToInfo", sender: self)
             }
+            else {
+                print("Our session is invalid. Let's try to refresh it")
+                print("Our encrypted_refresh_token: \(storedSession.encryptedRefreshToken)")
+                SPTAuth.defaultInstance().renewSession(storedSession, callback: { (error, renewedSession) in
+                    if error != nil {
+                        print("Error on renewSession: \(error?.localizedDescription)")
+                        return
+                    }
+                    
+                    if renewedSession != nil && (renewedSession?.isValid())! {
+                        print("We got a new session!")
+                        self.appDelegate?.saveSession(session: renewedSession!)
+                        self.performSegue(withIdentifier: "loginToInfo", sender: self)
+                    }
+                    else {
+                        print("We didn't get a new/valid session. :(")
+                    }
+                })
+            }
         }
         else {
             print("We didn't find a stored session")
@@ -39,14 +58,14 @@ class ViewController: UIViewController {
     
     @IBAction func loginWithSpotify(_ sender: Any) {
         print("loginWithSpotify!")
-        if SPTAuth.supportsApplicationAuthentication() {
+        if SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
             UIApplication.shared.open(SPTAuth.defaultInstance().spotifyAppAuthenticationURL(), options: [:], completionHandler: nil)
         }
         else {
-            let loginURL = SPTAuth.loginURL(forClientId: self.appDelegate?.clientID,
-                                            withRedirectURL: URL(string: (self.appDelegate?.redirectURL)!),
-                                            scopes: self.appDelegate?.requestedScopes,
-                                            responseType: "token")
+            let loginURL = SPTAuth.loginURL(forClientId: AppDelegate.clientID,
+                                            withRedirectURL: URL(string: AppDelegate.redirectURL),
+                                            scopes: AppDelegate.requestedScopes,
+                                            responseType: "code")
             
             UIApplication.shared.open(loginURL!, options: [:], completionHandler: nil)
         }
