@@ -39,12 +39,10 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
     
     override func viewDidAppear(_ animated: Bool) {
         
-        let audioController = SPTCoreAudioController()
-        
         do {
             print("Starting our SPTAudioStreamingController")
-            try player.start(withClientId: AppDelegate.clientID,
-                             audioController: audioController,
+            try player.start(withClientId: Constants.clientID,
+                             audioController: self.appDelegate?.audioController,
                              allowCaching: true)
             print("Started")
         } catch let error {
@@ -213,10 +211,6 @@ class ViewController2: UIViewController, SPTAudioStreamingDelegate, SPTAudioStre
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     
 }

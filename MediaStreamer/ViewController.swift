@@ -29,26 +29,28 @@ class ViewController: UIViewController {
             print("We have a session stored!")
             if storedSession.isValid() {
                 print("[2] We have a valid session. We need to transition to the info view")
-                self.performSegue(withIdentifier: "loginToInfo", sender: self)
+                self.performSegue(withIdentifier: Constants.LogintoPlaylists, sender: self)
             }
             else {
-                print("Our session is invalid. Let's try to refresh it")
-                print("Our encrypted_refresh_token: \(storedSession.encryptedRefreshToken)")
-                SPTAuth.defaultInstance().renewSession(storedSession, callback: { (error, renewedSession) in
-                    if error != nil {
-                        print("Error on renewSession: \(error?.localizedDescription)")
-                        return
-                    }
-                    
-                    if renewedSession != nil && (renewedSession?.isValid())! {
-                        print("We got a new session!")
-                        self.appDelegate?.saveSession(session: renewedSession!)
-                        self.performSegue(withIdentifier: "loginToInfo", sender: self)
-                    }
-                    else {
-                        print("We didn't get a new/valid session. :(")
-                    }
-                })
+                if SPTAuth.defaultInstance().hasTokenRefreshService {
+                    print("Our session is invalid. Let's try to refresh it")
+                    print("Our encrypted_refresh_token: \(storedSession.encryptedRefreshToken)")
+                    SPTAuth.defaultInstance().renewSession(storedSession, callback: { (error, renewedSession) in
+                        if error != nil {
+                            print("Error on renewSession: \(error?.localizedDescription)")
+                            return
+                        }
+                        
+                        if renewedSession != nil && (renewedSession?.isValid())! {
+                            print("We got a new session!")
+                            self.appDelegate?.saveSession(session: renewedSession!)
+                            self.performSegue(withIdentifier: Constants.LogintoPlaylists, sender: self)
+                        }
+                        else {
+                            print("We didn't get a new/valid session. :(")
+                        }
+                    })
+                }
             }
         }
         else {
@@ -58,15 +60,18 @@ class ViewController: UIViewController {
     
     @IBAction func loginWithSpotify(_ sender: Any) {
         print("loginWithSpotify!")
-        if SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
+        
+        //Authentication with the app hasn't been working
+        if false && SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
             UIApplication.shared.open(SPTAuth.defaultInstance().spotifyAppAuthenticationURL(), options: [:], completionHandler: nil)
         }
         else {
-            let loginURL = SPTAuth.loginURL(forClientId: AppDelegate.clientID,
-                                            withRedirectURL: URL(string: AppDelegate.redirectURL),
-                                            scopes: AppDelegate.requestedScopes,
+            let loginURL = SPTAuth.loginURL(forClientId: Constants.clientID,
+                                            withRedirectURL: URL(string: Constants.redirectURL),
+                                            scopes: Constants.requestedScopes,
                                             responseType: "code")
             
+            print("loginURL: \(loginURL)")
             UIApplication.shared.open(loginURL!, options: [:], completionHandler: nil)
         }
     }
