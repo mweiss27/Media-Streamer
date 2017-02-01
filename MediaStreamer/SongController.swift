@@ -15,24 +15,31 @@ class SongController: UIViewController {
     @IBOutlet weak var header: UILabel!
     var playlist: SPTPartialPlaylist?
     
-    @IBOutlet weak var songsScroll: UIScrollView!
-
+    @IBOutlet weak var songStack: UIView!
+    @IBOutlet weak var backButton: UIButton!
+    @IBOutlet weak var songScroll: UIScrollView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.appDelegate = UIApplication.shared.delegate as? AppDelegate
         self.header.text = self.playlist?.name
         
+        
+        self.initSongs()
+        self.songScroll.contentOffset = CGPoint.zero
+        
+        print("SongController.viewDidLoad")
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        self.initSongs()
-        
+        print("SongController.viewDidAppear")
     }
     
     func initSongs() {
+        print("SongController.initSongs")
         let uri = self.playlist?.playableUri
         if uri != nil {
             SPTPlaylistSnapshot.playlist(withURI: self.playlist?.playableUri, accessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
@@ -45,40 +52,75 @@ class SongController: UIViewController {
                     return
                 }
                 
-                let x = self.appDelegate?.window?.frame.origin.x
                 var y = 0
-                let w = self.appDelegate?.window?.frame.width
-                let h = 21
+                let w = self.songScroll.frame.width
+                let h = 45
                 
-                print("We got an obj: \(Mirror(reflecting: obj!).subjectType)")
                 if obj is SPTPlaylistSnapshot {
                     let snapshot = obj as! SPTPlaylistSnapshot
                     let tracks = snapshot.tracksForPlayback()
+                    var i = 0
                     for obj in tracks! {
                         if obj is SPTPlaylistTrack {
                             let track = obj as! SPTPlaylistTrack
-                            let rect = CGRect(x: x!, y: CGFloat(y), width: w!, height: CGFloat(h))
-                            let button = SongButton.init(frame: rect)
-                            button.song = track
-                            button.setTitle(track.name, for: UIControlState.normal)
-                            button.setTitleColor(UIColor.white, for: UIControlState.normal)
-                            button.contentHorizontalAlignment = UIControlContentHorizontalAlignment.left
-                            button.titleLabel?.lineBreakMode = NSLineBreakMode.byTruncatingTail
                             
+                            let label_song = UILabel.init(frame: CGRect(
+                                x: 0,
+                                y: 0,
+                                width: CGFloat(w),
+                                height: CGFloat(18)
+                            ))
+                            label_song.text = track.name
+                            label_song.textColor = UIColor.white
+                            label_song.lineBreakMode = NSLineBreakMode.byTruncatingTail
                             
-                            let sel = #selector(SongController.songClicked(sender:))
+                            let label_artist = UILabel.init(frame: CGRect(
+                                x: CGFloat(0),
+                                y: 18,
+                                width: CGFloat(w),
+                                height: CGFloat(18)
+                            ))
+                            let artist = track.artists.first as! SPTPartialArtist?
+                            if artist?.name != nil {
+                                label_artist.text = artist?.name
+                                label_artist.textColor = UIColor.gray
+                                label_artist.lineBreakMode = NSLineBreakMode.byTruncatingTail
+                            }
                             
+                            let view = SongView.init(frame: CGRect(
+                                x: CGFloat(0),
+                                y: CGFloat(y),
+                                width: CGFloat(w),
+                                height: CGFloat(label_song.frame.height + 1 + label_artist.frame.height)
+                                
+                            ))
+                            view.isOpaque = false
+                            view.playlist = snapshot
+                            view.index = i
                             
-                            button.addTarget(self, action: sel, for: UIControlEvents.touchUpInside)
-                            self.songsScroll.addSubview(button)
-
-                            y += 21
+                            view.addSubview(label_song)
+                            view.addSubview(label_artist)
+                            let gesture = UITapGestureRecognizer.init(
+                                target: self,
+                                action: #selector(self.songClicked(_:)))
+                            view.addGestureRecognizer(gesture)
+                            
+                            self.songStack.addSubview(view)
+                            y += h-1
+                            i += 1
                         }
                         else {
                             print("\(Mirror(reflecting: obj).subjectType)")
                         }
                     }
-                    print("ScrollView height: \(self.songsScroll.frame.height)")
+                    
+                    print("Setting scroll size to: \(self.view.frame.width), \(y)")
+                    self.songScroll.contentSize = CGSize(width: self.songScroll.frame.width, height: CGFloat(y))
+                    print("Setting song stack size to \(self.songStack.frame.width), \(y)")
+                    self.songStack.frame.size = CGSize(
+                        width: self.songStack.frame.width,
+                        height: CGFloat(y)
+                    )
                 }
                 
             })
@@ -89,23 +131,53 @@ class SongController: UIViewController {
         }
     }
     
-    func songClicked(sender: SongButton) {
-        if (SpotifyApp.instance.player?.loggedIn)! && (SpotifyApp.instance.player?.initialized)! {
-            print("Song Clicked: \(sender)")
-            if sender.song != nil {
-                self.performSegue(withIdentifier: Constants.SongsToPlayer, sender: sender.song)
+    func songClicked(_ sender: UITapGestureRecognizer) {
+        let source = sender.view
+        if source != nil && source is SongView {
+            let source_sv = source as! SongView
+            if (SpotifyApp.instance.player?.loggedIn)! && (SpotifyApp.instance.player?.initialized)! {
+                self.performSegue(withIdentifier: Constants.SongsToPlayer, sender: PlayInfo(playlist: source_sv.playlist!, index: source_sv.index!))
+            }
+            else {
+                print("[ERROR] Not ready to play songs.")
             }
         }
         else {
-            print("[ERROR] Not ready to play songs.")
+            print("source is nil or not SongView")
+        }
+    }
+    
+    func scrollTap(_ sender: UITapGestureRecognizer) {
+        print("Scroll Tap")
+        print("Point: \(sender.location(in: songScroll))")
+    }
+    
+    @IBAction func unwindToSongs(segue: UIStoryboardSegue) {
+        print("SongController.unwindToSongs")
+        if let songController = segue.source as? PlayerController {
+            print("Coming from PlayerController")
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.destination is PlayerController && sender is SPTPlaylistTrack {
+        if segue.destination is PlayerController && sender is PlayInfo {
             let playerController = segue.destination as! PlayerController
-            playerController.song = sender as? SPTPlaylistTrack
+            let playInfo = sender as! PlayInfo
+            playerController.playlist = playInfo.playlist
+            playerController.index = UInt(playInfo.index)
         }
+    }
+    
+    class PlayInfo {
+        
+        let playlist: SPTPlaylistSnapshot
+        let index: Int
+        
+        init(playlist: SPTPlaylistSnapshot, index: Int) {
+            self.playlist = playlist
+            self.index = index
+        }
+        
     }
     
 }

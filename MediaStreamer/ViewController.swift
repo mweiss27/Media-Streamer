@@ -62,7 +62,7 @@ class ViewController: UIViewController {
         print("loginWithSpotify!")
         
         //Authentication with the app hasn't been working
-        if false && SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
+        if SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
             UIApplication.shared.open(SPTAuth.defaultInstance().spotifyAppAuthenticationURL(), options: [:], completionHandler: nil)
         }
         else {

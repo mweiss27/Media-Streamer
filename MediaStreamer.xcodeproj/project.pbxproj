@@ -24,7 +24,7 @@
 		C987AE5A1E3EEBF900355688 /* SpotifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE591E3EEBF900355688 /* SpotifyApp.swift */; };
 		C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */; };
 		C987AE5E1E3F007800355688 /* SongController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5D1E3F007800355688 /* SongController.swift */; };
-		C987AE601E3F096100355688 /* SongButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5F1E3F096100355688 /* SongButton.swift */; };
+		C987AE601E3F096100355688 /* SongView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5F1E3F096100355688 /* SongView.swift */; };
 		C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE611E3F0A3200355688 /* PlayerController.swift */; };
 		C9892AC11E39208300158A4C /* ViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9892AC01E39208300158A4C /* ViewController2.swift */; };
 /* End PBXBuildFile section */
@@ -62,7 +62,7 @@
 		C987AE591E3EEBF900355688 /* SpotifyApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyApp.swift; sourceTree = "<group>"; };
 		C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistButton.swift; sourceTree = "<group>"; };
 		C987AE5D1E3F007800355688 /* SongController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongController.swift; sourceTree = "<group>"; };
-		C987AE5F1E3F096100355688 /* SongButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongButton.swift; sourceTree = "<group>"; };
+		C987AE5F1E3F096100355688 /* SongView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongView.swift; sourceTree = "<group>"; };
 		C987AE611E3F0A3200355688 /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		C9892AC01E39208300158A4C /* ViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -127,7 +127,7 @@
 				C987AE511E3E49F800355688 /* Constants.swift */,
 				C987AE591E3EEBF900355688 /* SpotifyApp.swift */,
 				C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */,
-				C987AE5F1E3F096100355688 /* SongButton.swift */,
+				C987AE5F1E3F096100355688 /* SongView.swift */,
 			);
 			path = MediaStreamer;
 			sourceTree = "<group>";
@@ -273,7 +273,7 @@
 				C987AE5A1E3EEBF900355688 /* SpotifyApp.swift in Sources */,
 				C987AE521E3E49F800355688 /* Constants.swift in Sources */,
 				C9439D681E329828007446B0 /* README.md in Sources */,
-				C987AE601E3F096100355688 /* SongButton.swift in Sources */,
+				C987AE601E3F096100355688 /* SongView.swift in Sources */,
 				C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */,
 				C9892AC11E39208300158A4C /* ViewController2.swift in Sources */,
 				C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */,

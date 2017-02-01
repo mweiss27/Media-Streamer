@@ -14,11 +14,13 @@ class Constants {
     static let redirectURL = "mediastreamerspotifyauth://callback"
     static let requestedScopes = [ SPTAuthStreamingScope, SPTAuthPlaylistReadPrivateScope, SPTAuthPlaylistReadCollaborativeScope ]
     
-    //static let tokenSwapURL = "https://spotify-refresh-token.herokuapp.com/swap"
-    //static let tokenRefreshServiceURL = "https://spotify-refresh-token.herokuapp.com/refresh"
+    static let tokenSwapURL = "https://spotify-refresh-token.herokuapp.com/swap"
+    static let tokenRefreshServiceURL = "https://spotify-refresh-token.herokuapp.com/refresh"
     
-    static let tokenSwapURL = "http://localhost:1234/swap"
-    static let tokenRefreshServiceURL = "http://localhost:1234/refresh"
+    /*
+     static let tokenSwapURL = "http://localhost:1234/swap"
+     static let tokenRefreshServiceURL = "http://localhost:1234/refresh"
+     */
     
     static let LogintoPlaylists: String = "login_to_playlists"
     static let PlaylistToSongs: String = "playlist_to_songs"

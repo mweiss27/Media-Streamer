@@ -8,8 +8,9 @@
 
 import UIKit
 
-class SongButton: UIButton {
+class SongView: UIView {
     
-    var song: SPTPlaylistTrack?
+    var playlist: SPTPlaylistSnapshot?
+    var index: Int?
     
 }

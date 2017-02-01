@@ -14,7 +14,7 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
     
     @IBOutlet weak var playlistHeader: UILabel!
     @IBOutlet weak var playlistScroll: UIScrollView!
-    
+    @IBOutlet weak var playlistStack: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,17 +24,19 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
         SpotifyApp.instance.player.delegate = self
         SpotifyApp.instance.player.playbackDelegate = self
         
+        self.initPlaylists()
+        
         print("PlaylistController viewDidLoad")
     }
     
     override func viewDidAppear(_ animated: Bool) {
         SpotifyApp.instance.startPlayer()
-        self.initPlaylists()
         
+        print("PlaylistController viewDidAppear")
     }
     
     func initPlaylists() {
-        
+        print("PlaylistController.initPlaylists")
         SPTUser.requestCurrentUser(withAccessToken: SPTAuth.defaultInstance().session.accessToken) { (error, obj) in
             if error != nil {
                 print("Error on requesetCurrentUser: \(error?.localizedDescription)")
@@ -62,7 +64,6 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                         
                         let x = self.appDelegate?.window?.frame.origin.x
                         var y = 0
-                        print("Starting y: \(y)")
                         let w = self.appDelegate?.window?.frame.width
                         let h = 21
                         
@@ -73,7 +74,6 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                                 //print("Playlist! \(Mirror(reflecting: pl).subjectType)")
                                 if pl is SPTPartialPlaylist {
                                     let partial = pl as! SPTPartialPlaylist
-                                    print("Playlist: \(partial.name)")
                                     
                                     let rect = CGRect(x: x!, y: CGFloat(y), width: w!, height: CGFloat(h))
                                     let button = PlaylistButton.init(frame: rect)
@@ -88,11 +88,14 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                                     
                                     
                                     button.addTarget(self, action: sel, for: UIControlEvents.touchUpInside)
-                                    self.playlistScroll.addSubview(button)
+                                    self.playlistStack.addSubview(button)
                                     
                                     y += 21
                                 }
                             }
+                            print("Setting scroll size to: \(self.view.frame.width), \(y)")
+                            self.playlistScroll.contentSize = CGSize(width: self.view.frame.width, height: CGFloat(y))
+                            print("Scroll position is: \(self.playlistScroll.frame.origin)")
                         }
                         else {
                             print("Our object isn't an SPTPlaylistList")
@@ -115,6 +118,13 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
         }
         else {
             print("Bad argument: \(sender)")
+        }
+    }
+    
+    @IBAction func unwindToPlaylists(segue: UIStoryboardSegue) {
+        print("PlaylistController.unwindToPlaylists")
+        if let songController = segue.source as? SongController {
+            print("Coming from SongController")
         }
     }
     
