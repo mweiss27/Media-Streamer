@@ -20,7 +20,6 @@ class ViewController: UIViewController {
         
         self.appDelegate = UIApplication.shared.delegate as? AppDelegate
         
-        
         print("ViewController is displayed")
     }
     

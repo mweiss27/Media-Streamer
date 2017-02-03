@@ -39,4 +39,20 @@ class SpotifyApp {
         }
     }
     
+    static public func getArtist(artists: [Any?]) -> String {
+        print("getArtist: \(artists)")
+        if artists.count > 0 {
+            if let first = artists.first as? SPTArtist {
+                return first.name
+            }
+            else if let first = artists.first as? SPTPartialArtist {
+                return first.name
+            }
+            else if let first = artists.first as? String {
+                return first
+            }
+        }
+        return "N/A"
+    }
+    
 }

@@ -16,6 +16,7 @@ class SongController: UIViewController {
     var playlist: SPTPartialPlaylist?
     
     @IBOutlet weak var songStack: UIView!
+    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var songScroll: UIScrollView!
     
@@ -24,7 +25,6 @@ class SongController: UIViewController {
         
         self.appDelegate = UIApplication.shared.delegate as? AppDelegate
         self.header.text = self.playlist?.name
-        
         
         self.initSongs()
         self.songScroll.contentOffset = CGPoint.zero
@@ -52,75 +52,16 @@ class SongController: UIViewController {
                     return
                 }
                 
-                var y = 0
-                let w = self.songScroll.frame.width
-                let h = 45
-                
-                if obj is SPTPlaylistSnapshot {
-                    let snapshot = obj as! SPTPlaylistSnapshot
-                    let tracks = snapshot.tracksForPlayback()
-                    var i = 0
-                    for obj in tracks! {
-                        if obj is SPTPlaylistTrack {
-                            let track = obj as! SPTPlaylistTrack
-                            
-                            let label_song = UILabel.init(frame: CGRect(
-                                x: 0,
-                                y: 0,
-                                width: CGFloat(w),
-                                height: CGFloat(18)
-                            ))
-                            label_song.text = track.name
-                            label_song.textColor = UIColor.white
-                            label_song.lineBreakMode = NSLineBreakMode.byTruncatingTail
-                            
-                            let label_artist = UILabel.init(frame: CGRect(
-                                x: CGFloat(0),
-                                y: 18,
-                                width: CGFloat(w),
-                                height: CGFloat(18)
-                            ))
-                            let artist = track.artists.first as! SPTPartialArtist?
-                            if artist?.name != nil {
-                                label_artist.text = artist?.name
-                                label_artist.textColor = UIColor.gray
-                                label_artist.lineBreakMode = NSLineBreakMode.byTruncatingTail
-                            }
-                            
-                            let view = SongView.init(frame: CGRect(
-                                x: CGFloat(0),
-                                y: CGFloat(y),
-                                width: CGFloat(w),
-                                height: CGFloat(label_song.frame.height + 1 + label_artist.frame.height)
-                                
-                            ))
-                            view.isOpaque = false
-                            view.playlist = snapshot
-                            view.index = i
-                            
-                            view.addSubview(label_song)
-                            view.addSubview(label_artist)
-                            let gesture = UITapGestureRecognizer.init(
-                                target: self,
-                                action: #selector(self.songClicked(_:)))
-                            view.addGestureRecognizer(gesture)
-                            
-                            self.songStack.addSubview(view)
-                            y += h-1
-                            i += 1
-                        }
-                        else {
-                            print("\(Mirror(reflecting: obj).subjectType)")
-                        }
-                    }
+                if let snapshot = obj as? SPTPlaylistSnapshot {
+                    let page: SPTListPage! = snapshot.firstTrackPage
                     
-                    print("Setting scroll size to: \(self.view.frame.width), \(y)")
-                    self.songScroll.contentSize = CGSize(width: self.songScroll.frame.width, height: CGFloat(y))
-                    print("Setting song stack size to \(self.songStack.frame.width), \(y)")
-                    self.songStack.frame.size = CGSize(
-                        width: self.songStack.frame.width,
-                        height: CGFloat(y)
-                    )
+                    //Remove all subviews
+                    for sub in self.songStack.subviews as [UIView] {
+                        sub.removeFromSuperview()
+                    }
+                    self.heightConstraint.constant = 0
+                    
+                    self.loadSongs(snapshot, page)
                 }
                 
             })
@@ -131,20 +72,95 @@ class SongController: UIViewController {
         }
     }
     
+    /*
+     let tracks = snapshot.tracksForPlayback()
+     var i = 0
+     for obj in tracks! {
+     if obj is SPTPlaylistTrack {
+     let track = obj as! SPTPlaylistTrack
+     
+     let view = UISongView.initWith(owner: self.songStack, song: track)
+     view.frame.origin.y = CGFloat(y)
+     view.playlist = snapshot
+     view.index = i
+     
+     let gesture = UITapGestureRecognizer.init(
+     target: self,
+     action: #selector(self.songClicked(_:)))
+     view.addGestureRecognizer(gesture)
+     
+     self.songStack.addSubview(view)
+     y += Int(view.frame.height+2)
+     i += 1
+     }
+     else {
+     print("\(Mirror(reflecting: obj).subjectType)")
+     }
+     }
+     self.heightConstraint.constant = CGFloat(y)
+     
+     */
+    
+    func loadSongs(_ playlist: SPTPlaylistSnapshot, _ listPage: SPTListPage) {
+        
+        let songs = listPage.tracksForPlayback()
+        for obj in songs! {
+            if let song = obj as? SPTPlaylistTrack {
+                let view = UISongView.initWith(owner: self.songStack, song: song)
+                view.playlist = playlist
+                view.index = self.songStack.subviews.count
+                
+                let h = view.frame.height
+                self.heightConstraint.constant = self.heightConstraint.constant + h
+                let y = Int(h) * self.songStack.subviews.count
+                view.frame.origin = CGPoint(x: 0, y: y)
+                
+                let gest = UITapGestureRecognizer.init(target: self, action: #selector(self.songClicked(_:)))
+                view.addGestureRecognizer(gest)
+                
+                self.songStack.addSubview(view)
+            }
+            else {
+                print("obj is not SPTPlaylistTrack: \(Mirror(reflecting: obj).subjectType)")
+            }
+        }
+        
+        print("Successfully added \(songs?.count) songs. Total: \(self.songStack.subviews.count)")
+        
+        if listPage.hasNextPage {
+            print("This page has a next page")
+            listPage.requestNextPage(withAccessToken: SPTAuth.defaultInstance().session.accessToken, callback: {
+                (err, obj) in
+                if err != nil {
+                    print("Error on requestNextPage: \(err?.localizedDescription)")
+                    return
+                }
+                
+                print("Got our next page")
+                print("Type of obj: \(Mirror(reflecting: obj!).subjectType)")
+                
+                if let nextPage = obj as? SPTListPage {
+                    self.loadSongs(playlist, nextPage)
+                }
+                
+            })
+        }
+    }
+    
     func songClicked(_ sender: UITapGestureRecognizer) {
-        let source = sender.view
-        if source != nil && source is SongView {
-            let source_sv = source as! SongView
+        if let source = sender.view as? UISongView {
             if (SpotifyApp.instance.player?.loggedIn)! && (SpotifyApp.instance.player?.initialized)! {
-                self.performSegue(withIdentifier: Constants.SongsToPlayer, sender: PlayInfo(playlist: source_sv.playlist!, index: source_sv.index!))
+                self.performSegue(withIdentifier: Constants.SongsToPlayer, sender: PlayInfo(playlist: source.playlist!, index: source.index!))
             }
             else {
                 print("[ERROR] Not ready to play songs.")
             }
         }
         else {
-            print("source is nil or not SongView")
+            print("[ERROR] source is nil or not UISongView: \(sender.view)")
         }
+        
+        
     }
     
     func scrollTap(_ sender: UITapGestureRecognizer) {
@@ -154,9 +170,6 @@ class SongController: UIViewController {
     
     @IBAction func unwindToSongs(segue: UIStoryboardSegue) {
         print("SongController.unwindToSongs")
-        if let songController = segue.source as? PlayerController {
-            print("Coming from PlayerController")
-        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

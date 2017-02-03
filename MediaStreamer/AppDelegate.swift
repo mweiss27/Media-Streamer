@@ -76,16 +76,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return SPTAuth.defaultInstance().session
     }
     
-    func saveSession(session: SPTSession) {
+    func saveSession(session: SPTSession?) {
+        var sess = session
         print("Saving an SPTSession")
+        if sess == nil {
+            sess = SPTSession()
+        }
         
         let userDefaults = UserDefaults.standard
-        let sessionData = NSKeyedArchiver.archivedData(withRootObject: session)
+        let sessionData = NSKeyedArchiver.archivedData(withRootObject: sess!)
         
         userDefaults.set(sessionData, forKey: "SpotifySession")
         userDefaults.synchronize()
         
-        SPTAuth.defaultInstance().session = session
+        SPTAuth.defaultInstance().session = sess
         print("Save success")
     }
     

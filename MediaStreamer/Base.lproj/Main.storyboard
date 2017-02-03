@@ -58,43 +58,47 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Playlists" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YYx-od-aok">
-                                <rect key="frame" x="16" y="20" width="288" height="29"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NRs-ZA-Mdp">
                                 <rect key="frame" x="16" y="57" width="288" height="491"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xAy-m6-WTZ">
                                         <rect key="frame" x="0.0" y="0.0" width="288" height="491"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="491" id="K82-Ie-Yvb"/>
+                                        </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="top" secondItem="NRs-ZA-Mdp" secondAttribute="top" id="4qz-HW-NLs"/>
-                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="centerY" secondItem="NRs-ZA-Mdp" secondAttribute="centerY" id="BOu-xY-Ivx"/>
-                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="centerX" secondItem="NRs-ZA-Mdp" secondAttribute="centerX" id="Mak-37-LTr"/>
-                                    <constraint firstAttribute="trailing" secondItem="xAy-m6-WTZ" secondAttribute="trailing" id="fdg-xW-siF"/>
-                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="leading" secondItem="NRs-ZA-Mdp" secondAttribute="leading" id="uiB-NC-d8s"/>
-                                    <constraint firstAttribute="bottom" secondItem="xAy-m6-WTZ" secondAttribute="bottom" id="y18-FQ-AUs"/>
+                                    <constraint firstAttribute="bottom" secondItem="xAy-m6-WTZ" secondAttribute="bottom" id="L26-Gs-2YW"/>
+                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="top" secondItem="NRs-ZA-Mdp" secondAttribute="top" id="Pn8-vw-T7P"/>
+                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="leading" secondItem="NRs-ZA-Mdp" secondAttribute="leading" id="bYJ-rd-qxo"/>
+                                    <constraint firstAttribute="trailing" secondItem="xAy-m6-WTZ" secondAttribute="trailing" id="etg-zi-iAB"/>
+                                    <constraint firstItem="xAy-m6-WTZ" firstAttribute="centerX" secondItem="NRs-ZA-Mdp" secondAttribute="centerX" id="nWq-Md-Mdf"/>
                                 </constraints>
                             </scrollView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Playlists" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YYx-od-aok">
+                                <rect key="frame" x="0.0" y="20" width="320" height="29"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="leading" secondItem="DYH-6z-hsc" secondAttribute="leadingMargin" id="TUr-5v-aIU"/>
-                            <constraint firstAttribute="bottom" secondItem="NRs-ZA-Mdp" secondAttribute="bottom" constant="20" symbolic="YES" id="dmW-Ug-xDR"/>
-                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="top" secondItem="YYx-od-aok" secondAttribute="bottom" constant="8" symbolic="YES" id="gr4-Gb-mHW"/>
-                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="top" secondItem="DYH-6z-hsc" secondAttribute="top" constant="57" id="lS3-75-4dh"/>
-                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="trailing" secondItem="DYH-6z-hsc" secondAttribute="trailingMargin" id="pUk-x2-LZq"/>
-                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="centerX" secondItem="YYx-od-aok" secondAttribute="centerX" id="tXG-Ba-l4P"/>
+                            <constraint firstItem="YYx-od-aok" firstAttribute="width" secondItem="DYH-6z-hsc" secondAttribute="width" id="G48-pz-z6w"/>
+                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="leading" secondItem="DYH-6z-hsc" secondAttribute="leadingMargin" id="M3t-zR-bJy"/>
+                            <constraint firstItem="YYx-od-aok" firstAttribute="top" secondItem="I6g-Uu-dYp" secondAttribute="bottom" id="dd6-al-ba2"/>
+                            <constraint firstAttribute="bottom" secondItem="NRs-ZA-Mdp" secondAttribute="bottom" constant="20" symbolic="YES" id="hpW-OO-ilN"/>
+                            <constraint firstItem="YYx-od-aok" firstAttribute="centerX" secondItem="DYH-6z-hsc" secondAttribute="centerX" id="oiO-Vy-YAU"/>
+                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="top" secondItem="YYx-od-aok" secondAttribute="bottom" constant="8" id="qtc-Hr-1WT"/>
+                            <constraint firstItem="NRs-ZA-Mdp" firstAttribute="trailing" secondItem="DYH-6z-hsc" secondAttribute="trailingMargin" id="xed-NK-Ee8"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="heightConstraint" destination="K82-Ie-Yvb" id="MKp-TO-Ech"/>
                         <outlet property="playlistScroll" destination="NRs-ZA-Mdp" id="KPz-Zv-cg5"/>
                         <outlet property="playlistStack" destination="xAy-m6-WTZ" id="4zh-N2-nE5"/>
-                        <segue destination="ERb-LU-qos" kind="presentation" identifier="playlist_to_songs" id="BAs-RD-Zwo"/>
+                        <segue destination="ERb-LU-qos" kind="showDetail" identifier="playlist_to_songs" action="showViewController:sender:" id="BAs-RD-Zwo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="63v-7I-xj6" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -113,22 +117,29 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Songs" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9yx-8r-a2n">
-                                <rect key="frame" x="48" y="20" width="256" height="29"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Songs" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9yx-8r-a2n">
+                                <rect key="frame" x="16" y="20" width="288" height="29"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" fixedFrame="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pxb-LF-p5z">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pxb-LF-p5z">
                                 <rect key="frame" x="16" y="57" width="288" height="477"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <view opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oz3-Ly-14h">
-                                        <rect key="frame" x="8" y="8" width="272" height="461"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oz3-Ly-14h">
+                                        <rect key="frame" x="0.0" y="0.0" width="288" height="477"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="477" id="1fN-mN-olm"/>
+                                        </constraints>
                                     </view>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="oz3-Ly-14h" secondAttribute="trailing" id="UIf-yq-ETW"/>
+                                    <constraint firstAttribute="bottom" secondItem="oz3-Ly-14h" secondAttribute="bottom" id="ZYQ-yW-5Zl"/>
+                                    <constraint firstItem="oz3-Ly-14h" firstAttribute="width" secondItem="Pxb-LF-p5z" secondAttribute="width" id="lOX-nL-A3z"/>
+                                    <constraint firstItem="oz3-Ly-14h" firstAttribute="leading" secondItem="Pxb-LF-p5z" secondAttribute="leading" id="ndW-Ot-xwq"/>
+                                    <constraint firstItem="oz3-Ly-14h" firstAttribute="top" secondItem="Pxb-LF-p5z" secondAttribute="top" id="shp-zb-MBL"/>
+                                </constraints>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gUI-j3-GYs">
                                 <rect key="frame" x="8" y="15" width="32" height="32"/>
@@ -140,13 +151,23 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="9yx-8r-a2n" firstAttribute="trailing" secondItem="Pxb-LF-p5z" secondAttribute="trailing" id="8nO-ZW-fqA"/>
+                            <constraint firstItem="Pxb-LF-p5z" firstAttribute="trailing" secondItem="YVq-2i-7FM" secondAttribute="trailingMargin" id="IYh-1R-vET"/>
+                            <constraint firstItem="9yx-8r-a2n" firstAttribute="top" secondItem="hVg-3j-FMU" secondAttribute="bottom" id="T24-km-j1Z"/>
+                            <constraint firstItem="fjc-u7-B9P" firstAttribute="top" secondItem="Pxb-LF-p5z" secondAttribute="bottom" constant="34" id="aCi-jv-R7Y"/>
+                            <constraint firstItem="Pxb-LF-p5z" firstAttribute="leading" secondItem="YVq-2i-7FM" secondAttribute="leadingMargin" id="aQy-Zv-E84"/>
+                            <constraint firstItem="Pxb-LF-p5z" firstAttribute="top" secondItem="9yx-8r-a2n" secondAttribute="bottom" constant="8" id="ksa-ht-XDd"/>
+                            <constraint firstItem="9yx-8r-a2n" firstAttribute="leading" secondItem="Pxb-LF-p5z" secondAttribute="leading" id="yqc-IB-1OR"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="gUI-j3-GYs" id="2sg-wP-XbN"/>
                         <outlet property="header" destination="9yx-8r-a2n" id="qWv-UY-fma"/>
+                        <outlet property="heightConstraint" destination="1fN-mN-olm" id="srM-VM-ajj"/>
                         <outlet property="songScroll" destination="Pxb-LF-p5z" id="JT2-cB-MOu"/>
                         <outlet property="songStack" destination="oz3-Ly-14h" id="sN6-8U-4Gn"/>
-                        <segue destination="xBa-t6-dpA" kind="presentation" identifier="songs_to_player" id="zTo-AI-z8k"/>
+                        <segue destination="xBa-t6-dpA" kind="showDetail" identifier="songs_to_player" action="showViewController:sender:" id="zTo-AI-z8k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dYH-Tf-xZJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -252,7 +273,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="backButton" width="32" height="32"/>
+        <image name="backButton" width="16" height="16"/>
         <image name="nextButton" width="32" height="32"/>
         <image name="playButton" width="32" height="32"/>
         <image name="previousButton" width="32" height="32"/>

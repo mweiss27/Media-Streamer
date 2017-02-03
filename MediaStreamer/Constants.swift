@@ -12,7 +12,7 @@ class Constants {
     
     static let clientID = "2da635f7c6224a24b10cd8c2566b4e8b"
     static let redirectURL = "mediastreamerspotifyauth://callback"
-    static let requestedScopes = [ SPTAuthStreamingScope, SPTAuthPlaylistReadPrivateScope, SPTAuthPlaylistReadCollaborativeScope ]
+    static let requestedScopes = [ SPTAuthStreamingScope, SPTAuthPlaylistReadPrivateScope, SPTAuthPlaylistReadCollaborativeScope, SPTAuthUserReadPrivateScope ]
     
     static let tokenSwapURL = "https://spotify-refresh-token.herokuapp.com/swap"
     static let tokenRefreshServiceURL = "https://spotify-refresh-token.herokuapp.com/refresh"
