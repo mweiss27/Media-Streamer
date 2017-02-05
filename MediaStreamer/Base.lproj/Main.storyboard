@@ -98,7 +98,7 @@
                         <outlet property="heightConstraint" destination="K82-Ie-Yvb" id="MKp-TO-Ech"/>
                         <outlet property="playlistScroll" destination="NRs-ZA-Mdp" id="KPz-Zv-cg5"/>
                         <outlet property="playlistStack" destination="xAy-m6-WTZ" id="4zh-N2-nE5"/>
-                        <segue destination="ERb-LU-qos" kind="showDetail" identifier="playlist_to_songs" action="showViewController:sender:" id="BAs-RD-Zwo"/>
+                        <segue destination="ERb-LU-qos" kind="show" identifier="playlist_to_songs" id="BAs-RD-Zwo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="63v-7I-xj6" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -167,7 +167,7 @@
                         <outlet property="heightConstraint" destination="1fN-mN-olm" id="srM-VM-ajj"/>
                         <outlet property="songScroll" destination="Pxb-LF-p5z" id="JT2-cB-MOu"/>
                         <outlet property="songStack" destination="oz3-Ly-14h" id="sN6-8U-4Gn"/>
-                        <segue destination="xBa-t6-dpA" kind="showDetail" identifier="songs_to_player" action="showViewController:sender:" id="zTo-AI-z8k"/>
+                        <segue destination="xBa-t6-dpA" kind="show" identifier="songs_to_player" id="zTo-AI-z8k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dYH-Tf-xZJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -244,10 +244,19 @@
                                     <segue destination="MHW-OB-xib" kind="unwind" unwindAction="unwindToSongsWithSegue:" id="Vr2-Mw-7EP"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L4K-Eb-EwA">
+                                <rect key="frame" x="32" y="466" width="16" height="22"/>
+                                <state key="normal" image="shuffle_offButton"/>
+                                <connections>
+                                    <action selector="shuffleButtonClicked:" destination="xBa-t6-dpA" eventType="touchUpInside" id="ddC-NC-RT6"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="8lM-sL-Ob4" firstAttribute="top" secondItem="hLT-5z-xhH" secondAttribute="bottom" constant="75" id="2V2-pb-UIi"/>
+                            <constraint firstItem="qPU-HF-dgF" firstAttribute="leading" secondItem="L4K-Eb-EwA" secondAttribute="trailing" constant="32" id="G83-8Z-qhN"/>
+                            <constraint firstItem="L4K-Eb-EwA" firstAttribute="centerY" secondItem="qPU-HF-dgF" secondAttribute="centerY" id="Oia-0v-HoE"/>
                             <constraint firstItem="8lM-sL-Ob4" firstAttribute="top" secondItem="qPU-HF-dgF" secondAttribute="bottom" constant="75" id="Z2v-on-2F0"/>
                             <constraint firstItem="hLT-5z-xhH" firstAttribute="leading" secondItem="Qfa-bx-PRG" secondAttribute="trailing" constant="32" id="j1d-RE-yad"/>
                             <constraint firstItem="8lM-sL-Ob4" firstAttribute="top" secondItem="Qfa-bx-PRG" secondAttribute="bottom" constant="75" id="rtz-6c-71k"/>
@@ -263,13 +272,14 @@
                         <outlet property="nextButton" destination="hLT-5z-xhH" id="mSC-fI-oF6"/>
                         <outlet property="pausePlay" destination="Qfa-bx-PRG" id="WHy-gt-Yss"/>
                         <outlet property="progressSlider" destination="IDN-C8-FtW" id="U2v-PH-bee"/>
+                        <outlet property="shuffleButton" destination="L4K-Eb-EwA" id="cJu-7U-Jg0"/>
                         <outlet property="songName" destination="bW5-jt-JpC" id="tTF-gC-lyO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F9A-Fo-1Nz" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="MHW-OB-xib" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2012" y="-543"/>
+            <point key="canvasLocation" x="2011.875" y="-544.0140845070423"/>
         </scene>
     </scenes>
     <resources>
@@ -277,5 +287,6 @@
         <image name="nextButton" width="32" height="32"/>
         <image name="playButton" width="32" height="32"/>
         <image name="previousButton" width="32" height="32"/>
+        <image name="shuffle_offButton" width="16" height="16"/>
     </resources>
 </document>
