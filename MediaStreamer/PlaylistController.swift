@@ -62,18 +62,20 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                             let items = listlist.items
                             
                             var y = 0
-                            for item in items! {
-                                if item is SPTPartialPlaylist {
-                                    let partial = item as! SPTPartialPlaylist
-                                    print("Creating a UIPlaylistView for \(partial.name)")
-                                    let view = UIPlaylistView.initWith(owner: self.playlistStack, playlist: partial)
-                                    view.frame.origin.y = CGFloat(y)
-                                    
-                                    let gesture = UITapGestureRecognizer.init(target: self, action: #selector(self.playlistTapped(_:)))
-                                    view.addGestureRecognizer(gesture)
-                                    
-                                    self.playlistStack.addSubview(view)
-                                    y += Int(view.frame.height + 3)
+                            if items != nil{
+                                for item in items! {
+                                    if item is SPTPartialPlaylist {
+                                        let partial = item as! SPTPartialPlaylist
+                                        print("Creating a UIPlaylistView for \(partial.name)")
+                                        let view = UIPlaylistView.initWith(owner: self.playlistStack, playlist: partial)
+                                        view.frame.origin.y = CGFloat(y)
+                                        
+                                        let gesture = UITapGestureRecognizer.init(target: self, action: #selector(self.playlistTapped(_:)))
+                                        view.addGestureRecognizer(gesture)
+                                        
+                                        self.playlistStack.addSubview(view)
+                                        y += Int(view.frame.height + 3)
+                                    }
                                 }
                             }
                             self.heightConstraint.constant = CGFloat(y)
