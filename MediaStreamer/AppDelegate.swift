@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let audioController: SPTCoreAudioController = SPTCoreAudioController.init()
     
+    var roomController: RoomController? = nil
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
@@ -46,15 +48,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 else {
                     print("No error, we were able to handle!")
                     if session != nil {
-                        self.saveSession(session: session!)
-                        if (session?.isValid())! {
-                            print("[1] We have a valid session. We need to transition to the info view")
-                            let loginView = (self.window?.rootViewController as! ViewController)
-                            loginView.performSegue(withIdentifier: Constants.LogintoPlaylists, sender: nil)
+                        if self.roomController != nil {
+                            self.roomController?.handleSpotifyLogin(session: session)
                         }
                         else {
-                            print("We attempted to login, but the session isn't valid!")
+                            print("[ERR] roomController is nil")
                         }
+                    }
+                    else {
+                        print("[ERR] Session is nil from SpotifyAuth callback")
                     }
                 }
             })

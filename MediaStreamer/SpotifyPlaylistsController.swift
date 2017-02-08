@@ -1,38 +1,28 @@
 //
-//  PlaylistController.swift
+//  SpotifyPlaylistsController.swift
 //  MediaStreamer
 //
-//  Created by Matt Weiss on 1/29/17.
+//  Created by Matt Weiss on 2/6/17.
 //  Copyright © 2017 Matt Weiss. All rights reserved.
 //
 
 import UIKit
 
-class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
+class SpotifyPlaylistsController: UIViewController {
     
-    var appDelegate: AppDelegate?
-    
-    @IBOutlet weak var playlistHeader: UILabel!
-    @IBOutlet weak var playlistScroll: UIScrollView!
     @IBOutlet weak var playlistStack: UIView!
-    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var playlistStackHeight: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.appDelegate = UIApplication.shared.delegate as? AppDelegate
-        
-        SpotifyApp.instance.player.delegate = self
-        SpotifyApp.instance.player.playbackDelegate = self
-        
         self.initPlaylists()
         
-        print("PlaylistController viewDidLoad")
+        print("SpotifyPlaylistsController viewDidLoad")
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        SpotifyApp.instance.startPlayer()
-        print("PlaylistController viewDidAppear")
+        print("SpotifyPlaylistsController viewDidAppear")
     }
     
     func initPlaylists() {
@@ -56,6 +46,7 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                             print("Error on .playlists: \(error?.localizedDescription)")
                             return
                         }
+                        
                         print("\(Mirror(reflecting: playlists!).subjectType)")
                         if playlists is SPTPlaylistList {
                             let listlist = playlists as! SPTPlaylistList
@@ -66,8 +57,8 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                                 for item in items! {
                                     if item is SPTPartialPlaylist {
                                         let partial = item as! SPTPartialPlaylist
-                                        print("Creating a UIPlaylistView for \(partial.name)")
-                                        let view = UIPlaylistView.initWith(owner: self.playlistStack, playlist: partial)
+                                        print("Creating a SpotifyPlaylistView for \(partial.name)")
+                                        let view = SpotifyPlaylistView.initWith(owner: self.playlistStack, playlist: partial)
                                         view.frame.origin.y = CGFloat(y)
                                         
                                         let gesture = UITapGestureRecognizer.init(target: self, action: #selector(self.playlistTapped(_:)))
@@ -78,7 +69,7 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
                                     }
                                 }
                             }
-                            self.heightConstraint.constant = CGFloat(y)
+                            self.playlistStackHeight.constant = CGFloat(y)
                         }
                     })
                     
@@ -91,9 +82,8 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
     
     func playlistTapped(_ sender: UITapGestureRecognizer) {
         
-        if let source = sender.view as? UIPlaylistView {
+        if let source = sender.view as? SpotifyPlaylistView {
             print("Playlist Tapped: \(source.playlistName!)")
-            self.performSegue(withIdentifier: Constants.PlaylistToSongs, sender: source)
         }
         else {
             print("Bad source")
@@ -101,33 +91,14 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
         
     }
     
-    func playlistClicked(sender: PlaylistButton) {
-        if sender.playlist != nil {
-            if let playlist = sender.playlist {
-                self.performSegue(withIdentifier: Constants.PlaylistToSongs, sender: playlist)
-            }
-        }
-        else {
-            print("Bad argument: \(sender)")
-        }
-    }
     
-    
-    
-    @IBAction func unwindToPlaylists(segue: UIStoryboardSegue) {
-        print("PlaylistController.unwindToPlaylists")
-        if segue.source is SongController {
-            print("Coming from SongController")
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let songController = segue.destination as? SongController {
-            if let playlistView = sender as? UIPlaylistView {
-                songController.playlist = playlistView.partialPlaylist
-            }
-        }
-    }
+//    @IBAction func unwindToPlaylists(segue: UIStoryboardSegue) {
+//        print("PlaylistController.unwindToPlaylists")
+//        if segue.source is SongController {
+//            print("Coming from SongController")
+//        }
+//    }
     
     
 }
+

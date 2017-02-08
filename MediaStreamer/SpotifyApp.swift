@@ -29,8 +29,8 @@ class SpotifyApp {
                 }
                 
                 try self.player.start(withClientId: Constants.clientID,
-                                 audioController: self.audioController,
-                                 allowCaching: true)
+                                      audioController: self.audioController,
+                                      allowCaching: true)
                 print("Start success")
             } catch let error {
                 print("Error on start: \(error.localizedDescription)")
@@ -39,20 +39,49 @@ class SpotifyApp {
         }
     }
     
-    static public func getArtist(artists: [Any?]) -> String {
-        print("getArtist: \(artists)")
-        if artists.count > 0 {
-            if let first = artists.first as? SPTArtist {
-                return first.name
-            }
-            else if let first = artists.first as? SPTPartialArtist {
-                return first.name
-            }
-            else if let first = artists.first as? String {
-                return first
+    public static func getArtist(artists: [Any?]?) -> String {
+        if artists != nil {
+            if (artists?.count)! > 0 {
+                if let first = artists?.first as? SPTArtist {
+                    return first.name
+                }
+                else if let first = artists?.first as? SPTPartialArtist {
+                    return first.name
+                }
+                else if let first = artists?.first as? String {
+                    return first
+                }
             }
         }
         return "N/A"
+    }
+    
+    public static func restoreSession() -> SPTSession? {
+        let userDefaults = UserDefaults.standard
+        if let sessionData = userDefaults.object(forKey: "SpotifySession") {
+            if let session = NSKeyedUnarchiver.unarchiveObject(with: sessionData as! Data) as? SPTSession {
+                print("We found an SPTSession")
+                SPTAuth.defaultInstance().session = session
+            }
+        }
+        return SPTAuth.defaultInstance().session
+    }
+    
+    public static func saveSession(session: SPTSession?) {
+        var sess = session
+        print("Saving an SPTSession")
+        if sess == nil {
+            sess = SPTSession()
+        }
+        
+        let userDefaults = UserDefaults.standard
+        let sessionData = NSKeyedArchiver.archivedData(withRootObject: sess!)
+        
+        userDefaults.set(sessionData, forKey: "SpotifySession")
+        userDefaults.synchronize()
+        
+        SPTAuth.defaultInstance().session = sess
+        print("Save success")
     }
     
 }

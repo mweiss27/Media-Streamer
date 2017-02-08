@@ -1,13 +1,12 @@
 Barebones functionality from Matt's perspective:
 
-    Users should be required to make an account using minimal information:
-        Username
-        Password
-
-    Allow a user to create or join a group via invite
-        Invite can be by phone number or username
+    Users don't require an account
+        Can create a room
+            Room is assigned an id
+            Room can be joined by entering room id
 
     Groups have a few properties
+        Unique id
         Display Name
         User List
             From the list, we can display icons showing what sort of activity the user is up to
@@ -18,6 +17,13 @@ Barebones functionality from Matt's perspective:
                       Option that could be disabled by default?
 
     From an API standpoint, we know that Spotify's iOS SDK exposes information about current playing information. We need to get this setup to see if this pulls the information locally from the device, requiring no login, or if it makes web API calls, which would require us to sign-in to Spotify from within the app. My guess is that it pulls it from the device.
+
+    The application will have multiple tabs
+        -Settings
+            -Set display name
+            -Spotify Authentication
+            -Google Authentication
+        
 
     I would say a user would have to hit a button to begin acting as a "broadcaster"
         By broadcaster, I mean that they are going to appear as someone who can be synced with

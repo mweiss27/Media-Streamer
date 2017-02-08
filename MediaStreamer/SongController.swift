@@ -159,8 +159,6 @@ class SongController: UIViewController {
         else {
             print("[ERROR] source is nil or not UISongView: \(sender.view)")
         }
-        
-        
     }
     
     func scrollTap(_ sender: UITapGestureRecognizer) {

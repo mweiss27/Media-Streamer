@@ -27,4 +27,6 @@ class Constants {
     static let SongsToPlayer: String = "songs_to_player"
     
     
+    static let BrowseSpotifyLibrary: String = "Search the Spotify library"
+    static let ShowingResults = "Showing %d results"
 }
