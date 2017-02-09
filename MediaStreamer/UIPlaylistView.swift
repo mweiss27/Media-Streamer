@@ -58,6 +58,7 @@ class UIPlaylistView: UIView {
     }
     
     private func loadImage() {
+        // Crashes for playlists with no songs
         URLSession.shared.dataTask(with: (self.playlistImage?.imageURL)!) {
             (data, response, error) in
             if error != nil {
