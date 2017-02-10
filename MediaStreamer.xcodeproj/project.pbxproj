@@ -35,6 +35,7 @@
 		C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */; };
 		C987AE5E1E3F007800355688 /* SongController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5D1E3F007800355688 /* SongController.swift */; };
 		C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE611E3F0A3200355688 /* PlayerController.swift */; };
+		DDD40F8A86D03B3617FDF820 /* Pods_MediaStreamer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C5F6C9526D9BAEFEAB8DC6D /* Pods-MediaStreamer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.debug.xcconfig"; sourceTree = "<group>"; };
+		AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MediaStreamer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		C9439D441E3295AF007446B0 /* MediaStreamer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaStreamer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9439D471E3295AF007446B0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -81,6 +84,7 @@
 		C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistButton.swift; sourceTree = "<group>"; };
 		C987AE5D1E3F007800355688 /* SongController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongController.swift; sourceTree = "<group>"; };
 		C987AE611E3F0A3200355688 /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
+		F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +97,7 @@
 				C9439D761E36B64C007446B0 /* AVFoundation.framework in Frameworks */,
 				C9439D6E1E353054007446B0 /* SpotifyAudioPlayback.framework in Frameworks */,
 				C9439D6F1E353054007446B0 /* SpotifyAuthentication.framework in Frameworks */,
+				DDD40F8A86D03B3617FDF820 /* Pods_MediaStreamer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +111,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7653324EC6E836B8BFB638C1 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1C5F6C9526D9BAEFEAB8DC6D /* Pods-MediaStreamer.debug.xcconfig */,
+				F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		C9439D3B1E3295AF007446B0 = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +129,7 @@
 				C9439D5B1E3295AF007446B0 /* MediaStreamerTests */,
 				C9439D451E3295AF007446B0 /* Products */,
 				C9439D7C1E36BF29007446B0 /* MediaStreamer-Bridging-Header.h */,
+				7653324EC6E836B8BFB638C1 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -167,6 +182,7 @@
 				C9439D751E36B64C007446B0 /* AVFoundation.framework */,
 				C9439D6C1E353054007446B0 /* SpotifyAudioPlayback.framework */,
 				C9439D6D1E353054007446B0 /* SpotifyAuthentication.framework */,
+				AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -218,10 +234,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9439D611E3295AF007446B0 /* Build configuration list for PBXNativeTarget "MediaStreamer" */;
 			buildPhases = (
+				30D5CEEA0B7ABE8FDCC40CB8 /* [CP] Check Pods Manifest.lock */,
 				C9439D401E3295AF007446B0 /* Sources */,
 				C9439D411E3295AF007446B0 /* Frameworks */,
 				C9439D421E3295AF007446B0 /* Resources */,
 				C9439D791E36B931007446B0 /* Headers */,
+				7CBA1CB1F6C0A141F7DE6BBA /* [CP] Embed Pods Frameworks */,
+				C85DF9D0FE5EC9E1C6D6D280 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -262,7 +281,7 @@
 				TargetAttributes = {
 					C9439D431E3295AF007446B0 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = F3998A6CDW;
+						DevelopmentTeam = U73UR6JLAQ;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
@@ -311,6 +330,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		30D5CEEA0B7ABE8FDCC40CB8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		7CBA1CB1F6C0A141F7DE6BBA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C85DF9D0FE5EC9E1C6D6D280 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9439D401E3295AF007446B0 /* Sources */ = {
@@ -472,11 +539,12 @@
 		};
 		C9439D621E3295AF007446B0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C5F6C9526D9BAEFEAB8DC6D /* Pods-MediaStreamer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = F3998A6CDW;
+				DEVELOPMENT_TEAM = U73UR6JLAQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -494,11 +562,12 @@
 		};
 		C9439D631E3295AF007446B0 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = F3998A6CDW;
+				DEVELOPMENT_TEAM = U73UR6JLAQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
