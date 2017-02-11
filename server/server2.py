@@ -25,11 +25,16 @@ def join(sid, roomNum):
 	print(roomNum)
 	print("Attempted Join")
 	cursor = conn.execute("SELECT DisplayName FROM Room WHERE RoomNum=?", (roomNum,))
-	for row in cursor:
-		if row[0] is not None:
+	if cursor.rowcount == 1:
+		for row in cursor:
+			print("Valid room number")
 			roomNum = row[0]
 			sio.emit("join reply", roomNum, room=sid)
-	
+	else:
+		print("invalid room number")
+		roomNum = "nil"
+		sio.emit("join reply", roomNum, room=sid)
+
 @sio.on('create room')
 def createRoom(sid, displayName, roomNum):
 	conn.execute("INSERT INTO Room (RoomNum, DisplayName) VALUES (?, ?)", (roomNum, displayName))
