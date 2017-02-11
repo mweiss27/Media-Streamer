@@ -96,11 +96,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        SocketIOManager.sharedSocket.establishConnection()
+        SocketIOManager.socket.connect()
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        SocketIOManager.sharedSocket.closeConnection()
+        SocketIOManager.socket.disconnect()
     }
     
 }
