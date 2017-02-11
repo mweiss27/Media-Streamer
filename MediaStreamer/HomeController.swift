@@ -7,17 +7,26 @@
 //
 
 import UIKit
-import SocketIO
 
 class HomeController: UIViewController {
 
+    let defaults = UserDefaults()
+    let db = SQLiteDB.shared
+    
+    @IBOutlet weak var displayNameField: UITextField!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let uuid = UUID().uuidString
-        print(uuid)
-        self.initNetworkCommunication()
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(HomeController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        let displayName = defaults.string(forKey: "displayName")
+        if displayName != nil{
+            displayNameField.text = displayName
+        }
+        displayNameField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -26,24 +35,23 @@ class HomeController: UIViewController {
         print("HomeController is displayed")
     }
     
-    func initNetworkCommunication(){
-        let socket = SocketIOClient(socketURL: URL(string: "http://192.168.1.117:80")!, config: [.log(true), .forcePolling(true)])
+    func textFieldDidChange(_ textField: UITextField) {
+        defaults.set(displayNameField.text, forKey: "displayName");
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @IBAction func createAddRoom(_ sender: Any) {
+        // Ask what user wants
+        let alert = UIAlertController(title: "Create/Add", message: "What would you like to do?", preferredStyle: UIAlertControllerStyle.alert)
         
-        socket.on("connect") {data, ack in
-            print("socket connected")
-        }
-        
-        socket.on("currentAmount") {data, ack in
-            if let cur = data[0] as? Double {
-                socket.emitWithAck("canUpdate", cur).timingOut(after: 0) {data in
-                    socket.emit("update", ["amount": cur + 2.50])
-                }
-                
-                ack.with("Got your currentAmount", "dude")
-            }
-        }
-        
-        socket.connect()
+        alert.addAction(UIAlertAction(title: "Create New Room", style: UIAlertActionStyle.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Join Existing Room", style: UIAlertActionStyle.default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+
+        self.present(alert, animated: true, completion: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		946F7DE21E4F6C220046DB58 /* SocketIOManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7DE11E4F6C220046DB58 /* SocketIOManager.swift */; };
+		946F7DEF1E4F771B0046DB58 /* SQLiteDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7DED1E4F771B0046DB58 /* SQLiteDB.swift */; };
+		946F7DF01E4F771B0046DB58 /* SQLTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7DEE1E4F771B0046DB58 /* SQLTable.swift */; };
+		946F7DF21E4F774F0046DB58 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */; };
+		946F7DF41E4F78700046DB58 /* data.db in Resources */ = {isa = PBXBuildFile; fileRef = 946F7DF31E4F78700046DB58 /* data.db */; };
 		C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */; };
 		C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D471E3295AF007446B0 /* AppDelegate.swift */; };
 		C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D491E3295AF007446B0 /* ViewController.swift */; };
@@ -50,6 +55,11 @@
 
 /* Begin PBXFileReference section */
 		1C5F6C9526D9BAEFEAB8DC6D /* Pods-MediaStreamer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.debug.xcconfig"; sourceTree = "<group>"; };
+		946F7DE11E4F6C220046DB58 /* SocketIOManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketIOManager.swift; sourceTree = "<group>"; };
+		946F7DED1E4F771B0046DB58 /* SQLiteDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteDB.swift; sourceTree = "<group>"; };
+		946F7DEE1E4F771B0046DB58 /* SQLTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLTable.swift; sourceTree = "<group>"; };
+		946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
+		946F7DF31E4F78700046DB58 /* data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = data.db; sourceTree = "<group>"; };
 		AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MediaStreamer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		C9439D441E3295AF007446B0 /* MediaStreamer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaStreamer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				946F7DF21E4F774F0046DB58 /* libsqlite3.0.tbd in Frameworks */,
 				C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */,
 				C9439D781E36B650007446B0 /* SystemConfiguration.framework in Frameworks */,
 				C9439D761E36B64C007446B0 /* AVFoundation.framework in Frameworks */,
@@ -123,6 +134,7 @@
 		C9439D3B1E3295AF007446B0 = {
 			isa = PBXGroup;
 			children = (
+				946F7DF31E4F78700046DB58 /* data.db */,
 				C9439D6B1E353041007446B0 /* Frameworks */,
 				C9439D671E329828007446B0 /* README.md */,
 				C9439D461E3295AF007446B0 /* MediaStreamer */,
@@ -145,6 +157,8 @@
 		C9439D461E3295AF007446B0 /* MediaStreamer */ = {
 			isa = PBXGroup;
 			children = (
+				946F7DED1E4F771B0046DB58 /* SQLiteDB.swift */,
+				946F7DEE1E4F771B0046DB58 /* SQLTable.swift */,
 				C9877F141E48F79A008D5147 /* ViewControllers */,
 				C9439D471E3295AF007446B0 /* AppDelegate.swift */,
 				C9439D491E3295AF007446B0 /* ViewController.swift */,
@@ -161,6 +175,7 @@
 				C9877F0A1E429BEB008D5147 /* UIPlaylistView.swift */,
 				C9877F0E1E43CD07008D5147 /* UISongView.swift */,
 				C9877F101E43FA44008D5147 /* Helper.swift */,
+				946F7DE11E4F6C220046DB58 /* SocketIOManager.swift */,
 			);
 			path = MediaStreamer;
 			sourceTree = "<group>";
@@ -177,6 +192,7 @@
 		C9439D6B1E353041007446B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */,
 				C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */,
 				C9439D771E36B650007446B0 /* SystemConfiguration.framework */,
 				C9439D751E36B64C007446B0 /* AVFoundation.framework */,
@@ -317,6 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9439D521E3295AF007446B0 /* LaunchScreen.storyboard in Resources */,
+				946F7DF41E4F78700046DB58 /* data.db in Resources */,
 				C9439D4F1E3295AF007446B0 /* Assets.xcassets in Resources */,
 				C9439D4D1E3295AF007446B0 /* Main.storyboard in Resources */,
 			);
@@ -390,8 +407,10 @@
 				C9439D681E329828007446B0 /* README.md in Sources */,
 				C9877F1F1E492411008D5147 /* SpotifyPlaylistsController.swift in Sources */,
 				C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */,
+				946F7DEF1E4F771B0046DB58 /* SQLiteDB.swift in Sources */,
 				C9877F0B1E429BEB008D5147 /* UIPlaylistView.swift in Sources */,
 				C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */,
+				946F7DF01E4F771B0046DB58 /* SQLTable.swift in Sources */,
 				C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */,
 				C9877F181E48F809008D5147 /* RoomController.swift in Sources */,
 				C9877F211E49C361008D5147 /* SpotifyTrackView.swift in Sources */,
@@ -400,6 +419,7 @@
 				C9877F251E4A4C83008D5147 /* SpotifyPlaylistView.swift in Sources */,
 				C9877F161E48F7A8008D5147 /* HomeController.swift in Sources */,
 				C987AE581E3E607300355688 /* PlaylistController.swift in Sources */,
+				946F7DE21E4F6C220046DB58 /* SocketIOManager.swift in Sources */,
 				C9877F0F1E43CD07008D5147 /* UISongView.swift in Sources */,
 				C9877F1D1E492401008D5147 /* SpotifySearchController.swift in Sources */,
 				C9877F231E4A3923008D5147 /* SpotifySongsController.swift in Sources */,

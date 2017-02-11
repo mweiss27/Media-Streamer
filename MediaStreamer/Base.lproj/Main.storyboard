@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FLs-Wp-a4q">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FLs-Wp-a4q">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -74,20 +74,65 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vS5-zx-y12">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vS5-zx-y12">
                                 <rect key="frame" x="16" y="8" width="288" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Kool Kids Klub"/>
                                 <connections>
                                     <segue destination="7ad-dJ-CfE" kind="show" id="Ove-8s-Dno"/>
                                 </connections>
                             </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="v7n-La-FPS">
+                                <rect key="frame" x="0.0" y="138" width="320" height="366"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Display Name:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZPW-LZ-mso">
+                                <rect key="frame" x="16" y="46" width="110" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="This is the name others will see" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JAB-56-CI6">
+                                <rect key="frame" x="16" y="75" width="288" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rooms:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KIl-F4-xhT">
+                                <rect key="frame" x="16" y="113" width="58" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="vS5-zx-y12" firstAttribute="leading" secondItem="NeD-0H-1fO" secondAttribute="leadingMargin" id="3lE-fq-Dex"/>
+                            <constraint firstItem="ZPW-LZ-mso" firstAttribute="leading" secondItem="NeD-0H-1fO" secondAttribute="leadingMargin" id="70L-tp-GPi"/>
+                            <constraint firstItem="JAB-56-CI6" firstAttribute="trailing" secondItem="NeD-0H-1fO" secondAttribute="trailingMargin" id="8aR-06-hiO"/>
+                            <constraint firstItem="KIl-F4-xhT" firstAttribute="top" secondItem="JAB-56-CI6" secondAttribute="bottom" constant="8" id="DNR-SH-wd0"/>
+                            <constraint firstItem="JAB-56-CI6" firstAttribute="leading" secondItem="NeD-0H-1fO" secondAttribute="leadingMargin" id="K1a-Iz-mnL"/>
+                            <constraint firstItem="vS5-zx-y12" firstAttribute="trailing" secondItem="NeD-0H-1fO" secondAttribute="trailingMargin" id="LM7-Zy-4q2"/>
+                            <constraint firstAttribute="trailing" secondItem="v7n-La-FPS" secondAttribute="trailing" id="NqA-1M-SZw"/>
+                            <constraint firstItem="KIl-F4-xhT" firstAttribute="leading" secondItem="NeD-0H-1fO" secondAttribute="leadingMargin" id="R2z-Th-9VC"/>
+                            <constraint firstItem="JAB-56-CI6" firstAttribute="top" secondItem="ZPW-LZ-mso" secondAttribute="bottom" constant="8" id="TKm-g5-ruZ"/>
+                            <constraint firstItem="v7n-La-FPS" firstAttribute="top" secondItem="vS5-zx-y12" secondAttribute="bottom" constant="100" id="WWZ-o3-eyv"/>
+                            <constraint firstItem="v7n-La-FPS" firstAttribute="leading" secondItem="NeD-0H-1fO" secondAttribute="leading" id="aZK-Ci-vCK"/>
+                            <constraint firstItem="eEa-69-Ikh" firstAttribute="top" secondItem="v7n-La-FPS" secondAttribute="bottom" id="hkd-dM-ew8"/>
+                            <constraint firstItem="vS5-zx-y12" firstAttribute="top" secondItem="i5L-iE-8Lp" secondAttribute="bottom" constant="8" id="j79-8N-jov"/>
+                            <constraint firstItem="ZPW-LZ-mso" firstAttribute="top" secondItem="vS5-zx-y12" secondAttribute="bottom" constant="8" id="yau-ne-xAj"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Media Streamer" id="rTK-he-mwB">
                         <barButtonItem key="backBarButtonItem" title="Home" id="Sbt-1V-yiE"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="ktn-X6-9pr">
+                            <connections>
+                                <action selector="createAddRoom:" destination="ZNm-Te-t7p" id="dXb-ST-Gbe"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="displayNameField" destination="JAB-56-CI6" id="iLK-uA-pep"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pe0-Mq-1NN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -95,6 +95,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Save success")
     }
     
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        SocketIOManager.sharedSocket.establishConnection()
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        SocketIOManager.sharedSocket.closeConnection()
+    }
     
 }
 
