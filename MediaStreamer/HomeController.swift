@@ -30,7 +30,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Init rooms table
         let data = db.query(sql: "SELECT * FROM Room ORDER BY DisplayName ASC")
         if data.count > 0{
-            for i in 1...data.count-1{
+            for i in 0...data.count-1{
                 if let rName = data[i]["DisplayName"]{
                     roomList.append(rName as! String)
                 }
@@ -44,10 +44,13 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         roomTableView.dataSource = self;
         roomTableView.register(UITableViewCell.self, forCellReuseIdentifier: "customcell")
         roomTableView.allowsSelection = true
+        
+        print("view did load")
     }
     
     // Return number of rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        print(roomList.count)
         return roomList.count
     }
     
@@ -68,14 +71,18 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             // handle delete (by removing the data from your array and updating the tableview)
             let roomNum = roomNumberList[indexPath.item]
+            print("deleting: " + roomNum)
             let result = self.db.execute(sql: "DELETE FROM Room WHERE roomNum=?", parameters: [roomNum])
-            if (result != 0){
+            if result != 0{
                 roomNumberList.remove(at: indexPath.item)
                 roomList.remove(at: indexPath.item)
                 self.roomTableView.reloadData()
+                print("reload 2")
             }else{
                 print("Room delete failed")
             }
+            let data = db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
+            print(data.count)
         }
     }
     
@@ -137,6 +144,11 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         self?.roomList.append(displayName)
                         self?.roomNumberList.append(String(roomNum))
                         self?.roomTableView.reloadData()
+                        print("reload 3")
+                    }else{
+                        let data = self?.db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
+                        print("Join" + String(data!.count))
+                        print("Room join failed")
                     }
                 }
             }
@@ -163,6 +175,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
                 self.roomList.append(displayName)
                 self.roomNumberList.append(String(roomNum))
+                print("reload 1")
                 self.roomTableView.reloadData()
             }else{
                 print("Room creation failed.")

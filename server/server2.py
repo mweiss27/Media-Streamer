@@ -25,12 +25,13 @@ def join(sid, roomNum):
 	print(roomNum)
 	print("Attempted Join")
 	cursor = conn.execute("SELECT DisplayName FROM Room WHERE RoomNum=?", (roomNum,))
-	if cursor.rowcount == 1:
-		for row in cursor:
-			print("Valid room number")
-			roomNum = row[0]
-			sio.emit("join reply", roomNum, room=sid)
-	else:
+	found = False
+	for row in cursor:
+		print("Valid room number")
+		found = True
+		roomNum = row[0]
+		sio.emit("join reply", roomNum, room=sid)
+	if not found:
 		print("invalid room number")
 		roomNum = "nil"
 		sio.emit("join reply", roomNum, room=sid)
