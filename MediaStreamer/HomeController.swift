@@ -102,11 +102,10 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("HomeController is displayed")
     }
     
-    func initNetworkCommunication(){
-        let socket = SocketIOClient(socketURL: URL(string: "http://172.28.7.231:80")!, config: [.log(true), .forcePolling(true)])
-        
-        socket.on("connect") {data, ack in
-            print("socket connected")
+    // Only permit 30 characters in text fields
+    func createTextFieldDidChange(_ textField: UITextField) {
+        if (createAddTextField.text!.characters.count > 30) {
+            textField.deleteBackward()
         }
     }
     
