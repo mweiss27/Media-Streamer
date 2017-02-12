@@ -20,8 +20,10 @@ class MediaStreamer(Protocol):
         self.factory.clients.remove(self)
         
     def dataReceived(self, data):
+        print(data)
+        self.transport.write(("hi" + '\n').encode('utf-8'))
         a = data.decode().split(':')
-        print (a)
+        #print (a)
         if len(a) > 1:
             command = a[0]
             content = a[1]

@@ -4,8 +4,8 @@ CREATE TABLE UserInfo(
 	PRIMARY KEY(UUID)
 );
 CREATE TABLE Room(
-	RoomNum INT NOT NULL,
-	DisplayName VARCHAR(30),
+	RoomNum CHAR(6) NOT NULL,
+	DisplayName VARCHAR(30) NOT NULL,
 	PRIMARY KEY(RoomNum)
 );	
 CREATE TABLE Queue(

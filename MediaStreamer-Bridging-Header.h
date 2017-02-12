@@ -7,3 +7,5 @@
 #import <SpotifyAudioPlayback/SpotifyAudioPlayback.h>
 #import <SpotifyMetadata/SpotifyMetadata.h>
 #import <SafariServices/SafariServices.h>
+#import "sqlite3.h"
+#import <time.h>
