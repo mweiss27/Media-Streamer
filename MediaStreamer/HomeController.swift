@@ -15,6 +15,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var createAddTextField : UITextField!
     var roomList : [String] = []
     var roomNumberList : [String] = []
+    var enteringRoomNum : String = ""
     @IBOutlet weak var displayNameField: UILabel!
     
     @IBOutlet weak var roomTableView: UITableView!
@@ -45,12 +46,10 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         roomTableView.register(UITableViewCell.self, forCellReuseIdentifier: "customcell")
         roomTableView.allowsSelection = true
         
-        print("view did load")
     }
     
     // Return number of rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print(roomList.count)
         return roomList.count
     }
     
@@ -71,26 +70,30 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             // handle delete (by removing the data from your array and updating the tableview)
             let roomNum = roomNumberList[indexPath.item]
-            print("deleting: " + roomNum)
             let result = self.db.execute(sql: "DELETE FROM Room WHERE roomNum=?", parameters: [roomNum])
             if result != 0{
                 roomNumberList.remove(at: indexPath.item)
                 roomList.remove(at: indexPath.item)
                 self.roomTableView.reloadData()
-                print("reload 2")
             }else{
                 print("Room delete failed")
             }
-            let data = db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
-            print(data.count)
         }
     }
     
     // Enter selected room
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO: Tell server to change rooms
-        print("selection")
         let displayName = roomList[indexPath.item]
+        roomTableView.deselectRow(at: indexPath, animated: true)
+        let nickname = defaults.string(forKey: "displayName")
+        if nickname != nil{
+            SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], nickname!)
+        }else{
+            SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], "Anonymous")
+        }
+        
+        enteringRoomNum = roomNumberList[indexPath.item]
         performSegue(withIdentifier: "enterRoom", sender: displayName)
     }
     
@@ -139,18 +142,13 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
                     self?.present(alert, animated: true, completion: nil)
                 } else {
-                    DispatchQueue.main.async {
-                        let result = self?.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
-                        if result != 0{
-                            self?.roomList.append(displayName)
-                            self?.roomNumberList.append(String(roomNum))
-                            self?.roomTableView.reloadData()
-                            print("reload 3")
-                        }else{
-                            let data = self?.db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
-                            print("Join" + String(data!.count))
-                            print("Room join failed")
-                        }
+                    let result = self?.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
+                    if result != 0{
+                        self?.roomList.append(displayName)
+                        self?.roomNumberList.append(String(roomNum))
+                        self?.roomTableView.reloadData()
+                    }else{
+                        print("Room join failed")
                     }
                 }
             }
@@ -177,7 +175,6 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
                 self.roomList.append(displayName)
                 self.roomNumberList.append(String(roomNum))
-                print("reload 1")
                 self.roomTableView.reloadData()
             }else{
                 print("Room creation failed.")
@@ -225,6 +222,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if segue.identifier == "enterRoom"{
             if let dest = segue.destination as? RoomController {
                 dest.navigationItem.title = sender as! String?
+                dest.roomNum = enteringRoomNum
             }
         }
     }

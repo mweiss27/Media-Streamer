@@ -41,6 +41,17 @@ def createRoom(sid, displayName, roomNum):
 	conn.execute("INSERT INTO Room (RoomNum, DisplayName) VALUES (?, ?)", (roomNum, displayName))
 	conn.commit()
 	print("Room Created")
+	
+@sio.on('enter room')
+def enterRoom(sid, roomNum, nickname):
+	sio.enter_room(sid, roomNum)
+	sio.emit("add user", nickname, room=roomNum)
+	print(nickname + " entered room " + roomNum)
+	
+@sio.on('leave room')
+def leave_room(sid, roomNum):
+    sio.leave_room(sid, roomNum)
+    print("someone is leaving room: " + roomNum)
 
 if __name__ == '__main__':
     # wrap Flask application with socketio's middleware
