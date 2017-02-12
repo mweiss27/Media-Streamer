@@ -39,7 +39,7 @@ class SpotifyPlaylistsController: UIViewController {
                     let user = obj as! SPTUser
                     let accessToken = SPTAuth.defaultInstance().session.accessToken
                     
-                    print("Currently logged in as: \(user.canonicalUserName)")
+                    print("Currently logged in as: \(user.displayName)")
                     
                     SPTPlaylistList.playlists(forUser: user.canonicalUserName, withAccessToken: accessToken, callback: { (error, playlists) in
                         if error != nil {
@@ -57,7 +57,6 @@ class SpotifyPlaylistsController: UIViewController {
                                 for item in items! {
                                     if item is SPTPartialPlaylist {
                                         let partial = item as! SPTPartialPlaylist
-                                        print("Creating a SpotifyPlaylistView for \(partial.name)")
                                         let view = SpotifyPlaylistView.initWith(owner: self.playlistStack, playlist: partial)
                                         view.frame.origin.y = CGFloat(y)
                                         
@@ -84,6 +83,9 @@ class SpotifyPlaylistsController: UIViewController {
         
         if let source = sender.view as? SpotifyPlaylistView {
             print("Playlist Tapped: \(source.playlistName!)")
+            
+            
+            
         }
         else {
             print("Bad source")

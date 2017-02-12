@@ -23,11 +23,13 @@ class HomeController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        print("Requested Scopes: \(SPTAuth.defaultInstance().requestedScopes)")
+        
         print("HomeController is displayed")
     }
     
     func initNetworkCommunication(){
-        let socket = SocketIOClient(socketURL: URL(string: "http://192.168.1.117:80")!, config: [.log(true), .forcePolling(true)])
+        let socket = SocketIOClient(socketURL: URL(string: "http://172.28.7.231:80")!, config: [.log(true), .forcePolling(true)])
         
         socket.on("connect") {data, ack in
             print("socket connected")

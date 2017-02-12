@@ -115,6 +115,9 @@
                                                 <rect key="frame" x="8" y="11" width="32" height="32"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <state key="normal" image="spotify_icon"/>
+                                                <connections>
+                                                    <segue destination="kW9-RY-MeL" kind="show" identifier="room_to_spotify" id="qH2-7N-6cb"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apn-l4-bZ7">
                                                 <rect key="frame" x="50" y="11" width="32" height="32"/>
@@ -149,65 +152,13 @@
                     </navigationItem>
                     <connections>
                         <outlet property="spotifyButton" destination="KdU-cK-XeW" id="DG9-65-qsF"/>
-                        <segue destination="Bzc-DX-WyB" kind="show" identifier="room_to_spotify" id="PcA-vk-dTa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q0z-Ja-mn4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="288.75" y="328.52112676056339"/>
         </scene>
-        <!--Playlists-->
-        <scene sceneID="CHI-my-vR5">
-            <objects>
-                <viewController id="ypz-nh-GA7" customClass="SpotifyPlaylistsController" customModule="MediaStreamer" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="EmY-dy-4tT"/>
-                        <viewControllerLayoutGuide type="bottom" id="EAi-n9-NRE"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="BJh-45-ld5">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WOs-KD-UUw" userLabel="PLScroll">
-                                <rect key="frame" x="16" y="6" width="288" height="441"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="38V-DD-d6O" userLabel="PLStack">
-                                        <rect key="frame" x="0.0" y="0.0" width="288" height="441"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="441" id="cIf-bc-Fts"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="38V-DD-d6O" firstAttribute="top" secondItem="WOs-KD-UUw" secondAttribute="top" id="3Ta-eq-gLQ"/>
-                                    <constraint firstItem="38V-DD-d6O" firstAttribute="centerX" secondItem="WOs-KD-UUw" secondAttribute="centerX" id="5Ub-Up-02g"/>
-                                    <constraint firstAttribute="bottom" secondItem="38V-DD-d6O" secondAttribute="bottom" id="d5N-lN-3FL"/>
-                                    <constraint firstItem="38V-DD-d6O" firstAttribute="leading" secondItem="WOs-KD-UUw" secondAttribute="leading" id="kOY-G7-9Rw"/>
-                                    <constraint firstAttribute="trailing" secondItem="38V-DD-d6O" secondAttribute="trailing" id="pFd-KJ-u7a"/>
-                                </constraints>
-                            </scrollView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="WOs-KD-UUw" firstAttribute="centerX" secondItem="BJh-45-ld5" secondAttribute="centerX" id="OFn-2r-Zpp"/>
-                            <constraint firstItem="WOs-KD-UUw" firstAttribute="top" secondItem="EmY-dy-4tT" secondAttribute="bottom" constant="6" id="UtB-he-V4k"/>
-                            <constraint firstItem="EAi-n9-NRE" firstAttribute="top" secondItem="WOs-KD-UUw" secondAttribute="bottom" constant="8" id="bou-pE-UdW"/>
-                            <constraint firstItem="WOs-KD-UUw" firstAttribute="leading" secondItem="BJh-45-ld5" secondAttribute="leadingMargin" id="fXS-65-tnJ"/>
-                            <constraint firstItem="WOs-KD-UUw" firstAttribute="trailing" secondItem="BJh-45-ld5" secondAttribute="trailingMargin" id="kyL-z0-Ny2"/>
-                        </constraints>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="My Playlists" image="playlistsIcon" id="wfg-HX-3or"/>
-                    <navigationItem key="navigationItem" title="Playlists" id="bfe-Mn-VYq"/>
-                    <connections>
-                        <outlet property="playlistStack" destination="38V-DD-d6O" id="SwE-4n-Mn0"/>
-                        <outlet property="playlistStackHeight" destination="cIf-bc-Fts" id="sgk-Ut-gMU"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0ky-Oz-vVd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1102.5" y="1553.8732394366198"/>
-        </scene>
-        <!--Search-->
+        <!--Spotify Browser-->
         <scene sceneID="GPe-X6-U9c">
             <objects>
                 <viewController id="kW9-RY-MeL" customClass="SpotifySearchController" customModule="MediaStreamer" customModuleProvider="target" sceneMemberID="viewController">
@@ -238,8 +189,16 @@
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OtI-78-mJX">
+                                <rect key="frame" x="16" y="7" width="288" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Return to Playlists"/>
+                                <connections>
+                                    <action selector="returnToPlaylistsClicked:" destination="kW9-RY-MeL" eventType="touchUpInside" id="ks6-YY-XQL"/>
+                                </connections>
+                            </button>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LKT-vc-Dbc">
-                                <rect key="frame" x="16" y="67" width="288" height="380"/>
+                                <rect key="frame" x="16" y="67" width="288" height="429"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qst-YB-beN" userLabel="searchResults">
                                         <rect key="frame" x="0.0" y="0.0" width="288" height="1"/>
@@ -272,7 +231,9 @@
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Search" image="searchIcon" id="Glo-Gn-7dY"/>
+                    <navigationItem key="navigationItem" title="Spotify Browser" id="8To-rO-Mdg"/>
                     <connections>
+                        <outlet property="returnToPlaylists" destination="OtI-78-mJX" id="oQ9-zi-gr5"/>
                         <outlet property="searchField" destination="v4A-BG-Do9" id="ls0-rE-ojF"/>
                         <outlet property="searchHeader" destination="HJC-j0-otQ" id="eWD-IF-0wK"/>
                         <outlet property="searchResults" destination="qst-YB-beN" id="sjB-GG-OIZ"/>
@@ -281,25 +242,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xZq-vh-U5K" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1104" y="860"/>
-        </scene>
-        <!--Tab Bar Controller-->
-        <scene sceneID="pqJ-du-V8V">
-            <objects>
-                <tabBarController id="Bzc-DX-WyB" sceneMemberID="viewController">
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="fo5-TB-Aaf">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                    </tabBar>
-                    <connections>
-                        <segue destination="kW9-RY-MeL" kind="relationship" relationship="viewControllers" id="uQi-YK-OaV"/>
-                        <segue destination="ypz-nh-GA7" kind="relationship" relationship="viewControllers" id="vmp-ic-tSe"/>
-                    </connections>
-                </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hVW-dg-d8A" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="294" y="1126"/>
+            <point key="canvasLocation" x="288.75" y="1120.7746478873239"/>
         </scene>
         <!--Playlist Controller-->
         <scene sceneID="561-b2-9Kq">
@@ -541,7 +484,6 @@
         <image name="backButton" width="16" height="16"/>
         <image name="nextButton" width="32" height="32"/>
         <image name="playButton" width="32" height="32"/>
-        <image name="playlistsIcon" width="16" height="16"/>
         <image name="previousButton" width="32" height="32"/>
         <image name="searchIcon" width="16" height="16"/>
         <image name="shuffle_offButton" width="16" height="16"/>

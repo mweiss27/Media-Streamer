@@ -75,14 +75,14 @@ class RoomController: UIViewController {
     
     func spotifyButtonClickedAuthed(_ sender: UIButton!) {
         print("spotifyButtonClickedAuthed")
-        self.performSegue(withIdentifier: "room_to_spotify", sender: self)
+        self.performSegue(withIdentifier: Constants.RoomToSpotify, sender: self)
     }
     
     func spotifyButtonClickedNotAuthed(_ sender: UIButton!) {
         print("spotifyButtonClickedNotAuthed")
         (UIApplication.shared.delegate as? AppDelegate)?.roomController = self
         if SPTAuth.spotifyApplicationIsInstalled() && SPTAuth.supportsApplicationAuthentication() {
-            UIApplication.shared.open(SPTAuth.defaultInstance().spotifyAppAuthenticationURL(), options: [:], completionHandler: nil)
+            UIApplication.shared.open(SPTAuth.defaultInstance().spotifyAppAuthenticationURL(), options: [ : ], completionHandler: nil)
         }
         else {
             let loginURL = SPTAuth.loginURL(forClientId: Constants.clientID,

@@ -27,4 +27,10 @@ class Helper {
         return result
     }
     
+    static func removeAllSubviews(view: UIView!) {
+        for subview in view.subviews {
+            subview.removeFromSuperview()
+        }
+    }
+    
 }
