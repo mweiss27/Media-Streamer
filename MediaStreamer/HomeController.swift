@@ -29,12 +29,14 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         // Init rooms table
         let data = db.query(sql: "SELECT * FROM Room ORDER BY DisplayName ASC")
-        for i in 0...data.count-1{
-            if let rName = data[i]["DisplayName"]{
-                roomList.append(rName as! String)
-            }
-            if let rNum = data[i]["RoomNum"]{
-                roomNumberList.append(String(describing: rNum))
+        if data.count > 0{
+            for i in 1...data.count-1{
+                if let rName = data[i]["DisplayName"]{
+                    roomList.append(rName as! String)
+                }
+                if let rNum = data[i]["RoomNum"]{
+                    roomNumberList.append(String(describing: rNum))
+                }
             }
         }
         
