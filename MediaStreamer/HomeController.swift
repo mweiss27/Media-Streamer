@@ -139,16 +139,18 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
                     self?.present(alert, animated: true, completion: nil)
                 } else {
-                    let result = self?.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
-                    if result != 0{
-                        self?.roomList.append(displayName)
-                        self?.roomNumberList.append(String(roomNum))
-                        self?.roomTableView.reloadData()
-                        print("reload 3")
-                    }else{
-                        let data = self?.db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
-                        print("Join" + String(data!.count))
-                        print("Room join failed")
+                    DispatchQueue.main.async {
+                        let result = self?.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
+                        if result != 0{
+                            self?.roomList.append(displayName)
+                            self?.roomNumberList.append(String(roomNum))
+                            self?.roomTableView.reloadData()
+                            print("reload 3")
+                        }else{
+                            let data = self?.db.query(sql: "SELECT * FROM Room WHERE RoomNum=111111")
+                            print("Join" + String(data!.count))
+                            print("Room join failed")
+                        }
                     }
                 }
             }
