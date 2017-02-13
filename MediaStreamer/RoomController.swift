@@ -8,10 +8,13 @@
 
 import UIKit
 
-class RoomController: UIViewController {
+class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    var userList : [String] = []
+    var roomNum : String = ""
     
     @IBOutlet weak var spotifyButton: UIButton!
-    
+    @IBOutlet weak var currentUsersTable: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +30,11 @@ class RoomController: UIViewController {
             }
             self.spotifyButton.isEnabled = true
         }
+        
+        currentUsersTable.delegate = self
+        currentUsersTable.dataSource = self
+        currentUsersTable.register(UITableViewCell.self, forCellReuseIdentifier: "userCell")
+        addUserListener()
         
     }
     
@@ -109,6 +117,45 @@ class RoomController: UIViewController {
         }
         else {
             print("We attempted to login, but the session isn't valid!")
+        }
+    }
+    
+    // Return number of rows in table
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return userList.count
+    }
+    
+    // Populate table
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath as IndexPath)
+        cell.textLabel?.text = userList[indexPath.item]
+        return cell
+    }
+    
+    override func viewWillDisappear(_ animated : Bool) {
+        super.viewWillDisappear(animated)
+        
+        if (self.isMovingFromParentViewController){
+            SocketIOManager.socket.emit("leave room", roomNum)
+        }
+    }
+    
+    func addUserListener(){
+        SocketIOManager.socket.on("add user") {[weak self] data, ack in
+            var found = false
+            if let nickname = data[0] as? String {
+                if(self?.userList) != nil{
+                    for user in (self?.userList)!{
+                        if user == nickname{
+                            found = true
+                        }
+                    }
+                    if !found{
+                        self?.userList.append(nickname)
+                        self?.currentUsersTable.reloadData()
+                    }
+                }
+            }
         }
     }
     

@@ -12,6 +12,10 @@ import SocketIO
 class SocketIOManager: NSObject {
     //static let sharedSocket = SocketIOManager()
     
-    static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://173.88.84.254:25468")! as URL)
+    // Remote
+    //static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://173.88.84.254:25468")! as URL)
+    
+    // Local
+    static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://192.168.1.117:80")! as URL)
 
 }
