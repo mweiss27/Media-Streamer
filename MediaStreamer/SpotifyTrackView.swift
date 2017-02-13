@@ -21,7 +21,7 @@ class SpotifyTrackView: UIView {
     private var artistView: UILabel?
     
     static func initWith(owner: UIView, song: SPTTrack) -> SpotifyTrackView {
-        print("initWith(\(owner), \(song)")
+        //print("initWith(\(owner), \(song)")
         let view = SpotifyTrackView()
         view.song = song
         view.owner = owner
@@ -63,7 +63,7 @@ class SpotifyTrackView: UIView {
         self.frame.size = CGSize(width: width, height: Int((self.nameView?.frame.height)! + (self.artistView?.frame.height)!) + gap)
         
         self.addView?.frame.origin = CGPoint(x: 0, y: 8)
-        print("Setting addView origin to \(self.addView?.frame)")
+        //print("Setting addView origin to \(self.addView?.frame)")
         
         self.addSubview(self.addView!)
         self.addSubview(self.nameView!)

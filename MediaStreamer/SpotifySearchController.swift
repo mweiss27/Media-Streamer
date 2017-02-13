@@ -10,6 +10,12 @@ import UIKit
 
 class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     
+    private var searchAt: Int64? = nil
+    private var searchWaiting: Bool = false
+    private var updateLock = DispatchQueue(label: "updateLock")
+    private var background = DispatchQueue(label: "background")
+    private var searchResult: SPTListPage?
+    
     @IBOutlet weak var searchResultsHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var searchResults: UIView!
     @IBOutlet weak var searchHeader: UILabel!
@@ -34,12 +40,6 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         
     }
     
-    private var searchAt: Int64? = nil
-    private var searchWaiting: Bool = false
-    private var updateLock = DispatchQueue(label: "updateLock")
-    private var background = DispatchQueue(label: "background")
-    private var searchResult: SPTListPage?
-    
     @IBOutlet weak var returnToPlaylists: UIButton!
     func textFieldDidChange(textField: UITextField) {
         let now = self.currentTimeMillis()
@@ -60,11 +60,11 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                 print("Running search for \(textField.text)")
                 
                 //DispatchQueue.main.sync {
-                    
-                    Helper.removeAllSubviews(view: self.searchResults)
-                    
-                    self.searchResultsHeightConstraint.constant = 0
-                    self.searchHeader.text = Constants.BrowseSpotifyLibrary
+                
+                Helper.removeAllSubviews(view: self.searchResults)
+                
+                self.searchResultsHeightConstraint.constant = 0
+                self.searchHeader.text = Constants.BrowseSpotifyLibrary
                 //}
                 
                 if let text = textField.text {
@@ -83,7 +83,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                             }
                             else {
                                 //DispatchQueue.main.sync {
-                                    self.searchHeader.text = "No results found"
+                                self.searchHeader.text = "No results found"
                                 //}
                             }
                         })
@@ -91,7 +91,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                     else {
                         self.searchResult = nil
                         //DispatchQueue.main.sync {
-                            self.buildPlaylists()
+                        self.buildPlaylists()
                         //}
                     }
                 }
@@ -213,16 +213,14 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                 self.searchResult = snapshot.firstTrackPage
                 
                 print("Wiping all subviews")
-                //DispatchQueue.main.sync {
-                    Helper.removeAllSubviews(view: self.searchResults)
-                    
-                    self.searchResultsHeightConstraint.constant = 0
-                    self.searchHeader.text = Constants.BrowseSpotifyLibrary
-                    
-                    self.returnToPlaylists.isHidden = false
-                    self.searchField.isHidden = true
-                    
-                //}
+                Helper.removeAllSubviews(view: self.searchResults)
+                
+                self.searchResultsHeightConstraint.constant = 0
+                self.searchHeader.text = Constants.BrowseSpotifyLibrary
+                
+                self.returnToPlaylists.isHidden = false
+                self.searchField.isHidden = true
+                
                 print("Continuing to load results")
                 self.loadMoreResults()
             }
@@ -234,71 +232,33 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     
     private var busy: Bool = false
     private func loadMoreResults() {
-        self.busy = true
         if self.searchResult?.items != nil {
+            print("Loading \(self.searchResult?.items.count) more items")
+            let items = (self.searchResult?.items)!
             
-            //+1 because our last task is to load the next page
-            
-            for item in (self.searchResult?.items)! {
-                if let track = item as? SPTPartialTrack {
+            let now = self.currentTimeMillis()
+            for item in items {
+                if let track = item as? SPTPlaylistTrack {
                     
-                    SPTPlaylistTrack.track(withURI: track.playableUri, accessToken: SPTAuth.defaultInstance().session.accessToken, market: nil, callback: { (error, obj) in
-                        if error != nil {
-                            print("Error on SPTPlaylistTrack.track: \(error?.localizedDescription)")
-                            return
-                        }
-                        if let track = obj as? SPTTrack {
-                            if track.name != nil && track.artists != nil {
-                                //DispatchQueue.main.sync {
-                                    
-                                    let view = SpotifyTrackView.initWith(owner: self.searchResults, song: track)
-                                    
-                                    let y = Int(view.frame.height + 2) * self.searchResults.subviews.count
-                                    view.frame.origin = CGPoint(x: 0, y: y)
-                                    
-                                    let gest = UITapGestureRecognizer.init(target: self, action: #selector(self.songClicked(_:)))
-                                    view.addGestureRecognizer(gest)
-                                    
-                                    self.searchResults.addSubview(view)
-                                    self.searchResultsHeightConstraint.constant = CGFloat(self.searchResults.subviews.count) * (view.frame.height + 2)
-                                    
-                                    self.searchHeader.text = String(format: Constants.ShowingResults, self.searchResults.subviews.count)
-                                //}
-                            }
-                        }
-                    })
+                    let view = SpotifyTrackView.initWith(owner: self.searchResults, song: track)
+                    
+                    let y = Int(view.frame.height + 2) * self.searchResults.subviews.count
+                    view.frame.origin = CGPoint(x: 0, y: y)
+                    
+                    let gest = UITapGestureRecognizer.init(target: self, action: #selector(self.songClicked(_:)))
+                    view.addGestureRecognizer(gest)
+                    
+                    self.searchResults.addSubview(view)
+                    self.searchResultsHeightConstraint.constant = CGFloat(self.searchResults.subviews.count) * (view.frame.height + 2)
+                    
+                    self.searchHeader.text = String(format: Constants.ShowingResults, self.searchResults.subviews.count)
                     
                 }
             }
-            if (self.searchResult?.hasNextPage)! {
-                
-                self.searchResult?.requestNextPage(withAccessToken: SPTAuth.defaultInstance().session.accessToken, callback: {
-                    (err, obj) in
-                    if err != nil {
-                        print("Error on requestNextPage: \(err?.localizedDescription)")
-                        self.busy = false
-                        return
-                    }
-                    
-                    print("Got our next page")
-                    if obj != nil {
-                        print("Type of obj: \(Mirror(reflecting: obj!).subjectType)")
-                        
-                        if let nextPage = obj as? SPTListPage {
-                            self.searchResult = nextPage
-                        }
-                    }
-                    else {
-                        print("obj is nil??")
-                    }
-                    self.busy = false
-                    
-                })
-            }
-            else {
-                self.searchResult = nil
-                self.busy = false
-            }
+            print("Added subviews in \(self.currentTimeMillis() - now)ms")
+        }
+        else {
+            print("items is nil")
         }
     }
     
@@ -314,9 +274,35 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.searchField.endEditing(true)
         let percent = (scrollView.frame.height + scrollView.contentOffset.y) / scrollView.contentSize.height
-        if !self.busy {
-            if percent > 0.9 {
-                self.loadMoreResults()
+        if percent > 0.75 {
+            let now = self.currentTimeMillis()
+            if self.searchResult != nil {
+                if !self.busy {
+                    self.busy = true
+                    if (self.searchResult?.hasNextPage)! {
+                        self.searchResult?.requestNextPage(withAccessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
+                            defer {
+                                self.busy = false
+                            }
+                            
+                            if error != nil {
+                                print("Error on requestNextPage: \(error!.localizedDescription)")
+                                return
+                            }
+                            
+                            if let page = obj as? SPTListPage {
+                                self.searchResult = page
+                                self.loadMoreResults()
+                            }
+                            
+                        })
+                    }
+                    else {
+                        self.searchResult = nil
+                        self.busy = false
+                    }
+                    print("Processed >0.75 scroll in \(self.currentTimeMillis() - now)ms")
+                }
             }
         }
     }

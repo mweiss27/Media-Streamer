@@ -37,12 +37,12 @@ class SpotifyPlaylistView: UIView {
             }
             if let user = obj as? SPTUser {
                 if let owner = user.displayName {
-                    print("Setting playlistAuthor=\(owner)")
+                    //print("Setting playlistAuthor=\(owner)")
                     view.playlistAuthor = owner
                     view.ownerView?.text = "\(owner) - \((view.partialPlaylist?.trackCount)!) songs"
                 }
                 else if let canon = user.canonicalUserName {
-                    print("Setting playlistAuthor=\(owner)")
+                    //print("Setting playlistAuthor=\(owner)")
                     view.playlistAuthor = canon
                     view.ownerView?.text = "\(canon) - \((view.partialPlaylist?.trackCount)!) songs"
                 }
