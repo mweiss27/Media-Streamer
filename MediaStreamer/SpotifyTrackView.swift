@@ -11,7 +11,7 @@ import UIKit
 class SpotifyTrackView: UIView {
     
     var owner: UIView?
-    var song: SPTTrack?
+    var song: SPTPartialTrack?
     
     private var songName: String?
     private var artistName: String?
@@ -20,7 +20,7 @@ class SpotifyTrackView: UIView {
     private var nameView: UILabel?
     private var artistView: UILabel?
     
-    static func initWith(owner: UIView, song: SPTTrack) -> SpotifyTrackView {
+    static func initWith(owner: UIView, song: SPTPartialTrack) -> SpotifyTrackView {
         //print("initWith(\(owner), \(song)")
         let view = SpotifyTrackView()
         view.song = song

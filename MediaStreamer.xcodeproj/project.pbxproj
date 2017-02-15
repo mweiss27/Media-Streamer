@@ -40,6 +40,13 @@
 		C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */; };
 		C987AE5E1E3F007800355688 /* SongController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE5D1E3F007800355688 /* SongController.swift */; };
 		C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE611E3F0A3200355688 /* PlayerController.swift */; };
+		C99288B81E54C18700140CF2 /* YoutubeVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288B71E54C18700140CF2 /* YoutubeVideo.swift */; };
+		C99288BB1E54C36300140CF2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288BA1E54C36300140CF2 /* User.swift */; };
+		C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F3711E1E54B7C20005BDBA /* Room.swift */; };
+		C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371201E54B8A80005BDBA /* MediaQueue.swift */; };
+		C9F371241E54B9540005BDBA /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371231E54B9540005BDBA /* Queue.swift */; };
+		C9F371261E54B9700005BDBA /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371251E54B9700005BDBA /* Media.swift */; };
+		C9F371291E54BAF00005BDBA /* SpotifySong.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371281E54BAF00005BDBA /* SpotifySong.swift */; };
 		DDD40F8A86D03B3617FDF820 /* Pods_MediaStreamer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */; };
 /* End PBXBuildFile section */
 
@@ -94,6 +101,13 @@
 		C987AE5B1E3EFF2A00355688 /* PlaylistButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistButton.swift; sourceTree = "<group>"; };
 		C987AE5D1E3F007800355688 /* SongController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongController.swift; sourceTree = "<group>"; };
 		C987AE611E3F0A3200355688 /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
+		C99288B71E54C18700140CF2 /* YoutubeVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeVideo.swift; sourceTree = "<group>"; };
+		C99288BA1E54C36300140CF2 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C9F3711E1E54B7C20005BDBA /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		C9F371201E54B8A80005BDBA /* MediaQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaQueue.swift; sourceTree = "<group>"; };
+		C9F371231E54B9540005BDBA /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
+		C9F371251E54B9700005BDBA /* Media.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
+		C9F371281E54BAF00005BDBA /* SpotifySong.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifySong.swift; sourceTree = "<group>"; };
 		F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,6 +171,8 @@
 		C9439D461E3295AF007446B0 /* MediaStreamer */ = {
 			isa = PBXGroup;
 			children = (
+				C9F371221E54B94B0005BDBA /* Util */,
+				C9F3711D1E54B61B0005BDBA /* Models */,
 				946F7DED1E4F771B0046DB58 /* SQLiteDB.swift */,
 				946F7DEE1E4F771B0046DB58 /* SQLTable.swift */,
 				C9877F141E48F79A008D5147 /* ViewControllers */,
@@ -231,6 +247,35 @@
 				C9877F241E4A4C83008D5147 /* SpotifyPlaylistView.swift */,
 			);
 			name = Spotify;
+			sourceTree = "<group>";
+		};
+		C9F3711D1E54B61B0005BDBA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C9F371271E54BACF0005BDBA /* Media */,
+				C9F3711E1E54B7C20005BDBA /* Room.swift */,
+				C9F371201E54B8A80005BDBA /* MediaQueue.swift */,
+				C99288BA1E54C36300140CF2 /* User.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		C9F371221E54B94B0005BDBA /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				C9F371231E54B9540005BDBA /* Queue.swift */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
+		C9F371271E54BACF0005BDBA /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				C9F371251E54B9700005BDBA /* Media.swift */,
+				C9F371281E54BAF00005BDBA /* SpotifySong.swift */,
+				C99288B71E54C18700140CF2 /* YoutubeVideo.swift */,
+			);
+			name = Media;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -402,20 +447,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				C987AE5E1E3F007800355688 /* SongController.swift in Sources */,
+				C99288B81E54C18700140CF2 /* YoutubeVideo.swift in Sources */,
+				C9F371291E54BAF00005BDBA /* SpotifySong.swift in Sources */,
 				C987AE5A1E3EEBF900355688 /* SpotifyApp.swift in Sources */,
 				C987AE521E3E49F800355688 /* Constants.swift in Sources */,
 				C9439D681E329828007446B0 /* README.md in Sources */,
 				C9877F1F1E492411008D5147 /* SpotifyPlaylistsController.swift in Sources */,
 				C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */,
+				C99288BB1E54C36300140CF2 /* User.swift in Sources */,
 				946F7DEF1E4F771B0046DB58 /* SQLiteDB.swift in Sources */,
 				C9877F0B1E429BEB008D5147 /* UIPlaylistView.swift in Sources */,
 				C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */,
 				946F7DF01E4F771B0046DB58 /* SQLTable.swift in Sources */,
+				C9F371261E54B9700005BDBA /* Media.swift in Sources */,
 				C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */,
 				C9877F181E48F809008D5147 /* RoomController.swift in Sources */,
+				C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */,
 				C9877F211E49C361008D5147 /* SpotifyTrackView.swift in Sources */,
 				C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */,
+				C9F371241E54B9540005BDBA /* Queue.swift in Sources */,
 				C9877F111E43FA44008D5147 /* Helper.swift in Sources */,
+				C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */,
 				C9877F251E4A4C83008D5147 /* SpotifyPlaylistView.swift in Sources */,
 				C9877F161E48F7A8008D5147 /* HomeController.swift in Sources */,
 				C987AE581E3E607300355688 /* PlaylistController.swift in Sources */,

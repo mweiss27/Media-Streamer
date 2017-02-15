@@ -10,8 +10,7 @@ import UIKit
 
 class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var userList : [String] = []
-    var roomNum : String = ""
+    var room: Room?
     
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var currentUsersTable: UITableView!
@@ -122,21 +121,31 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // Return number of rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userList.count
+        return (self.room?.users.count)!
     }
     
     // Populate table
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath as IndexPath)
-        cell.textLabel?.text = userList[indexPath.item]
+        cell.textLabel?.text = self.room?.users[indexPath.item]
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let identifier = segue.identifier
+        
+        if identifier == "room_to_spotify" {
+            if let dest = segue.destination as? SpotifySearchController {
+                dest.roomController = self
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated : Bool) {
         super.viewWillDisappear(animated)
         
         if (self.isMovingFromParentViewController){
-            SocketIOManager.socket.emit("leave room", roomNum)
+            SocketIOManager.socket.emit("leave room", String(reflecting: self.room?.id))
         }
     }
     
@@ -144,14 +153,14 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         SocketIOManager.socket.on("add user") {[weak self] data, ack in
             var found = false
             if let nickname = data[0] as? String {
-                if(self?.userList) != nil{
-                    for user in (self?.userList)!{
+                if(self?.room?.users) != nil{
+                    for user in (self?.room?.users)! {
                         if user == nickname{
                             found = true
                         }
                     }
                     if !found{
-                        self?.userList.append(nickname)
+                        self?.room?.users.append(nickname)
                         self?.currentUsersTable.reloadData()
                     }
                 }

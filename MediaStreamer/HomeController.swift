@@ -222,7 +222,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if segue.identifier == "enterRoom"{
             if let dest = segue.destination as? RoomController {
                 dest.navigationItem.title = sender as! String?
-                dest.roomNum = enteringRoomNum
+                dest.room = Room(id: UInt(enteringRoomNum))
             }
         }
     }

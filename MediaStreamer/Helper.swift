@@ -33,4 +33,20 @@ class Helper {
         }
     }
     
+    static func currentTimeMillis() -> Int64 {
+        let nowDouble = NSDate().timeIntervalSince1970
+        return Int64(nowDouble*1000)
+    }
+    
+    
+    static func mediaId(_ media: Media) -> Int {
+        if media is SpotifySong {
+            return 1
+        }
+        else if media is YoutubeVideo {
+            return 2
+        }
+        return -1
+    }
+    
 }

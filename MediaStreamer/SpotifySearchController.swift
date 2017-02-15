@@ -10,6 +10,8 @@ import UIKit
 
 class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     
+    var roomController: RoomController?
+    
     private var searchAt: Int64? = nil
     private var searchWaiting: Bool = false
     private var updateLock = DispatchQueue(label: "updateLock")
@@ -30,42 +32,41 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         (self.searchResults.superview as! UIScrollView).delegate = self
         self.searchField.addTarget(self, action: #selector(self.textFieldDidChange(textField:)), for: .editingChanged)
         
+        self.initPlaylists()
         print("SpotifySearchController is displayed")
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.initPlaylists()
-        
+        print("viewDidAppear")
     }
     
     @IBOutlet weak var returnToPlaylists: UIButton!
     func textFieldDidChange(textField: UITextField) {
-        let now = self.currentTimeMillis()
+        let now = Helper.currentTimeMillis()
+        
+        Helper.removeAllSubviews(view: self.searchResults)
+        self.searchResultsHeightConstraint.constant = 0
+        
         if self.searchWaiting {
             searchAt = now + 1000
         }
         else {
-            self.searchAt = self.currentTimeMillis() + 1000
+            self.searchAt = Helper.currentTimeMillis() + 1000
+            
             self.updateLock.sync {
                 self.searchWaiting = true
             }
             
             self.background.async {
-                while self.currentTimeMillis() < self.searchAt! {
+                while Helper.currentTimeMillis() < self.searchAt! {
                     usleep(useconds_t(UInt(0.1E6)))
                 }
                 
                 print("Running search for \(textField.text)")
                 
-                //DispatchQueue.main.sync {
-                
-                Helper.removeAllSubviews(view: self.searchResults)
-                
-                self.searchResultsHeightConstraint.constant = 0
                 self.searchHeader.text = Constants.BrowseSpotifyLibrary
-                //}
                 
                 if let text = textField.text {
                     if text.characters.count > 0 {
@@ -90,9 +91,9 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                     }
                     else {
                         self.searchResult = nil
-                        //DispatchQueue.main.sync {
-                        self.buildPlaylists()
-                        //}
+                        DispatchQueue.main.sync {
+                            self.buildPlaylists()
+                        }
                     }
                 }
                 
@@ -162,7 +163,9 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         self.searchResultsHeightConstraint.constant = 0
         self.searchHeader.text = Constants.BrowseSpotifyLibrary
         
-        self.searchField.endEditing(true)
+        if self.searchField.isEditing {
+            self.searchField.endEditing(true)
+        }
         if self.playlists != nil {
             
             var y = 0
@@ -236,9 +239,10 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
             print("Loading \(self.searchResult?.items.count) more items")
             let items = (self.searchResult?.items)!
             
-            let now = self.currentTimeMillis()
+            let now = Helper.currentTimeMillis()
             for item in items {
-                if let track = item as? SPTPlaylistTrack {
+                
+                if let track = item as? SPTPartialTrack {
                     
                     let view = SpotifyTrackView.initWith(owner: self.searchResults, song: track)
                     
@@ -255,7 +259,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                     
                 }
             }
-            print("Added subviews in \(self.currentTimeMillis() - now)ms")
+            print("Added subviews in \(Helper.currentTimeMillis() - now)ms")
         }
         else {
             print("items is nil")
@@ -265,6 +269,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     func songClicked(_ sender: UITapGestureRecognizer) {
         if let source = sender.view as? SpotifyTrackView {
             print("songClicked: \(source.song!)")
+            self.roomController?.room?.addToMediaQueue(media: SpotifySong(id: (source.song?.playableUri.absoluteString)!))
         }
         else {
             print("[ERROR] source is nil or not SpotifyTrackView: \(sender.view)")
@@ -275,7 +280,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         self.searchField.endEditing(true)
         let percent = (scrollView.frame.height + scrollView.contentOffset.y) / scrollView.contentSize.height
         if percent > 0.75 {
-            let now = self.currentTimeMillis()
+            let now = Helper.currentTimeMillis()
             if self.searchResult != nil {
                 if !self.busy {
                     self.busy = true
@@ -301,7 +306,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                         self.searchResult = nil
                         self.busy = false
                     }
-                    print("Processed >0.75 scroll in \(self.currentTimeMillis() - now)ms")
+                    print("Processed >0.75 scroll in \(Helper.currentTimeMillis() - now)ms")
                 }
             }
         }
@@ -309,16 +314,12 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     
     @IBAction func returnToPlaylistsClicked(_ sender: Any) {
         print("returnToPlaylistsClicked")
+        self.searchResult = nil
         self.returnToPlaylists.isHidden = true
         self.searchField.isHidden = false
         
         self.buildPlaylists()
         
-    }
-    
-    private func currentTimeMillis() -> Int64 {
-        let nowDouble = NSDate().timeIntervalSince1970
-        return Int64(nowDouble*1000)
     }
     
 }
