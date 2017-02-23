@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Toaster
 
 class Room {
     
@@ -17,7 +18,9 @@ class Room {
     init(id: UInt!) {
         self.id = id
         self.users = []
-        self.queue = MediaQueue()
+        self.queue = MediaQueue(onMediaChange: { (media) in
+            
+        })
     }
     
     func requestConnectedUsers(callback: (_ error: Error, _ data: Any) -> Void) {
@@ -32,6 +35,10 @@ class Room {
         //TODO: Request asynchronously, invoke callback with result, or error
         //Assuming error == nil --> data == nil
         
+    }
+    
+    func onMediaChange(_ media: Media) {
+    
     }
     
     func addToMediaQueue(media: Media) {
@@ -50,6 +57,14 @@ class Room {
          
             Note: Only modify the local queue upon successful add
         */
+        
+        self.queue.enqueue(media)
+        
+        Toast(text: "Song Added", delay: 0, duration: 0.5).show()
+        
+        print("Queue:")
+        self.queue.printContents()
+        
     }
     
     func removeFromMediaQueue(media: Media) {
@@ -64,6 +79,13 @@ class Room {
             Note: Only modify the local queue upon successful remove
          
          */
+        
+        if self.queue.remove(media) {
+            Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
+        }
+        
+        print("Queue:")
+        self.queue.printContents()
     }
     
 }

@@ -42,6 +42,7 @@
 		C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987AE611E3F0A3200355688 /* PlayerController.swift */; };
 		C99288B81E54C18700140CF2 /* YoutubeVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288B71E54C18700140CF2 /* YoutubeVideo.swift */; };
 		C99288BB1E54C36300140CF2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288BA1E54C36300140CF2 /* User.swift */; };
+		C99288DB1E55068000140CF2 /* SpotifyPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288DA1E55068000140CF2 /* SpotifyPlayer.swift */; };
 		C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F3711E1E54B7C20005BDBA /* Room.swift */; };
 		C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371201E54B8A80005BDBA /* MediaQueue.swift */; };
 		C9F371241E54B9540005BDBA /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371231E54B9540005BDBA /* Queue.swift */; };
@@ -103,6 +104,8 @@
 		C987AE611E3F0A3200355688 /* PlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerController.swift; sourceTree = "<group>"; };
 		C99288B71E54C18700140CF2 /* YoutubeVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeVideo.swift; sourceTree = "<group>"; };
 		C99288BA1E54C36300140CF2 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		C99288C21E54F28200140CF2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		C99288DA1E55068000140CF2 /* SpotifyPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyPlayer.swift; sourceTree = "<group>"; };
 		C9F3711E1E54B7C20005BDBA /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		C9F371201E54B8A80005BDBA /* MediaQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaQueue.swift; sourceTree = "<group>"; };
 		C9F371231E54B9540005BDBA /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
@@ -208,6 +211,7 @@
 		C9439D6B1E353041007446B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C99288C21E54F28200140CF2 /* QuartzCore.framework */,
 				946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */,
 				C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */,
 				C9439D771E36B650007446B0 /* SystemConfiguration.framework */,
@@ -222,6 +226,7 @@
 		C9877F141E48F79A008D5147 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C99288D91E55067200140CF2 /* Players */,
 				C9877F191E4923DC008D5147 /* ContentSearch */,
 				C9877F151E48F7A8008D5147 /* HomeController.swift */,
 				C9877F171E48F809008D5147 /* RoomController.swift */,
@@ -247,6 +252,14 @@
 				C9877F241E4A4C83008D5147 /* SpotifyPlaylistView.swift */,
 			);
 			name = Spotify;
+			sourceTree = "<group>";
+		};
+		C99288D91E55067200140CF2 /* Players */ = {
+			isa = PBXGroup;
+			children = (
+				C99288DA1E55068000140CF2 /* SpotifyPlayer.swift */,
+			);
+			name = Players;
 			sourceTree = "<group>";
 		};
 		C9F3711D1E54B61B0005BDBA /* Models */ = {
@@ -463,6 +476,7 @@
 				C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */,
 				C9877F181E48F809008D5147 /* RoomController.swift in Sources */,
 				C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */,
+				C99288DB1E55068000140CF2 /* SpotifyPlayer.swift in Sources */,
 				C9877F211E49C361008D5147 /* SpotifyTrackView.swift in Sources */,
 				C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */,
 				C9F371241E54B9540005BDBA /* Queue.swift in Sources */,

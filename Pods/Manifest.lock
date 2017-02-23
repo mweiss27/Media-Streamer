@@ -1,12 +1,15 @@
 PODS:
   - Socket.IO-Client-Swift (8.2.0)
+  - Toaster (2.0.2)
 
 DEPENDENCIES:
   - Socket.IO-Client-Swift (~> 8.2.0)
+  - Toaster (~> 2.0)
 
 SPEC CHECKSUMS:
   Socket.IO-Client-Swift: 900cf511777045c80d1ce1f11f71261e87765dd1
+  Toaster: 19f860acd46b7b8aeec5a76d4046a04cb1acca66
 
-PODFILE CHECKSUM: b23f3079e98526fc57a4bb1e8032ed519a0104ed
+PODFILE CHECKSUM: a8359e809d39d4921b1a7469d1cf79845e996e0d
 
 COCOAPODS: 1.2.0

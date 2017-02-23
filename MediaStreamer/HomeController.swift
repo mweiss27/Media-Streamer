@@ -46,6 +46,14 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         roomTableView.register(UITableViewCell.self, forCellReuseIdentifier: "customcell")
         roomTableView.allowsSelection = true
         
+        print("HomeController loaded")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        print("Requested Scopes: \(SPTAuth.defaultInstance().requestedScopes)")
+        print("HomeController is displayed")
     }
     
     // Return number of rows in table
@@ -95,14 +103,6 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         enteringRoomNum = roomNumberList[indexPath.item]
         performSegue(withIdentifier: "enterRoom", sender: displayName)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        print("Requested Scopes: \(SPTAuth.defaultInstance().requestedScopes)")
-        
-        print("HomeController is displayed")
     }
     
     // Only permit 30 characters in text fields

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Toaster
 
 class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -14,6 +15,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var currentUsersTable: UITableView!
+    @IBOutlet weak var currentPlaying: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +37,24 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         currentUsersTable.register(UITableViewCell.self, forCellReuseIdentifier: "userCell")
         addUserListener()
         
+        let touch = UITapGestureRecognizer.init(target: self, action: #selector(self.currentPlayingTouched))
+        self.currentPlaying.addGestureRecognizer(touch)
+        
+        print("RoomController loaded")
+    }
+    
+    func currentPlayingTouched() {
+        print("Tapped currentPlaying")
+        if (self.room?.queue.count)! > 0 {
+            if self.room?.queue.front is SpotifySong {
+                print("We're currently playing a SpotifySong. Transitioning to SpotifyPlayer")
+                
+                self.performSegue(withIdentifier: "roomToSpotify", sender: self)
+            }
+        }
+        else {
+            Toast(text: "The queue is currently empty", delay: 0, duration: 0.5).show()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -147,6 +167,10 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (self.isMovingFromParentViewController){
             SocketIOManager.socket.emit("leave room", String(reflecting: self.room?.id))
         }
+    }
+    
+    @IBAction func unwindToRoom(segue: UIStoryboardSegue) {
+        print("RoomController.unwind")
     }
     
     func addUserListener(){

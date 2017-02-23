@@ -8,14 +8,24 @@
 
 import Foundation
 
-protocol Media {
+class Media: Equatable {
     
-    var id: Any {
-        set
-        get
+    var id: String?
+    
+    init(id: String!) {
+        self.id = id
     }
     
-    func play()
-    func setPlaybackTime(time: Double!)
+    func play() {
+        fatalError("You cannot use a Media object. Create this as a subclass!")
+    }
     
+    func setPlaybackTime(time: Double!) {
+        fatalError("You cannot use a Media object. Create this as a subclass!")
+    }
+ 
+    
+    static func ==(lhs: Media, rhs: Media) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

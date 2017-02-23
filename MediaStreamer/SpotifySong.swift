@@ -10,15 +10,9 @@ import Foundation
 
 class SpotifySong: Media {
     
-    internal var id: Any
-
-    init(id: String) {
-        self.id = id
-    }
-    
-    func play() {
+    override func play() {
         print("Playing SpotifySong: \(self.id)")
-        SpotifyApp.instance.player.playSpotifyURI(self.id as! String, startingWith: 0, startingWithPosition: 0.0) { (error) in
+        SpotifyApp.instance.player.playSpotifyURI(self.id, startingWith: 0, startingWithPosition: 0.0) { (error) in
             if error != nil {
                 print("Error on Spotify.playSpotifyURI: \(error?.localizedDescription)")
                 return
@@ -29,7 +23,7 @@ class SpotifySong: Media {
         }
     }
     
-    func setPlaybackTime(time: Double!) {
+    override func setPlaybackTime(time: Double!) {
         SpotifyApp.instance.player.seek(to: time) { (error) in
             if error != nil {
                 print("Error on SpotifySong.setPlaybackTime: \(error?.localizedDescription)")
