@@ -100,6 +100,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }else{
             SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], "Anonymous")
         }
+        self.defaults.set(roomNumberList[indexPath.item], forKey: "currRoom")
         
         enteringRoomNum = roomNumberList[indexPath.item]
         performSegue(withIdentifier: "enterRoom", sender: displayName)
@@ -222,7 +223,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if segue.identifier == "enterRoom"{
             if let dest = segue.destination as? RoomController {
                 dest.navigationItem.title = sender as! String?
-                dest.room = Room(id: UInt(enteringRoomNum))
+                dest.room = Room(id: Int(enteringRoomNum))
             }
         }
     }

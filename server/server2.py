@@ -7,6 +7,8 @@ sio = socketio.Server()
 app = Flask(__name__)
 conn = sqlite3.connect("DATABASE.sqlite")
 print("Database connected")
+sid2nick = dict()
+sid2room = dict()
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -18,6 +20,11 @@ def message(sid, data):
 
 @sio.on('disconnect')
 def disconnect(sid):
+    if sid in sid2room:
+    	roomNum = sid2room[sid]
+    	sio.emit("remove user", sid2nick[sid], room=roomNum)
+    	sid2room.pop(sid)
+    	sid2nick.pop(sid)
     print('disconnect ', sid)
     
 @sio.on('join room')
@@ -44,13 +51,22 @@ def createRoom(sid, displayName, roomNum):
 	
 @sio.on('enter room')
 def enterRoom(sid, roomNum, nickname):
+	sid2nick[sid] = nickname
+	sid2room[sid] = roomNum
 	sio.enter_room(sid, roomNum)
+	for sid, room in sid2room.items():
+		if room == roomNum:
+			sio.emit("add user", sid2nick[sid], room=roomNum)
 	sio.emit("add user", nickname, room=roomNum)
 	print(nickname + " entered room " + roomNum)
 	
 @sio.on('leave room')
 def leave_room(sid, roomNum):
     sio.leave_room(sid, roomNum)
+    sio.emit("remove user", sid2nick[sid], room=roomNum)
+    sid2room.pop(sid)
+    sid2nick.pop(sid)
+    
     print("someone is leaving room: " + roomNum)
 
 if __name__ == '__main__':

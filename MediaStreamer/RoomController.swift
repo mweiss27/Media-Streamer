@@ -12,6 +12,7 @@ import Toaster
 class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var room: Room?
+    let defaults = UserDefaults()
     
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var currentUsersTable: UITableView!
@@ -35,6 +36,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         currentUsersTable.delegate = self
         currentUsersTable.dataSource = self
         currentUsersTable.register(UITableViewCell.self, forCellReuseIdentifier: "userCell")
+        currentUsersTable.allowsSelection = false
         addUserListener()
         
         let touch = UITapGestureRecognizer.init(target: self, action: #selector(self.currentPlayingTouched))
@@ -165,7 +167,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillDisappear(animated)
         
         if (self.isMovingFromParentViewController){
-            SocketIOManager.socket.emit("leave room", String(reflecting: self.room?.id))
+            SocketIOManager.socket.emit("leave room", String(self.room!.id))
+            self.defaults.removeObject(forKey: "currRoom")
         }
     }
     
@@ -190,6 +193,29 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
+        
+        SocketIOManager.socket.on("remove user") {[weak self] data, ack in
+            if let nickname = data[0] as? String {
+                if let index = self?.room?.users.index(of: nickname) {
+                    self?.room?.users.remove(at: index)
+                    self?.currentUsersTable.reloadData()
+                }
+            }
+        }
+        SocketIOManager.socket.on("connect") {[weak self] data, ack in
+            self?.room?.users.removeAll()
+            let defaults = UserDefaults()
+            let currRoom = defaults.string(forKey: "currRoom")
+            if currRoom != nil{
+                let nickname = defaults.string(forKey: "displayName")
+                if nickname != nil{
+                    SocketIOManager.socket.emit("enter room", currRoom!, nickname!)
+                }else{
+                    SocketIOManager.socket.emit("enter room", currRoom!, "Anonymous")
+                }
+            }
+        }
+        
     }
     
 }

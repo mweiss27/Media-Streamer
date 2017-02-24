@@ -11,11 +11,11 @@ import Toaster
 
 class Room {
     
-    let id: UInt
+    let id: Int
     var users: [String]
     let queue: MediaQueue
     
-    init(id: UInt!) {
+    init(id: Int!) {
         self.id = id
         self.users = []
         self.queue = MediaQueue(onMediaChange: { (media) in

@@ -97,10 +97,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         SocketIOManager.socket.connect()
+        print("becoming active")
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         SocketIOManager.socket.disconnect()
+        print("entering background")
     }
     
 }
