@@ -43,9 +43,6 @@ class Helper {
         if media is SpotifySong {
             return 1
         }
-        else if media is YoutubeVideo {
-            return 2
-        }
         return -1
     }
     

@@ -18,9 +18,7 @@ class Room {
     init(id: Int!) {
         self.id = id
         self.users = []
-        self.queue = MediaQueue(onMediaChange: { (media) in
-            
-        })
+        self.queue = MediaQueue()
     }
     
     func requestConnectedUsers(callback: (_ error: Error, _ data: Any) -> Void) {
@@ -37,10 +35,6 @@ class Room {
         
     }
     
-    func onMediaChange(_ media: Media) {
-    
-    }
-    
     func addToMediaQueue(media: Media) {
         print("addToMediaQueue: Type=\(Helper.mediaId(media)), Id=\(media.id)")
         let id = media.id
@@ -49,14 +43,14 @@ class Room {
         
         /*
          TODO: Send a message to the server including:
-            contentProvider -- a value to represent Spotify, Youtube, etc
-            id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
-            timestamp -- The time the user is adding to the queue, used to handle multiple requests at once
+         contentProvider -- a value to represent Spotify, Youtube, etc
+         id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
+         timestamp -- The time the user is adding to the queue, used to handle multiple requests at once
          
-            Note: It is easier for the server to handle checking for duplicates, since it is the central hub for what each user is seeing.
+         Note: It is easier for the server to handle checking for duplicates, since it is the central hub for what each user is seeing.
          
-            Note: Only modify the local queue upon successful add
-        */
+         Note: Only modify the local queue upon successful add
+         */
         
         self.queue.enqueue(media)
         
@@ -65,6 +59,12 @@ class Room {
         print("Queue:")
         self.queue.printContents()
         
+        print("Player is logged in? " + SpotifyApp.instance.player.loggedIn.description)
+        print("Player is initialized? " + SpotifyApp.instance.player.initialized.description)
+        
+        if self.queue.currentMedia == nil && self.queue.count > 0 {
+            self.playNextSong()
+        }
     }
     
     func removeFromMediaQueue(media: Media) {
@@ -73,10 +73,10 @@ class Room {
         
         /*
          TODO: Send a message to the server including:
-            contentProvider -- a value to represent Spotify, Youtube, etc
-            id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
-
-            Note: Only modify the local queue upon successful remove
+         contentProvider -- a value to represent Spotify, Youtube, etc
+         id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
+         
+         Note: Only modify the local queue upon successful remove
          
          */
         
@@ -86,6 +86,52 @@ class Room {
         
         print("Queue:")
         self.queue.printContents()
+    }
+    
+    func playNextSong() -> Bool {
+        
+        if !SpotifyApp.instance.player.loggedIn {
+            print("[ERROR] Player is not logged in")
+            return false
+        }
+        
+        if !SpotifyApp.instance.player.initialized {
+            print("[ERROR] Player is not initialized")
+            return false
+        }
+        
+        if !self.queue.isEmpty {
+            print("Queue is not empty, getting the next item and playing")
+            self.queue.currentMedia = self.queue.dequeue()
+            
+            print("Next Media: \(self.queue.currentMedia!)")
+            self.queue.currentMedia?.play()
+            return true
+        }
+        else {
+            print("Queue is empty!")
+            self.queue.currentMedia?.pause()
+            self.queue.currentMedia = nil
+            return false
+        }
+    }
+    
+    func pauseCurrentSong() {
+        if let currentMedia = self.queue.currentMedia {
+            currentMedia.pause()
+        }
+    }
+    
+    func resumeCurrentSong() {
+        if let currentMedia = self.queue.currentMedia {
+            currentMedia.resume()
+        }
+    }
+    
+    func seek(to: Double!) {
+        if let currentMedia = self.queue.currentMedia {
+            currentMedia.setPlaybackTime(time: to)
+        }
     }
     
 }

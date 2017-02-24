@@ -26,6 +26,7 @@ class SpotifyApp {
                 print("Starting our SPTAudioStreamingController")
                 DispatchQueue.main.async {
                     self.player.login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+                    print("player logged in!")
                 }
                 
                 try self.player.start(withClientId: Constants.clientID,

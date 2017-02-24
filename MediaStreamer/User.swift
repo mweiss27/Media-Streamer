@@ -17,12 +17,14 @@ class User {
     }
     
     public func setDisplayName(displayName: String!) -> Bool {
-
+        
         if displayName.characters.count == 0 || displayName.characters.count > 16 {
             return false
         }
         
-        return true
+        self.displayName = displayName
+        
+        return false
     }
     
 }

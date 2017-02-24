@@ -20,6 +20,14 @@ class Media: Equatable {
         fatalError("You cannot use a Media object. Create this as a subclass!")
     }
     
+    func pause() {
+        fatalError("You cannot use a Media object. Create this as a subclass!")
+    }
+    
+    func resume() {
+        fatalError("You cannot use a Media object. Create this as a subclass!")
+    }
+    
     func setPlaybackTime(time: Double!) {
         fatalError("You cannot use a Media object. Create this as a subclass!")
     }

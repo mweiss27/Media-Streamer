@@ -8,67 +8,44 @@
 
 import UIKit
 
-class SpotifyPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
+class SpotifyPlayer: UIViewController {
     
-    var playlist: SPTPartialPlaylist?
-    var index: UInt?
+    var roomController: RoomController?
+    
     var dragging: Bool = false
-    private var lastImageURL: String? = nil
+    var lastImageURL: String? = nil
     
     @IBOutlet weak var albumArt: UIImageView!
     @IBOutlet weak var songName: UILabel!
     @IBOutlet weak var artistName: UILabel!
     @IBOutlet weak var pausePlay: UIButton!
-    @IBOutlet weak var backButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var progressSlider: UISlider!
     
+    var _songName: String?, _artistName: String?, _imageURL: String?, _isPlaying: Bool?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("PlayerController.viewDidLoad")
-        print("Playlist: \(self.playlist)")
-        print("Largeset Image: \(self.playlist?.largestImage)")
+        print("SpotifyPlayer.viewDidLoad")
         
-        SpotifyApp.instance.player.delegate = self
-        SpotifyApp.instance.player.playbackDelegate = self
+        if self._songName != nil {
+            self.songName.text = self._songName
+        }
         
-//        
-//        URLSession.shared.dataTask(with: (self.playlist?.largestImage.imageURL)!) {
-//            (data, response, error) in
-//            if error != nil {
-//                print("Error on dataTask: \(error)")
-//                return
-//            }
-//            print("No error. Setting image!")
-//            DispatchQueue.main.async {
-//                self.albumArt.image = UIImage(data: data!)
-//            }
-//            }.resume()
+        if self._artistName != nil {
+            self.artistName.text = self._artistName
+        }
+        
+        if self._imageURL != nil {
+            self.setImage(self._imageURL)
+        }
+        
+        if self._isPlaying != nil {
+            self.pausePlay.setImage(UIImage(named:self._isPlaying! ? "pauseButton" : "playButton"), for: .normal)
+        }
         
         print("Player is logged in? " + SpotifyApp.instance.player.loggedIn.description)
         print("Player is initialized? " + SpotifyApp.instance.player.initialized.description)
-        
-//        if SpotifyApp.instance.player.playbackState != nil {
-//            
-//            SpotifyApp.instance.player.setIsPlaying(false) { (error) in
-//                if error != nil {
-//                    print("Error on setIsPlaying(false): \(error?.localizedDescription)")
-//                    return
-//                }
-//                SpotifyApp.instance.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
-//                    if error != nil {
-//                        print("Error on playSpotifyURI: \(error?.localizedDescription)")
-//                    }
-//                }
-//            }
-//        }
-//        else {
-//            SpotifyApp.instance.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
-//                if error != nil {
-//                    print("Error on playSpotifyURI: \(error?.localizedDescription)")
-//                }
-//            }
-//        }
         
     }
     
@@ -85,64 +62,24 @@ class SpotifyPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStream
         }
     }
     
-    @IBAction func backClicked(_ sender: Any) {
-        
-        let playbackState = SpotifyApp.instance.player.playbackState
-        if playbackState != nil {
-            let position = Int((playbackState?.position)!)
-            if position < 2 {
-                SpotifyApp.instance.player.skipPrevious { (error) in
-                    if error != nil {
-                        print("Error on skipPrevious: \(error?.localizedDescription)")
-                        return
-                    }
-                }
-            }
-            else {
-                SpotifyApp.instance.player.seek(to: 0, callback: { (error) in
-                    if error != nil {
-                        print("Error on seekToStart: \(error?.localizedDescription)")
-                    }
-                })
-            }
-        }
-        
-    }
-    
     @IBAction func nextClicked(_ sender: Any) {
-        self.index = self.index! + 1
-        if self.index! > (self.playlist?.trackCount)! {
-            self.index = 0
-        }
-        SpotifyApp.instance.player.skipNext { (error) in
-            if error != nil {
-                print("Error on skipNext: \(error?.localizedDescription)")
-                return
-            }
+        print("nextClicked")
+        if !(self.roomController?.room?.playNextSong())! {
+            self.roomController?.currentSongName.text = ""
+            self.roomController?.currentArtistName.text = ""
+            self.roomController?.currentPlaybackTime.progress = 0
+            self.performSegue(withIdentifier: "unwindToRoom", sender: self)
         }
     }
     
-    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didStartPlayingTrack trackUri: String!) {
-        print("didStartPlayingTrack")
-        self.songName.text = audioStreaming.metadata.currentTrack?.name
-        self.artistName.text = audioStreaming.metadata.currentTrack?.artistName
-    }
-    
-    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didStopPlayingTrack trackUri: String!) {
-        print("didStopPlayingTrack")
-    }
-    
-    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChange metadata: SPTPlaybackMetadata!) {
-        print("metadataChanged")
-        self.songName.text = metadata.currentTrack?.name
-        self.artistName.text = metadata.currentTrack?.artistName
-        
-        if self.lastImageURL != metadata.currentTrack?.albumCoverArtURL {
-            self.lastImageURL = metadata.currentTrack?.albumCoverArtURL
-            URLSession.shared.dataTask(with: URL(string: (metadata.currentTrack?.albumCoverArtURL)!)!) {
+    func setImage(_ url: String!) {
+        if self.lastImageURL != url {
+            self.lastImageURL = url
+            URLSession.shared.dataTask(with: URL(string: url)!) {
                 (data, response, error) in
                 if error != nil {
                     print("Error on dataTask: \(error)")
+                    self.lastImageURL = nil
                     return
                 }
                 print("No error. Setting image!")
@@ -150,38 +87,6 @@ class SpotifyPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStream
                     self.albumArt.image = UIImage(data: data!)
                 }
                 }.resume()
-        }
-    }
-    
-    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePlaybackStatus isPlaying: Bool) {
-        print("Playback Status Changed: \(isPlaying.description)")
-        var image: UIImage?
-        if isPlaying {
-            image = UIImage(named: "pauseButton")
-        }
-        else {
-            image = UIImage(named: "playButton")
-        }
-        self.pausePlay.setImage(image, for: UIControlState.normal)
-    }
-    
-    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
-        let metadata = audioStreaming.metadata
-        if metadata != nil {
-            let track = metadata?.currentTrack
-            if track != nil {
-                let duration = (track?.duration)!
-                //print("Progress: \(Float(position / duration))")
-                if !self.dragging {
-                    self.progressSlider.value = Float(position / duration)
-                }
-            }
-            else {
-                print("Position changed, nil track")
-            }
-        }
-        else {
-            print("Position changed, nil metadata")
         }
     }
     
@@ -198,11 +103,9 @@ class SpotifyPlayer: UIViewController, SPTAudioStreamingDelegate, SPTAudioStream
             if metadata != nil {
                 let realPosition = self.progressSlider.value * Float((metadata?.currentTrack?.duration)!)
                 print("Playback position changed: \(self.progressSlider.value)")
-                SpotifyApp.instance.player.seek(to: Double(realPosition), callback: { (error) in
-                    if error != nil {
-                        print("Error on seekToStart: \(error?.localizedDescription)")
-                    }
-                })
+                
+                self.roomController?.room?.seek(to: Double(realPosition))
+                
             }
             self.dragging = false
         }

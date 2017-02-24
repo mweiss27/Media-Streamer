@@ -186,19 +186,19 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wgw-W6-0Ok">
                                 <rect key="frame" x="0.0" y="450" width="320" height="54"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="grb-7V-MRu">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="grb-7V-MRu">
                                         <rect key="frame" x="8" y="8" width="304" height="21"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="15.5"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Song Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ND2-0W-BM5">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ND2-0W-BM5" userLabel="Artist Name">
                                         <rect key="frame" x="8" y="25" width="304" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="4Zf-uL-obm">
+                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Zf-uL-obm">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="2"/>
                                         <color key="progressTintColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="trackTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -247,10 +247,13 @@
                         <barButtonItem key="backBarButtonItem" title="Room" id="lWU-rX-hzC"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="currentArtistName" destination="ND2-0W-BM5" id="fva-C0-12A"/>
+                        <outlet property="currentPlaybackTime" destination="4Zf-uL-obm" id="bA9-YN-W0p"/>
                         <outlet property="currentPlaying" destination="wgw-W6-0Ok" id="Fka-g3-cQa"/>
+                        <outlet property="currentSongName" destination="grb-7V-MRu" id="yYM-tj-B35"/>
                         <outlet property="currentUsersTable" destination="ks3-bh-OsV" id="jwy-pX-AZJ"/>
                         <outlet property="spotifyButton" destination="KdU-cK-XeW" id="DG9-65-qsF"/>
-                        <segue destination="5cS-Uk-gN8" kind="presentation" identifier="roomToSpotify" id="Obc-4T-goH"/>
+                        <segue destination="5cS-Uk-gN8" kind="presentation" identifier="room_to_player" id="Obc-4T-goH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q0z-Ja-mn4" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -341,7 +344,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xZq-vh-U5K" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="288.75" y="1120.7746478873239"/>
+            <point key="canvasLocation" x="215" y="1101"/>
         </scene>
         <!--Spotify Player-->
         <scene sceneID="cLd-4J-3SA">
@@ -384,17 +387,6 @@
                                 <rect key="frame" x="40" y="73" width="240" height="240"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vL0-fN-FZl">
-                                <rect key="frame" x="96" y="461" width="32" height="32"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="32" id="Akj-c3-fYB"/>
-                                    <constraint firstAttribute="height" constant="32" id="SnH-xD-K6v"/>
-                                </constraints>
-                                <state key="normal" image="previousButton"/>
-                                <connections>
-                                    <action selector="backClicked:" destination="5cS-Uk-gN8" eventType="touchUpInside" id="jgn-BC-J9A"/>
-                                </connections>
-                            </button>
                             <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="B3P-6T-DAG" userLabel="progressSlider">
                                 <rect key="frame" x="30" y="423" width="260" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -424,7 +416,7 @@
                                 </constraints>
                                 <state key="normal" image="arrowDown"/>
                                 <connections>
-                                    <segue destination="HLc-Zc-Rsl" kind="unwind" unwindAction="unwindToRoomWithSegue:" id="Bej-c4-47u"/>
+                                    <segue destination="HLc-Zc-Rsl" kind="unwind" identifier="unwindToRoom" unwindAction="unwindToRoomWithSegue:" id="Bej-c4-47u"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -434,8 +426,6 @@
                             <constraint firstItem="gIT-iQ-YH7" firstAttribute="centerX" secondItem="ifs-EU-rPN" secondAttribute="centerX" id="4fc-3z-8mb"/>
                             <constraint firstItem="sIs-D6-6cZ" firstAttribute="leading" secondItem="gIT-iQ-YH7" secondAttribute="trailing" constant="16" id="VND-tY-EEs"/>
                             <constraint firstItem="ieo-VK-Mvl" firstAttribute="top" secondItem="gIT-iQ-YH7" secondAttribute="bottom" constant="75" id="Zmm-aS-whO"/>
-                            <constraint firstItem="vL0-fN-FZl" firstAttribute="centerY" secondItem="gIT-iQ-YH7" secondAttribute="centerY" id="b4l-9V-urN"/>
-                            <constraint firstItem="gIT-iQ-YH7" firstAttribute="leading" secondItem="vL0-fN-FZl" secondAttribute="trailing" constant="16" id="f2j-WY-hZt"/>
                             <constraint firstItem="Dzv-hP-v56" firstAttribute="top" secondItem="Qes-II-0ho" secondAttribute="bottom" id="naF-wr-dqe"/>
                             <constraint firstAttribute="leadingMargin" secondItem="Dzv-hP-v56" secondAttribute="leading" id="oP0-0r-eMX"/>
                         </constraints>
@@ -444,7 +434,6 @@
                     <connections>
                         <outlet property="albumArt" destination="EWk-LB-dQT" id="XOs-Zw-iiQ"/>
                         <outlet property="artistName" destination="yXQ-f0-Ho1" id="DGq-1A-XHD"/>
-                        <outlet property="backButton" destination="vL0-fN-FZl" id="LOz-ux-zi8"/>
                         <outlet property="nextButton" destination="sIs-D6-6cZ" id="qNi-Kg-aUh"/>
                         <outlet property="pausePlay" destination="gIT-iQ-YH7" id="t3C-BC-WON"/>
                         <outlet property="progressSlider" destination="B3P-6T-DAG" id="aae-km-1dY"/>
@@ -461,7 +450,6 @@
         <image name="arrowDown" width="64" height="64"/>
         <image name="nextButton" width="64" height="64"/>
         <image name="playButton" width="64" height="64"/>
-        <image name="previousButton" width="64" height="64"/>
         <image name="searchIcon" width="16" height="16"/>
         <image name="spotify_icon" width="354" height="354"/>
         <image name="youtube_icon" width="256" height="256"/>

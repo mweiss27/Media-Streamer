@@ -67,6 +67,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false
     }
     
+    override func remoteControlReceived(with event: UIEvent?) {
+        print("Remote Controler Received! \(event?.description), \(event?.type)")
+    }
+    
     func restoreSession() -> SPTSession? {
         let userDefaults = UserDefaults.standard
         if let sessionData = userDefaults.object(forKey: "SpotifySession") {
