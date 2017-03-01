@@ -30,8 +30,8 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
         print("Playlist: \(self.playlist)")
         print("Largeset Image: \(self.playlist?.largestImage)")
         
-        SpotifyApp.instance.player.delegate = self
-        SpotifyApp.instance.player.playbackDelegate = self
+        SpotifyApp.player.delegate = self
+        SpotifyApp.player.playbackDelegate = self
         
         
         URLSession.shared.dataTask(with: (self.playlist?.largestImage.imageURL)!) {
@@ -46,20 +46,20 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
             }
             }.resume()
         
-        print("Player is logged in? " + SpotifyApp.instance.player.loggedIn.description)
-        print("Player is initialized? " + SpotifyApp.instance.player.initialized.description)
-        if SpotifyApp.instance.player.playbackState != nil {
+        print("Player is logged in? " + SpotifyApp.player.loggedIn.description)
+        print("Player is initialized? " + SpotifyApp.player.initialized.description)
+        if SpotifyApp.player.playbackState != nil {
             
-            if SpotifyApp.instance.player.playbackState.isShuffling {
+            if SpotifyApp.player.playbackState.isShuffling {
                 self.shuffleButton.imageView?.image = UIImage(named: "shuffle_onButton")
             }
             
-            SpotifyApp.instance.player.setIsPlaying(false) { (error) in
+            SpotifyApp.player.setIsPlaying(false) { (error) in
                 if error != nil {
                     print("Error on setIsPlaying(false): \(error?.localizedDescription)")
                     return
                 }
-                SpotifyApp.instance.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
+                SpotifyApp.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
                     if error != nil {
                         print("Error on playSpotifyURI: \(error?.localizedDescription)")
                     }
@@ -67,7 +67,7 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
             }
         }
         else {
-            SpotifyApp.instance.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
+            SpotifyApp.player.playSpotifyURI(self.playlist?.playableUri.absoluteString, startingWith: self.index!, startingWithPosition: 0) { (error) in
                 if error != nil {
                     print("Error on playSpotifyURI: \(error?.localizedDescription)")
                 }
@@ -82,7 +82,7 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
     }
     
     @IBAction func pausePlayClicked(_ sender: Any) {
-        SpotifyApp.instance.player.setIsPlaying(!SpotifyApp.instance.player.playbackState.isPlaying) { (error) in
+        SpotifyApp.player.setIsPlaying(!SpotifyApp.player.playbackState.isPlaying) { (error) in
             if error != nil {
                 print("Error on setIsPlaying: \(error?.localizedDescription)")
             }
@@ -91,11 +91,11 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
     
     @IBAction func backClicked(_ sender: Any) {
         
-        let playbackState = SpotifyApp.instance.player.playbackState
+        let playbackState = SpotifyApp.player.playbackState
         if playbackState != nil {
             let position = Int((playbackState?.position)!)
             if position < 2 {
-                SpotifyApp.instance.player.skipPrevious { (error) in
+                SpotifyApp.player.skipPrevious { (error) in
                     if error != nil {
                         print("Error on skipPrevious: \(error?.localizedDescription)")
                         return
@@ -103,7 +103,7 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
                 }
             }
             else {
-                SpotifyApp.instance.player.seek(to: 0, callback: { (error) in
+                SpotifyApp.player.seek(to: 0, callback: { (error) in
                     if error != nil {
                         print("Error on seekToStart: \(error?.localizedDescription)")
                     }
@@ -118,7 +118,7 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
         if self.index! > (self.playlist?.trackCount)! {
             self.index = 0
         }
-        SpotifyApp.instance.player.skipNext { (error) in
+        SpotifyApp.player.skipNext { (error) in
             if error != nil {
                 print("Error on skipNext: \(error?.localizedDescription)")
                 return
@@ -198,11 +198,11 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
             }
         }
         if !stillMoving {
-            let metadata = SpotifyApp.instance.player.metadata
+            let metadata = SpotifyApp.player.metadata
             if metadata != nil {
                 let realPosition = self.progressSlider.value * Float((metadata?.currentTrack?.duration)!)
                 print("Playback position changed: \(self.progressSlider.value)")
-                SpotifyApp.instance.player.seek(to: Double(realPosition), callback: { (error) in
+                SpotifyApp.player.seek(to: Double(realPosition), callback: { (error) in
                     if error != nil {
                         print("Error on seekToStart: \(error?.localizedDescription)")
                     }
@@ -219,10 +219,10 @@ class PlayerController: UIViewController, SPTAudioStreamingDelegate, SPTAudioStr
     @IBAction func shuffleButtonClicked(_ sender: Any) {
         print("shuffleButtonClicked")
         var shuffling: Bool = false
-        if let state = SpotifyApp.instance.player.playbackState {
+        if let state = SpotifyApp.player.playbackState {
             shuffling = state.isShuffling
         }
-        SpotifyApp.instance.player.setShuffle(!shuffling) { (error) in
+        SpotifyApp.player.setShuffle(!shuffling) { (error) in
             if error != nil {
                 print("Error on setShuffle: \(error?.localizedDescription)")
                 return

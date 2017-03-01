@@ -16,6 +16,9 @@ class SocketIOManager: NSObject {
     //static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://173.88.84.254:25468")! as URL)
     
     // Local
-    static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://192.168.1.117:80")! as URL)
+    //static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://192.168.1.117:80")! as URL)
 
+    // ngrok
+    static var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://868ab955.ngrok.io")! as URL)
+    
 }

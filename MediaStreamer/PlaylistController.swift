@@ -22,8 +22,8 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
         
         self.appDelegate = UIApplication.shared.delegate as? AppDelegate
         
-        SpotifyApp.instance.player.delegate = self
-        SpotifyApp.instance.player.playbackDelegate = self
+        SpotifyApp.player.delegate = self
+        SpotifyApp.player.playbackDelegate = self
         
         self.initPlaylists()
         
@@ -31,7 +31,7 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        SpotifyApp.instance.startPlayer()
+        SpotifyApp.startPlayer()
         print("PlaylistController viewDidAppear")
     }
     

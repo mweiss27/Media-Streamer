@@ -149,7 +149,7 @@ class SongController: UIViewController {
     
     func songClicked(_ sender: UITapGestureRecognizer) {
         if let source = sender.view as? UISongView {
-            if (SpotifyApp.instance.player?.loggedIn)! && (SpotifyApp.instance.player?.initialized)! {
+            if SpotifyApp.player.loggedIn && SpotifyApp.player.initialized {
                 self.performSegue(withIdentifier: Constants.SongsToPlayer, sender: PlayInfo(playlist: source.playlist!, index: source.index!))
             }
             else {

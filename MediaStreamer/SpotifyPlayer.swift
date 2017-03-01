@@ -44,9 +44,27 @@ class SpotifyPlayer: UIViewController {
             self.pausePlay.setImage(UIImage(named:self._isPlaying! ? "pauseButton" : "playButton"), for: .normal)
         }
         
-        print("Player is logged in? " + SpotifyApp.instance.player.loggedIn.description)
-        print("Player is initialized? " + SpotifyApp.instance.player.initialized.description)
+        print("Player is logged in? " + SpotifyApp.player.loggedIn.description)
+        print("Player is initialized? " + SpotifyApp.player.initialized.description)
         
+        let swipeDown = UISwipeGestureRecognizer.init(target: self, action: #selector(self.swipeGesture(_:)))
+        swipeDown.direction = UISwipeGestureRecognizerDirection.down
+        
+        let swipeLeft = UISwipeGestureRecognizer.init(target: self, action: #selector(self.swipeGesture(_:)))
+        swipeLeft.direction = UISwipeGestureRecognizerDirection.left
+        
+        self.albumArt.addGestureRecognizer(swipeDown)
+        self.albumArt.addGestureRecognizer(swipeLeft)
+    }
+    
+    @objc private func swipeGesture(_ gesture: UISwipeGestureRecognizer) {
+        if gesture.direction == .down {
+            self.performSegue(withIdentifier: "unwindToRoom", sender: self)
+        }
+            //Swiping left implies going right
+        else if gesture.direction == .left {
+            self.nextClicked(nil)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -55,14 +73,14 @@ class SpotifyPlayer: UIViewController {
     }
     
     @IBAction func pausePlayClicked(_ sender: Any) {
-        SpotifyApp.instance.player.setIsPlaying(!SpotifyApp.instance.player.playbackState.isPlaying) { (error) in
+        SpotifyApp.player.setIsPlaying(!SpotifyApp.player.playbackState.isPlaying) { (error) in
             if error != nil {
                 print("Error on setIsPlaying: \(error?.localizedDescription)")
             }
         }
     }
     
-    @IBAction func nextClicked(_ sender: Any) {
+    @IBAction func nextClicked(_ sender: Any?) {
         print("nextClicked")
         if !(self.roomController?.room?.playNextSong())! {
             self.roomController?.currentSongName.text = ""
@@ -99,7 +117,7 @@ class SpotifyPlayer: UIViewController {
             }
         }
         if !stillMoving {
-            let metadata = SpotifyApp.instance.player.metadata
+            let metadata = SpotifyApp.player.metadata
             if metadata != nil {
                 let realPosition = self.progressSlider.value * Float((metadata?.currentTrack?.duration)!)
                 print("Playback position changed: \(self.progressSlider.value)")

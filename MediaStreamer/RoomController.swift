@@ -37,8 +37,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedAuthed(_:)), for: .touchUpInside)
                 
                 self.spotifyDelegate = SpotifyDelegate(self)
-                SpotifyApp.instance.player.delegate = self.spotifyDelegate!
-                SpotifyApp.instance.player.playbackDelegate = self.spotifyDelegate!
+                SpotifyApp.player.delegate = self.spotifyDelegate!
+                SpotifyApp.player.playbackDelegate = self.spotifyDelegate!
                 
             }
             else {
@@ -56,6 +56,14 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let touch = UITapGestureRecognizer.init(target: self, action: #selector(self.currentPlayingTouched))
         self.currentPlaying.addGestureRecognizer(touch)
         
+        let swipeLeft = UISwipeGestureRecognizer.init(target: self, action: #selector(self.currentPlayingSwiped(_:)))
+        swipeLeft.direction = .left
+        self.currentPlaying.addGestureRecognizer(swipeLeft)
+        
+        let swipeUp = UISwipeGestureRecognizer.init(target: self, action: #selector(self.currentPlayingSwiped(_:)))
+        swipeUp.direction = .up
+        self.currentPlaying.addGestureRecognizer(swipeUp)
+        
         print("RoomController loaded")
     }
     
@@ -64,7 +72,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if SPTAuth.defaultInstance().session != nil && SPTAuth.defaultInstance().session.isValid() {
             //Start it if it isn't currently started
-            SpotifyApp.instance.startPlayer()
+            SpotifyApp.startPlayer()
         }
         
         print("RoomController is displayed")
@@ -171,7 +179,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if let dest = segue.destination as? SpotifyPlayer {
                 dest.roomController = self
                 
-                if let metadata = SpotifyApp.instance.player.metadata {
+                if let metadata = SpotifyApp.player.metadata {
                     if let currentTrack = metadata.currentTrack {
                         if dest.songName != nil {
                             print("Setting songName")
@@ -201,7 +209,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         }
                         
                         
-                        if let playbackState = SpotifyApp.instance.player.playbackState {
+                        if let playbackState = SpotifyApp.player.playbackState {
                             if dest.pausePlay != nil {
                                 print("Setting isPlaying")
                                 dest.pausePlay.setImage(UIImage(named:playbackState.isPlaying ? "pauseButton" : "playButton"), for: .normal)
@@ -243,6 +251,22 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         else {
             Toast(text: "The queue is currently empty", delay: 0, duration: 0.5).show()
+        }
+    }
+    
+    @objc func currentPlayingSwiped(_ gesture: UISwipeGestureRecognizer) {
+        //left means next
+        if gesture.direction == .left {
+            if self.room?.queue.currentMedia != nil {
+                if !(self.room?.playNextSong())! {
+                    self.currentSongName.text = ""
+                    self.currentArtistName.text = ""
+                    self.currentPlaybackTime.progress = 0
+                }
+            }
+        }
+        else if gesture.direction == .up {
+            self.currentPlayingTouched()
         }
     }
     

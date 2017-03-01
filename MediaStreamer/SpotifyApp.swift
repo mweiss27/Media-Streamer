@@ -12,15 +12,10 @@ class SpotifyApp {
     
     static let instance = SpotifyApp.init()
     
-    let audioController: SPTCoreAudioController!
-    let player: SPTAudioStreamingController!
+    static let audioController: SPTCoreAudioController = SPTCoreAudioController()
+    static let player: SPTAudioStreamingController = SPTAudioStreamingController.sharedInstance()
     
-    private init() {
-        self.audioController = SPTCoreAudioController.init()
-        self.player = SPTAudioStreamingController.sharedInstance()
-    }
-    
-    public func startPlayer() {
+    public static func startPlayer() {
         if !player.initialized {
             do {
                 print("Starting our SPTAudioStreamingController")

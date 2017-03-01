@@ -59,8 +59,8 @@ class Room {
         print("Queue:")
         self.queue.printContents()
         
-        print("Player is logged in? " + SpotifyApp.instance.player.loggedIn.description)
-        print("Player is initialized? " + SpotifyApp.instance.player.initialized.description)
+        print("Player is logged in? " + SpotifyApp.player.loggedIn.description)
+        print("Player is initialized? " + SpotifyApp.player.initialized.description)
         
         if self.queue.currentMedia == nil && self.queue.count > 0 {
             self.playNextSong()
@@ -90,12 +90,12 @@ class Room {
     
     func playNextSong() -> Bool {
         
-        if !SpotifyApp.instance.player.loggedIn {
+        if !SpotifyApp.player.loggedIn {
             print("[ERROR] Player is not logged in")
             return false
         }
         
-        if !SpotifyApp.instance.player.initialized {
+        if !SpotifyApp.player.initialized {
             print("[ERROR] Player is not initialized")
             return false
         }
