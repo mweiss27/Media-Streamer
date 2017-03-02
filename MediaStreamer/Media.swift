@@ -20,7 +20,7 @@ class Media: Equatable {
         fatalError("You cannot use a Media object. Create this as a subclass!")
     }
     
-    func pause() {
+    func pause(completion: @escaping (_ error: Error?) -> Void) {
         fatalError("You cannot use a Media object. Create this as a subclass!")
     }
     

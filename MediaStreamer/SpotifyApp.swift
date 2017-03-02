@@ -15,23 +15,26 @@ class SpotifyApp {
     static let audioController: SPTCoreAudioController = SPTCoreAudioController()
     static let player: SPTAudioStreamingController = SPTAudioStreamingController.sharedInstance()
     
-    public static func startPlayer() {
-        if !player.initialized {
-            do {
-                print("Starting our SPTAudioStreamingController")
-                DispatchQueue.main.async {
-                    self.player.login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
-                    print("player logged in!")
+    /**
+     @note: Asynchronous. Listen for:
+     Success will be notified on the `audioStreamingDidLogin:` delegate method and
+     failure will be notified on the `audioStreaming:didEncounterError:` delegate method.
+     */
+    public static func loginToPlayer() {
+        if !player.loggedIn {
+            DispatchQueue.main.async {
+                do {
+                    try player.start(withClientId: Constants.clientID)
+                    player.login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+                    print("login returned")
+                } catch let error {
+                    print("Error on player.start: \(error.localizedDescription)")
                 }
-                
-                try self.player.start(withClientId: Constants.clientID,
-                                      audioController: self.audioController,
-                                      allowCaching: true)
-                print("Start success")
-            } catch let error {
-                print("Error on start: \(error.localizedDescription)")
-                
             }
+            print("login requested.")
+        }
+        else {
+            print("[ERROR] loginToPlayer called, but already logged in")
         }
     }
     

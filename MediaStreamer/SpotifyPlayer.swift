@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MediaPlayer
 
 class SpotifyPlayer: UIViewController {
     
@@ -100,9 +101,10 @@ class SpotifyPlayer: UIViewController {
                     self.lastImageURL = nil
                     return
                 }
+                let image = UIImage(data: data!)
                 print("No error. Setting image!")
                 DispatchQueue.main.async {
-                    self.albumArt.image = UIImage(data: data!)
+                    self.albumArt.image = image!
                 }
                 }.resume()
         }

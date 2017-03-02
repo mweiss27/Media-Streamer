@@ -23,9 +23,10 @@
 //  THE SOFTWARE.
 
 public struct SocketIOClientConfiguration : ExpressibleByArrayLiteral, Collection, MutableCollection {
+    
     public typealias Element = SocketIOClientOption
     public typealias Index = Array<SocketIOClientOption>.Index
-    public typealias Generator = Array<SocketIOClientOption>.Generator
+    public typealias Generator = Array<SocketIOClientOption>.Iterator
     public typealias SubSequence =  Array<SocketIOClientOption>.SubSequence
     
     private var backingArray = [SocketIOClientOption]()
@@ -104,5 +105,9 @@ public struct SocketIOClientConfiguration : ExpressibleByArrayLiteral, Collectio
 
     public func suffix(from start: Index) -> SubSequence {
         return backingArray.suffix(from: start)
+    }
+    
+    public func makeIterator() -> IndexingIterator<SocketIOClientConfiguration> {
+        return IndexingIterator(_elements: self)
     }
 }

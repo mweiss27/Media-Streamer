@@ -195,6 +195,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler:{ action in
             let roomNum = self.createAddTextField.text!
             self.addSocketRoomJoinListener(roomNum: roomNum)
+            print("Emitting 'join room \(roomNum)'")
             SocketIOManager.socket.emit("join room", roomNum)
         }))
         
@@ -223,7 +224,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if segue.identifier == "enterRoom"{
             if let dest = segue.destination as? RoomController {
                 dest.navigationItem.title = sender as! String?
-                dest.room = Room(id: Int(enteringRoomNum))
+                dest.room = Room(roomController: dest, id: Int(enteringRoomNum))
             }
         }
     }

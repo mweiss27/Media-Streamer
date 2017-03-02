@@ -8,14 +8,17 @@
 
 import Foundation
 import Toaster
+import AVFoundation
 
 class Room {
     
+    private let roomController: RoomController
     let id: Int
     var users: [String]
     let queue: MediaQueue
     
-    init(id: Int!) {
+    init(roomController: RoomController, id: Int!) {
+        self.roomController = roomController
         self.id = id
         self.users = []
         self.queue = MediaQueue()
@@ -110,21 +113,19 @@ class Room {
         }
         else {
             print("Queue is empty!")
-            self.queue.currentMedia?.pause()
-            self.queue.currentMedia = nil
+            self.queue.currentMedia?.pause(completion: { (error) in
+                if let error = error {
+                    print("error on playNextSong.pause: \(error.localizedDescription)")
+                    return
+                }
+                self.queue.currentMedia = nil
+                
+                self.roomController.currentSongName.text = ""
+                self.roomController.currentArtistName.text = ""
+                self.roomController.currentPlaybackTime.progress = 0.0
+            })
+            
             return false
-        }
-    }
-    
-    func pauseCurrentSong() {
-        if let currentMedia = self.queue.currentMedia {
-            currentMedia.pause()
-        }
-    }
-    
-    func resumeCurrentSong() {
-        if let currentMedia = self.queue.currentMedia {
-            currentMedia.resume()
         }
     }
     

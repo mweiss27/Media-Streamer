@@ -12,6 +12,7 @@
 		946F7DF01E4F771B0046DB58 /* SQLTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946F7DEE1E4F771B0046DB58 /* SQLTable.swift */; };
 		946F7DF21E4F774F0046DB58 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */; };
 		946F7DF41E4F78700046DB58 /* data.db in Resources */ = {isa = PBXBuildFile; fileRef = 946F7DF31E4F78700046DB58 /* data.db */; };
+		C90A4E621E689D0800D5ED6D /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90A4E5A1E689B1D00D5ED6D /* MediaPlayer.framework */; };
 		C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */; };
 		C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D471E3295AF007446B0 /* AppDelegate.swift */; };
 		C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D491E3295AF007446B0 /* ViewController.swift */; };
@@ -69,6 +70,11 @@
 		946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		946F7DF31E4F78700046DB58 /* data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = data.db; sourceTree = "<group>"; };
 		AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MediaStreamer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C90A4E581E6898EB00D5ED6D /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		C90A4E5A1E689B1D00D5ED6D /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		C90A4E5C1E689B4A00D5ED6D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		C90A4E5D1E689B4A00D5ED6D /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
+		C90A4E5E1E689B4A00D5ED6D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
 		C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		C9439D441E3295AF007446B0 /* MediaStreamer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaStreamer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9439D471E3295AF007446B0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -120,6 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C90A4E621E689D0800D5ED6D /* MediaPlayer.framework in Frameworks */,
 				946F7DF21E4F774F0046DB58 /* libsqlite3.0.tbd in Frameworks */,
 				C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */,
 				C9439D781E36B650007446B0 /* SystemConfiguration.framework in Frameworks */,
@@ -203,6 +210,11 @@
 		C9439D6B1E353041007446B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C90A4E5C1E689B4A00D5ED6D /* CoreMedia.framework */,
+				C90A4E5D1E689B4A00D5ED6D /* MediaAccessibility.framework */,
+				C90A4E5E1E689B4A00D5ED6D /* MediaToolbox.framework */,
+				C90A4E5A1E689B1D00D5ED6D /* MediaPlayer.framework */,
+				C90A4E581E6898EB00D5ED6D /* AVKit.framework */,
 				C99288C21E54F28200140CF2 /* QuartzCore.framework */,
 				946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */,
 				C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */,

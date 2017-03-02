@@ -24,7 +24,7 @@ class SpotifySong: Media {
         }
     }
     
-    override func pause() {
+    override func pause(completion: @escaping (Error?) -> Void) {
         print("Pausing SpotifySong: \(self.id)")
         if let playback = SpotifyApp.player.playbackState {
             if playback.isPlaying {
@@ -34,11 +34,12 @@ class SpotifySong: Media {
                 SpotifyApp.player.setIsPlaying(false, callback: { (error) in
                     if error != nil {
                         print("Error on SpotifySong.pause: \(error?.localizedDescription)")
+                        completion(error)
                         return
                     }
                     
                     print("Pause success")
-                    
+                    completion(nil)
                 })
             }
         }

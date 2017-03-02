@@ -42,8 +42,8 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         print("viewDidAppear")
         
         /*
- Import ALToastView.h and call static toastInView:withText: for every new toast message you want to show, e.g in your UIViewController subclass call [ALToastView toastInView:self.view withText:@"Hello ALToastView"];
- */
+         Import ALToastView.h and call static toastInView:withText: for every new toast message you want to show, e.g in your UIViewController subclass call [ALToastView toastInView:self.view withText:@"Hello ALToastView"];
+         */
     }
     
     @IBOutlet weak var returnToPlaylists: UIButton!

@@ -31,7 +31,6 @@ class PlaylistController: UIViewController, SPTAudioStreamingDelegate, SPTAudioS
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        SpotifyApp.startPlayer()
         print("PlaylistController viewDidAppear")
     }
     
