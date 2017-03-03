@@ -1,19 +1,92 @@
 import socketio
 import eventlet
 import sqlite3
+import datetime
 from flask import Flask, render_template
-
-class User:
-	
-	def __init__(self, room, nickname):
-		self.room = room
-		self.nickname = nickname
 
 sio = socketio.Server()
 app = Flask(__name__)
 conn = sqlite3.connect("DATABASE.sqlite")
 print("Database connected")
 sid2user = dict()
+room2queue = dict()
+
+class User:
+	
+	def __init__(self, room, nickname):
+		self.room = room
+		self.nickname = nickname
+		
+
+class Queue:
+
+	def __init__(self, room):
+		self.queue = []
+		self.room = room
+		self.playing = False
+		
+	def add(self, id):
+		self.queue.append(QueueItem(id))
+		sio.emit('client_add', id, room=self.room)
+		
+	def remove(self, id):
+		first_or_default = next((x for x in lst if x.id == id), None)
+		if first_or_default is not None:
+			queue.pop(first_or_default)
+			sio.emit('client_remove', id, room=self.room)
+			
+	def play(self):
+		self.playing = True
+		sio.emit('client_play', {"id": self.queue[0].id, "time": self.queue[0].playback_time}, room=self.room)
+	
+	def pause(self, time):
+		self.playing = False
+		self.queue[0].playback_time = time
+		sio.emit('client_pause', room=self.room)
+	
+	def change_playback(self, playback):
+		self.queue[0].playback_time = playback
+		sio.emit('client_playback', {"id": self.queue[0].id, "time": self.queue[0].playback_time}, room=self.room)
+
+class QueueItem:
+
+	def __init__(self, id):
+		self.id = id
+		self.playback_time = 0
+		
+	def pause(self, playback_time):
+		self.playback_time = playback_time
+
+
+@sio.on('add_queue')
+def add_queue(sid, id):
+	room = sid2user[sid].room
+	room2queue[room].add(id)
+	print("add queue")
+	
+@sio.on('remove_queue')
+def add_queue(sid, id):
+	room = sid2user[sid].room
+	room2queue[room].remove(id)
+	print("remove queue")
+	
+@sio.on('play')
+def add_queue(sid, data):
+	room = sid2user[sid].room
+	room2queue[room].play()
+	print("play")
+	
+@sio.on('pause')
+def add_queue(sid, time):
+	room = sid2user[sid].room
+	room2queue[room].pause(time)
+	print("pause")
+	
+@sio.on('change_playback')
+def add_queue(sid, time):
+	room = sid2user[sid].room
+	room2queue[room].change_playback(time)
+	print("change playback")
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -62,6 +135,8 @@ def enterRoom(sid, roomNum, nickname):
 			sio.emit("add user", sid2user[sid].nickname, room=roomNum)
 	sio.emit("add user", nickname, room=roomNum)
 	print(nickname + " entered room " + roomNum)
+	if roomNum not in room2queue:
+		room2queue[roomNum] = Queue(roomNum)
 	
 @sio.on('leave room')
 def leave_room(sid, roomNum):

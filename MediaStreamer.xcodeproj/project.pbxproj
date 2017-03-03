@@ -377,7 +377,7 @@
 				TargetAttributes = {
 					C9439D431E3295AF007446B0 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = F3998A6CDW;
+						DevelopmentTeam = U73UR6JLAQ;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -662,7 +662,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = F3998A6CDW;
+				DEVELOPMENT_TEAM = U73UR6JLAQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -690,7 +690,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = F3998A6CDW;
+				DEVELOPMENT_TEAM = U73UR6JLAQ;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

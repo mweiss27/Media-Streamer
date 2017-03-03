@@ -274,6 +274,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         if let source = sender.view as? SpotifyTrackView {
             print("songClicked: \(source.song!)")
             self.roomController?.room?.addToMediaQueue(media: SpotifySong(id: (source.song?.playableUri.absoluteString)!))
+            SocketIOManager.socket.emit("add_queue", (source.song?.playableUri.absoluteString)!)
         }
         else {
             print("[ERROR] source is nil or not SpotifyTrackView: \(sender.view)")

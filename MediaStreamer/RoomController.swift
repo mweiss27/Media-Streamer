@@ -350,6 +350,11 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
+        SocketIOManager.socket.on("client_add") {[weak self] data, ack in
+            if let id = data[0] as? String{
+                self?.room?.addToMediaQueue(media: SpotifySong(id: id))
+            }
+        }
         
     }
     
