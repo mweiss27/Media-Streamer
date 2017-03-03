@@ -20,6 +20,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBOutlet weak var currentSongName: UILabel!
     @IBOutlet weak var spotifyButton: UIButton!
+    @IBOutlet weak var spotifyLoading: UIActivityIndicatorView!
     @IBOutlet weak var currentUsersTable: UITableView!
     
     @IBOutlet weak var currentPlaying: UIView!
@@ -35,50 +36,88 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print(">>RoomController.viewDidLoad")
         // Do any additional setup after loading the view, typically from a nib.
         
+        //Remove all events from spotifyButton and mark it disabled
         self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+        self.spotifyButton.isEnabled = false
         
+        self.spotifyLoading.stopAnimating()
+        
+        //Setup delegates for receiving callbacks
         self.spotifyDelegate = SpotifyDelegate(self)
         SpotifyApp.player.delegate = self.spotifyDelegate!
         SpotifyApp.player.playbackDelegate = self.spotifyDelegate!
         
-        //async
-        print(">>tryInitSpotify")
-        self.tryInitSpotify { (result) in
-            print("tryInitSpotify(\(result))")
-            if result {
-                print(">>tryInitSpotify.result")
-                
-                self.onLogin = {
-                    print("self.onLogin called!")
-                    self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedAuthed(_:)), for: .touchUpInside)
-                    
-                    
-                    //We did our job.
-                    self.onLogin = nil
-                }
-                self.onError = { (error: Error?) in
-                    print("self.onError")
-                    Toast(text: "Unable to login to Spotify Player").show()
-                    
-                    self.onError = nil
-                }
-                print("loginToPlayer()")
-                SpotifyApp.loginToPlayer()
-                print("<<tryInitSpotify.result")
-            }
-            else {
-                self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedNotAuthed(_:)), for: .touchUpInside)
-            }
+        let session = SpotifyApp.restoreSession()
+        if session == nil {
+            print("Stored session is nil. Enabling Spotify with action to authenticate")
+            self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+            self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedNotAuthed(_:)), for: .touchUpInside)
             self.spotifyButton.isEnabled = true
         }
-        print("<<tryInitSpotify")
         
+        self.initUserTable()
+        self.initGestures()
+        
+        print("<<RoomController.viewDidLoad")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let session = SPTAuth.defaultInstance().session
+        if session != nil {
+            if !(session?.isValid())! {
+                //Exists, but not valid. Try to renew it
+                self.spotifyLoading.startAnimating()
+                SPTAuth.defaultInstance().renewSession(session!, callback: { (error, renewedSession) in
+                    var allow = false
+                    if error != nil {
+                        print("Error on renewSession: \(error?.localizedDescription)")
+                        Toast(text: "Error renewing Spotify Session.").show()
+                    }
+                    
+                    if renewedSession != nil && (renewedSession?.isValid())! {
+                        print("We got a new session!")
+                        SpotifyApp.saveSession(session: renewedSession!)
+                        allow = true
+                    }
+                    else {
+                        print("We didn't get a new/valid session. :(")
+                        Toast(text: "No error on renew, but invalid session.").show()
+                    }
+                    
+                    self.spotifyLoading.stopAnimating()
+                    if allow {
+                        //Got a valid session now. Login!
+                        self.loginToPlayer()
+                    }
+                    else {
+                        SpotifyApp.saveSession(session: nil)
+                        self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+                        self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedNotAuthed(_:)), for: .touchUpInside)
+                        self.spotifyButton.isEnabled = true
+                    }
+                })
+            }
+            else {
+                //exists, and is valid. Login!
+                self.loginToPlayer()
+            }
+            
+        }
+        
+        print("RoomController.viewDidAppear")
+    }
+    
+    private func initUserTable() {
         currentUsersTable.delegate = self
         currentUsersTable.dataSource = self
         currentUsersTable.register(UITableViewCell.self, forCellReuseIdentifier: "userCell")
         currentUsersTable.allowsSelection = false
         addUserListener()
-        
+    }
+    
+    private func initGestures() {
         let touch = UITapGestureRecognizer.init(target: self, action: #selector(self.currentPlayingTouched))
         self.currentPlaying.addGestureRecognizer(touch)
         
@@ -89,51 +128,6 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let swipeUp = UISwipeGestureRecognizer.init(target: self, action: #selector(self.currentPlayingSwiped(_:)))
         swipeUp.direction = .up
         self.currentPlaying.addGestureRecognizer(swipeUp)
-        
-        print("<<RoomController.viewDidLoad")
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        print("RoomController.viewDidAppear")
-    }
-    
-    private func tryInitSpotify(callback: @escaping (Bool) -> ()) {
-        if let storedSession: SPTSession = SpotifyApp.restoreSession() {
-            print("We have a session stored!")
-            if storedSession.isValid() {
-                print("[2] We have a valid session. We need to transition to the info view")
-                callback(true)
-            }
-            else {
-                if SPTAuth.defaultInstance().hasTokenRefreshService {
-                    print("Our session is invalid. Let's try to refresh it")
-                    print("Our encrypted_refresh_token: \(storedSession.encryptedRefreshToken)")
-                    SPTAuth.defaultInstance().renewSession(storedSession, callback: { (error, renewedSession) in
-                        if error != nil {
-                            print("Error on renewSession: \(error?.localizedDescription)")
-                            callback(false)
-                        }
-                        
-                        if renewedSession != nil && (renewedSession?.isValid())! {
-                            print("We got a new session!")
-                            SpotifyApp.saveSession(session: renewedSession!)
-                            callback(true)
-                            
-                        }
-                        else {
-                            print("We didn't get a new/valid session. :(")
-                            callback(false)
-                        }
-                    })
-                }
-            }
-        }
-        else {
-            print("We didn't find a stored session")
-            callback(false)
-        }
     }
     
     func spotifyButtonClickedAuthed(_ sender: UIButton!) {
@@ -159,34 +153,45 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
-    public func handleSpotifyLogin(session: SPTSession!) {
+    public func handleSpotifyAuthentication(session: SPTSession!) {
         print("RoomController.handleSpotifyLogin")
-        SpotifyApp.saveSession(session: session!)
         if session.isValid() {
             SpotifyApp.saveSession(session: session)
             print("[1] We have a valid session. We need login to the player")
-            
+            self.loginToPlayer()
+        }
+        else {
+            print("We attempted to login, but the session isn't valid!")
+        }
+    }
+    
+    @objc private func loginToPlayer() {
+        if (!SpotifyApp.player.initialized || !SpotifyApp.player.loggedIn) {
             self.onLogin = {
                 print("self.onLogin called!")
+                
+                self.spotifyLoading.stopAnimating()
                 self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
                 self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedAuthed(_:)), for: .touchUpInside)
+                self.spotifyButton.isEnabled = true
                 
-                self.performSegue(withIdentifier: "room_to_spotify", sender: self)
-                
-                //We did our job.
                 self.onLogin = nil
+                self.onError = nil
             }
             self.onError = { (error: Error?) in
                 print("self.onError")
                 Toast(text: "Unable to login to Spotify Player").show()
                 
+                self.spotifyLoading.stopAnimating()
+                self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+                self.spotifyButton.addTarget(self, action: #selector(self.loginToPlayer), for: .touchUpInside)
+                self.spotifyButton.isEnabled = true
+                
+                self.onLogin = nil
                 self.onError = nil
             }
+            self.spotifyLoading.startAnimating()
             SpotifyApp.loginToPlayer()
-            
-        }
-        else {
-            print("We attempted to login, but the session isn't valid!")
         }
     }
     

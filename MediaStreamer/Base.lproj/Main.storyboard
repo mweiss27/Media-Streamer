@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FLs-Wp-a4q">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12113" systemVersion="16B2659" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="FLs-Wp-a4q">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12078"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -129,7 +129,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="skT-Ww-V2e">
                                         <rect key="frame" x="0.0" y="0.0" width="288" height="55"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KdU-cK-XeW">
+                                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="749" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KdU-cK-XeW">
                                                 <rect key="frame" x="8" y="11" width="32" height="32"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <state key="normal" image="spotify_icon"/>
@@ -137,11 +137,11 @@
                                                     <segue destination="kW9-RY-MeL" kind="show" identifier="room_to_spotify" id="qH2-7N-6cb"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Apn-l4-bZ7">
-                                                <rect key="frame" x="50" y="11" width="32" height="32"/>
+                                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="7TD-Rb-7UQ">
+                                                <rect key="frame" x="14" y="17" width="20" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <state key="normal" image="youtube_icon"/>
-                                            </button>
+                                                <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                            </activityIndicatorView>
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="288" id="O6c-7h-a11"/>
@@ -153,6 +153,7 @@
                                     <constraint firstAttribute="bottom" secondItem="skT-Ww-V2e" secondAttribute="bottom" id="Bxa-7H-x1S"/>
                                     <constraint firstItem="skT-Ww-V2e" firstAttribute="height" secondItem="JMa-4e-XsR" secondAttribute="height" id="DnB-6J-apP"/>
                                     <constraint firstItem="skT-Ww-V2e" firstAttribute="top" secondItem="JMa-4e-XsR" secondAttribute="top" id="UcQ-QO-fN5"/>
+                                    <constraint firstAttribute="height" constant="55" id="etl-s7-gkJ"/>
                                     <constraint firstAttribute="trailing" secondItem="skT-Ww-V2e" secondAttribute="trailing" id="rf8-Jm-XLh"/>
                                 </constraints>
                             </scrollView>
@@ -231,7 +232,6 @@
                             <constraint firstItem="JMa-4e-XsR" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leadingMargin" id="KJs-2m-dRv"/>
                             <constraint firstItem="KQ6-uQ-8bL" firstAttribute="trailing" secondItem="sUk-e0-DZD" secondAttribute="trailingMargin" id="OZ2-EO-aPa"/>
                             <constraint firstItem="qqP-SX-epN" firstAttribute="top" secondItem="ks3-bh-OsV" secondAttribute="bottom" constant="54" id="QgI-RD-j8e"/>
-                            <constraint firstItem="qqP-SX-epN" firstAttribute="top" secondItem="JMa-4e-XsR" secondAttribute="bottom" constant="449" id="Ueg-VL-G4d"/>
                             <constraint firstItem="ks3-bh-OsV" firstAttribute="top" secondItem="KQ6-uQ-8bL" secondAttribute="bottom" constant="10" id="X6C-7T-NI6"/>
                             <constraint firstItem="2Hg-2f-mhu" firstAttribute="top" secondItem="JMa-4e-XsR" secondAttribute="bottom" constant="17" id="Xgd-II-eww"/>
                             <constraint firstItem="wgw-W6-0Ok" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leadingMargin" constant="-16" id="eeP-Fd-1qm"/>
@@ -253,6 +253,7 @@
                         <outlet property="currentSongName" destination="grb-7V-MRu" id="yYM-tj-B35"/>
                         <outlet property="currentUsersTable" destination="ks3-bh-OsV" id="jwy-pX-AZJ"/>
                         <outlet property="spotifyButton" destination="KdU-cK-XeW" id="DG9-65-qsF"/>
+                        <outlet property="spotifyLoading" destination="7TD-Rb-7UQ" id="O9K-eV-9LO"/>
                         <segue destination="5cS-Uk-gN8" kind="presentation" identifier="room_to_player" id="Obc-4T-goH"/>
                     </connections>
                 </viewController>
@@ -452,6 +453,5 @@
         <image name="playButton" width="64" height="64"/>
         <image name="searchIcon" width="16" height="16"/>
         <image name="spotify_icon" width="354" height="354"/>
-        <image name="youtube_icon" width="256" height="256"/>
     </resources>
 </document>

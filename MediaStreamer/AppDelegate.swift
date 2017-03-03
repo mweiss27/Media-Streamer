@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     print("No error, we were able to handle!")
                     if session != nil {
                         if self.roomController != nil {
-                            self.roomController?.handleSpotifyLogin(session: session)
+                            self.roomController?.handleSpotifyAuthentication(session: session)
                         }
                         else {
                             print("[ERR] roomController is nil")
