@@ -3,12 +3,17 @@ import eventlet
 import sqlite3
 from flask import Flask, render_template
 
+class User:
+	
+	def __init__(self, room, nickname):
+		self.room = room
+		self.nickname = nickname
+
 sio = socketio.Server()
 app = Flask(__name__)
 conn = sqlite3.connect("DATABASE.sqlite")
 print("Database connected")
-sid2nick = dict()
-sid2room = dict()
+sid2user = dict()
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -20,11 +25,10 @@ def message(sid, data):
 
 @sio.on('disconnect')
 def disconnect(sid):
-    if sid in sid2room:
-    	roomNum = sid2room[sid]
-    	sio.emit("remove user", sid2nick[sid], room=roomNum)
-    	sid2room.pop(sid)
-    	sid2nick.pop(sid)
+    if sid in sid2user:
+    	roomNum = sid2user[sid].room
+    	sio.emit("remove user", sid2user[sid].nickname, room=roomNum)
+    	sid2user.pop(sid)
     print('disconnect ', sid)
     
 @sio.on('join room')
@@ -51,27 +55,26 @@ def createRoom(sid, displayName, roomNum):
 	
 @sio.on('enter room')
 def enterRoom(sid, roomNum, nickname):
-	sid2nick[sid] = nickname
-	sid2room[sid] = roomNum
+	sid2user[sid] = User(roomNum, nickname)
 	sio.enter_room(sid, roomNum)
-	for sid, room in sid2room.items():
-		if room == roomNum:
-			sio.emit("add user", sid2nick[sid], room=roomNum)
+	for sid, user in sid2user.items():
+		if user.room == roomNum:
+			sio.emit("add user", sid2user[sid].nickname, room=roomNum)
 	sio.emit("add user", nickname, room=roomNum)
 	print(nickname + " entered room " + roomNum)
 	
 @sio.on('leave room')
 def leave_room(sid, roomNum):
     sio.leave_room(sid, roomNum)
-    sio.emit("remove user", sid2nick[sid], room=roomNum)
-    sid2room.pop(sid)
-    sid2nick.pop(sid)
+    nickname = sid2user[sid].nickname
+    sio.emit("remove user", nickname, room=roomNum)
+    sid2user.pop(sid)
     
-    print("someone is leaving room: " + roomNum)
+    print("{0} is leaving room: {1}".format(nickname, roomNum))
 
 if __name__ == '__main__':
     # wrap Flask application with socketio's middleware
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('192.168.1.16', 80)), app)
+    eventlet.wsgi.server(eventlet.listen(('192.168.1.117', 80)), app)
