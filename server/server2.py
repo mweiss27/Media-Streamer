@@ -2,6 +2,7 @@ import socketio
 import eventlet
 import sqlite3
 import datetime
+import sys
 from flask import Flask, render_template
 
 sio = socketio.Server()
