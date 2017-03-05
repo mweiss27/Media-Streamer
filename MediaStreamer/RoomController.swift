@@ -66,6 +66,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let session = SPTAuth.defaultInstance().session
         if session != nil {
+            
             if !(session?.isValid())! {
                 //Exists, but not valid. Try to renew it
                 self.spotifyLoading.startAnimating()
@@ -192,6 +193,12 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             self.spotifyLoading.startAnimating()
             SpotifyApp.loginToPlayer()
+        }
+        else {
+            self.spotifyLoading.stopAnimating()
+            self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+            self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedAuthed(_:)), for: .touchUpInside)
+            self.spotifyButton.isEnabled = true
         }
     }
     
@@ -351,8 +358,9 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
         SocketIOManager.socket.on("client_add") {[weak self] data, ack in
+            print("client_add received")
             if let id = data[0] as? String{
-                self?.room?.addToMediaQueue(media: SpotifySong(id: id))
+                self?.room?.addToMediaQueue(media: SpotifySong(id: id, addedByMe: false))
             }
         }
         

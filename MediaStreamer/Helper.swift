@@ -46,4 +46,10 @@ class Helper {
         return -1
     }
     
+    static func alert(view: UIViewController!, title: String!, message: String!) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
+        view.present(alert, animated: true, completion: nil)
+    }
+    
 }

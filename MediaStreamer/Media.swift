@@ -10,10 +10,12 @@ import Foundation
 
 class Media: Equatable {
     
-    var id: String?
+    var id: String!
+    var addedByMe: Bool!
     
-    init(id: String!) {
+    init(id: String!, addedByMe: Bool!) {
         self.id = id
+        self.addedByMe = addedByMe
     }
     
     func play() {

@@ -59,9 +59,9 @@ class QueueItem:
 
 
 @sio.on('add_queue')
-def add_queue(sid, id):
+def add_queue(sid, id, time):
 	room = sid2user[sid].room
-	room2queue[room].add(id)
+	room2queue[room].add(id, sid)
 	print("add queue")
 	
 @sio.on('remove_queue')
@@ -106,7 +106,7 @@ def disconnect(sid):
     
 @sio.on('join room')
 def join(sid, roomNum):
-	print(roomNum)
+	print(sid, roomNum)
 	print("Attempted Join")
 	cursor = conn.execute("SELECT DisplayName FROM Room WHERE RoomNum=?", (roomNum,))
 	found = False
@@ -124,10 +124,12 @@ def join(sid, roomNum):
 def createRoom(sid, displayName, roomNum):
 	conn.execute("INSERT INTO Room (RoomNum, DisplayName) VALUES (?, ?)", (roomNum, displayName))
 	conn.commit()
+	sio.emit("create reply", "1")
 	print("Room Created")
 	
 @sio.on('enter room')
 def enterRoom(sid, roomNum, nickname):
+	print("enterRoom", sid, roomNum, nickname)
 	sid2user[sid] = User(roomNum, nickname)
 	sio.enter_room(sid, roomNum)
 	for sid, user in sid2user.items():
@@ -152,4 +154,4 @@ if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('192.168.1.117', 80)), app)
+    eventlet.wsgi.server(eventlet.listen(('localhost', 80)), app)

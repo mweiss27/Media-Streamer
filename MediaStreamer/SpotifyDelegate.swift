@@ -84,7 +84,19 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     }
     
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didStartPlayingTrack trackUri: String!) {
-        print("Spotify.didStartPlayingTrack")
+        print("Spotify.didStartPlayingTrack: \(trackUri)")
+        if let meta = audioStreaming.metadata {
+            if let track = meta.currentTrack {
+                print("Current track: \(track.name)")
+            }
+            else {
+                print("nil track")
+            }
+        }
+        else {
+            print("nil meta")
+        }
+        
         do {
             
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
@@ -98,6 +110,17 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didStopPlayingTrack trackUri: String!) {
         print("Spotify.didStopPlayingTrack")
+    }
+    
+    func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didReceive event: SpPlaybackEvent) {
+        //This event is called when the current playlist reaches the end.
+        //We always have 1 song in our actual Spotify Queue -- the current song
+        if event == SPPlaybackNotifyAudioDeliveryDone {
+            if self.roomController.room?.queue.front != nil {
+                let nextSong = self.roomController.room?.queue.dequeue()
+                
+            }
+        }
     }
     
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePlaybackStatus isPlaying: Bool) {
@@ -166,9 +189,13 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
         if self.roomController.room?.queue.currentMedia != nil {
             if let duration = audioStreaming.metadata.currentTrack?.duration {
-                self.roomController.currentPlaybackTime.progress = Float(position/duration)
+                let val = Float(position/duration)
+                self.roomController.currentPlaybackTime.progress = val
                 if let player = self.spotifyPlayer {
-                    player.progressSlider.value = Float(position/duration)
+                    player.progressSlider.value = val
+                }
+                if val >= 1.0 {
+                    print("SONG FINISHED?")
                 }
             }
         }

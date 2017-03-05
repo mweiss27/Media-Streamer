@@ -44,17 +44,6 @@ class Room {
         let contentProvider = Helper.mediaId(media)
         let timestamp = Helper.currentTimeMillis() //Use time to synchronize order
         
-        /*
-         TODO: Send a message to the server including:
-         contentProvider -- a value to represent Spotify, Youtube, etc
-         id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
-         timestamp -- The time the user is adding to the queue, used to handle multiple requests at once
-         
-         Note: It is easier for the server to handle checking for duplicates, since it is the central hub for what each user is seeing.
-         
-         Note: Only modify the local queue upon successful add
-         */
-        
         self.queue.enqueue(media)
         
         Toast(text: "Song Added", delay: 0, duration: 0.5).show()
@@ -73,15 +62,6 @@ class Room {
     func removeFromMediaQueue(media: Media) {
         let id = media.id
         let contentProvider = Helper.mediaId(media)
-        
-        /*
-         TODO: Send a message to the server including:
-         contentProvider -- a value to represent Spotify, Youtube, etc
-         id -- the id of this content, specific to the provider. A Spotify URI, video id, etc
-         
-         Note: Only modify the local queue upon successful remove
-         
-         */
         
         if self.queue.remove(media) {
             Toast(text: "Song Removed", delay: 0, duration: 0.5).show()

@@ -10,6 +10,8 @@ import UIKit
 
 class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    private var sid: String?
+    
     let defaults = UserDefaults()
     let db = SQLiteDB.shared
     var createAddTextField : UITextField!
@@ -18,6 +20,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var enteringRoomNum : String = ""
     @IBOutlet weak var displayNameField: UILabel!
     
+    @IBOutlet weak var joinRoomLoading: UIActivityIndicatorView!
     @IBOutlet weak var roomTableView: UITableView!
     
     override func viewDidLoad() {
@@ -41,18 +44,20 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         }
         
+        self.joinRoomLoading.isHidden = true
         roomTableView.delegate = self;
         roomTableView.dataSource = self;
         roomTableView.register(UITableViewCell.self, forCellReuseIdentifier: "customcell")
         roomTableView.allowsSelection = true
         
-        print("HomeController loaded")
+        print("HomeController.viewDidLoad")
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         print("Requested Scopes: \(SPTAuth.defaultInstance().requestedScopes)")
+        
         print("HomeController is displayed")
     }
     
@@ -92,18 +97,20 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // Enter selected room
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO: Tell server to change rooms
+                //self.defaults.set(roomNumberList[indexPath.item], forKey: "currRoom")
+        
+        //enteringRoomNum = roomNumberList[indexPath.item]
+        //performSegue(withIdentifier: "enterRoom", sender: displayName)
+        
+        self.requestJoinRoom(indexPath: indexPath)
+    }
+    
+    private func requestJoinRoom(indexPath: IndexPath) {
         let displayName = roomList[indexPath.item]
         roomTableView.deselectRow(at: indexPath, animated: true)
         let nickname = defaults.string(forKey: "displayName")
-        if nickname != nil{
-            SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], nickname!)
-        }else{
-            SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], "Anonymous")
-        }
-        self.defaults.set(roomNumberList[indexPath.item], forKey: "currRoom")
-        
-        enteringRoomNum = roomNumberList[indexPath.item]
-        performSegue(withIdentifier: "enterRoom", sender: displayName)
+            SocketIOManager.socket.emit("enter room", roomNumberList[indexPath.item], nickname ?? "Anonymous")
+
     }
     
     // Only permit 30 characters in text fields
@@ -138,7 +145,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func addSocketRoomJoinListener(roomNum: String){
         SocketIOManager.socket.on("join reply") {[weak self] data, ack in
             if let displayName = data[0] as? String {
-                if displayName == "nil"{
+                if displayName == "nil" {
                     let alert = UIAlertController(title: "Room Not Found", message: "No room found for that id", preferredStyle: UIAlertControllerStyle.alert)
                     alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
                     self?.present(alert, animated: true, completion: nil)
@@ -168,18 +175,30 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let displayName = self.createAddTextField.text!
             let roomNum = Int(arc4random_uniform(999999))
             
-            // Insert record into local database
-            let result = self.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
-            if result != 0{
-                // Tell server about new room
-                SocketIOManager.socket.emit("create room", displayName, roomNum)
+            self.navigationItem.rightBarButtonItem =
+                UIBarButtonItem.init(customView: self.joinRoomLoading)
+            SocketIOManager.createRoom(view: self, id: roomNum, displayName: displayName, callback: { (error) in
+                if let error = error {
+                    print("Error on createRoom: \(error)")
+                    return
+                }
                 
-                self.roomList.append(displayName)
-                self.roomNumberList.append(String(roomNum))
-                self.roomTableView.reloadData()
-            }else{
-                print("Room creation failed.")
-            }
+                // Insert record into local database
+                let result = self.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomNum, displayName])
+                if result != 0 {
+                    // Tell server about new room
+                    
+                    self.roomList.append(displayName)
+                    self.roomNumberList.append(String(roomNum))
+                    self.roomTableView.reloadData()
+                    
+                } else {
+                    Helper.alert(view: self, title: "Failed to Create Room", message: "Failed to create Room")
+                }
+                
+            })
+            
+            
         }))
         
         self.present(alert, animated: true, completion: nil)
