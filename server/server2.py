@@ -11,6 +11,11 @@ print("Database connected")
 sid2user = dict()
 room2queue = dict()
 
+argc = len(sys.argv)
+port = 80
+if argc >= 2:
+	port = sys.argv[1]
+
 class User:
 	
 	def __init__(self, room, nickname):
@@ -154,4 +159,4 @@ if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('localhost', 80)), app)
+    eventlet.wsgi.server(eventlet.listen(('localhost', port)), app)
