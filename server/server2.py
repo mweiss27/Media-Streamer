@@ -15,7 +15,7 @@ room2queue = dict()
 argc = len(sys.argv)
 port = 80
 if argc >= 2:
-	port = sys.argv[1]
+	port = int(sys.argv[1])
 
 class User:
 	
