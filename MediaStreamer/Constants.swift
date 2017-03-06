@@ -35,4 +35,8 @@ class Constants {
     
     static let BrowseSpotifyLibrary: String = "Search the Spotify library"
     static let ShowingResults = "Showing %d results"
+    
+    static let ENTER_ROOM = "enterRoom"
+    static let ERROR_TIMEOUT = "timeout"
+    
 }

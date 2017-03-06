@@ -74,16 +74,17 @@ class SpotifyPlayer: UIViewController {
     }
     
     @IBAction func pausePlayClicked(_ sender: Any) {
-        SpotifyApp.player.setIsPlaying(!SpotifyApp.player.playbackState.isPlaying) { (error) in
-            if error != nil {
-                print("Error on setIsPlaying: \(error?.localizedDescription)")
-            }
+        if SpotifyApp.player.playbackState.isPlaying {
+            self.roomController?.room?.pause(true)
+        }
+        else {
+            self.roomController?.room?.resume(true)
         }
     }
     
     @IBAction func nextClicked(_ sender: Any?) {
         print("nextClicked")
-        if !(self.roomController?.room?.playNextSong())! {
+        if !(self.roomController?.room?.playNextSong(startTime: 0.0, true))! {
             self.roomController?.currentSongName.text = ""
             self.roomController?.currentArtistName.text = ""
             self.roomController?.currentPlaybackTime.progress = 0

@@ -74,10 +74,6 @@
                                     <action selector="changeDisplayName:" destination="ZNm-Te-t7p" eventType="touchUpInside" id="vza-ud-ATT"/>
                                 </connections>
                             </button>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="FY1-8f-TRU">
-                                <rect key="frame" x="284" y="15" width="20" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -107,7 +103,6 @@
                     </navigationItem>
                     <connections>
                         <outlet property="displayNameField" destination="ZPW-LZ-mso" id="BGR-40-8gz"/>
-                        <outlet property="joinRoomLoading" destination="FY1-8f-TRU" id="GGd-n2-Qyc"/>
                         <outlet property="roomTableView" destination="v7n-La-FPS" id="6dj-3l-B91"/>
                         <segue destination="7ad-dJ-CfE" kind="show" identifier="enterRoom" id="f98-ke-co4"/>
                     </connections>

@@ -38,18 +38,34 @@ class Helper {
         return Int64(nowDouble*1000)
     }
     
-    
-    static func mediaId(_ media: Media) -> Int {
-        if media is SpotifySong {
-            return 1
-        }
-        return -1
-    }
-    
     static func alert(view: UIViewController!, title: String!, message: String!) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
         view.present(alert, animated: true, completion: nil)
+    }
+    
+    static func loading(_ view: UIView!, _ message: String?) -> UIView {
+        let overlay = UIView.init(frame: view.bounds)
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        
+        if let message = message {
+            let msg = UILabel.init(frame: overlay.bounds)
+            msg.center = CGPoint(x: overlay.center.x, y: overlay.center.y - 30)
+            msg.textColor = UIColor.white
+            msg.text = message
+            msg.textAlignment = .center
+            overlay.addSubview(msg)
+        }
+        
+        let activity = UIActivityIndicatorView.init(frame: overlay.bounds)
+        activity.center = overlay.center
+        overlay.addSubview(activity)
+        
+        view.addSubview(overlay)
+        
+        activity.startAnimating()
+        
+        return overlay
     }
     
 }

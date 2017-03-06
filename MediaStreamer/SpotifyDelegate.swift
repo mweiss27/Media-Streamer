@@ -31,43 +31,25 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     }
     
     @objc private func play() {
-        if self.roomController.room?.queue.currentMedia != nil {
-            SpotifyApp.player.setIsPlaying(true) { (error) in
-                if let error = error {
-                    print("Error on setIsPlaying true: \(error.localizedDescription)")
-                }
-            }
-        }
+        self.roomController.room?.resume(true)
     }
     
     @objc private func pause() {
-        if self.roomController.room?.queue.currentMedia != nil {
-            SpotifyApp.player.setIsPlaying(false) { (error) in
-                if let error = error {
-                    print("Error on setIsPlaying false: \(error.localizedDescription)")
-                }
-            }
-        }
+        self.roomController.room?.pause(true)
     }
     
     @objc private func pausePlay() {
-        if self.roomController.room?.queue.currentMedia != nil {
-            do {
-                SpotifyApp.player.setIsPlaying(!SpotifyApp.player.playbackState.isPlaying) { (error) in
-                    if let error = error {
-                        print("Error on setIsPlaying toggle: \(error.localizedDescription)")
-                    }
-                }
-            }
-            catch let error {
-                print("Error on setIsPlaying(!isPlaying)")
-            }
+        if SpotifyApp.player.playbackState.isPlaying {
+            pause()
+        }
+        else {
+            play()
         }
     }
     
     @objc private func next() {
         if self.roomController.room?.queue.currentMedia != nil {
-            self.roomController.room?.playNextSong()
+            self.roomController.room?.playNextSong(startTime: 0.0, true)
         }
     }
     

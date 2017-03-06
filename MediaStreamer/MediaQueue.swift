@@ -8,9 +8,9 @@
 
 import Foundation
 
-class MediaQueue: Queue<Media> {
+class MediaQueue: Queue<SpotifySong> {
     
-    public var currentMedia: Media?
+    public var currentMedia: SpotifySong?
 
     
     

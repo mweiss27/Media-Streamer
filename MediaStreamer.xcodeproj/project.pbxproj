@@ -47,7 +47,6 @@
 		C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F3711E1E54B7C20005BDBA /* Room.swift */; };
 		C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371201E54B8A80005BDBA /* MediaQueue.swift */; };
 		C9F371241E54B9540005BDBA /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371231E54B9540005BDBA /* Queue.swift */; };
-		C9F371261E54B9700005BDBA /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371251E54B9700005BDBA /* Media.swift */; };
 		C9F371291E54BAF00005BDBA /* SpotifySong.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371281E54BAF00005BDBA /* SpotifySong.swift */; };
 		DDD40F8A86D03B3617FDF820 /* Pods_MediaStreamer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */; };
 /* End PBXBuildFile section */
@@ -116,7 +115,6 @@
 		C9F3711E1E54B7C20005BDBA /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		C9F371201E54B8A80005BDBA /* MediaQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaQueue.swift; sourceTree = "<group>"; };
 		C9F371231E54B9540005BDBA /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
-		C9F371251E54B9700005BDBA /* Media.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		C9F371281E54BAF00005BDBA /* SpotifySong.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifySong.swift; sourceTree = "<group>"; };
 		F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -244,6 +242,7 @@
 		C9877F141E48F79A008D5147 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C9CF06F71E6BF71C00DC1841 /* Misc */,
 				C99288D91E55067200140CF2 /* Players */,
 				C9877F191E4923DC008D5147 /* ContentSearch */,
 				C9877F151E48F7A8008D5147 /* HomeController.swift */,
@@ -280,6 +279,13 @@
 			name = Players;
 			sourceTree = "<group>";
 		};
+		C9CF06F71E6BF71C00DC1841 /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Misc;
+			sourceTree = "<group>";
+		};
 		C9F3711D1E54B61B0005BDBA /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -306,7 +312,6 @@
 		C9F371271E54BACF0005BDBA /* Media */ = {
 			isa = PBXGroup;
 			children = (
-				C9F371251E54B9700005BDBA /* Media.swift */,
 				C9F371281E54BAF00005BDBA /* SpotifySong.swift */,
 				C98347601E601CD70010CC65 /* SpotifyDelegate.swift */,
 			);
@@ -501,7 +506,6 @@
 				C9877F0B1E429BEB008D5147 /* UIPlaylistView.swift in Sources */,
 				C987AE5C1E3EFF2A00355688 /* PlaylistButton.swift in Sources */,
 				946F7DF01E4F771B0046DB58 /* SQLTable.swift in Sources */,
-				C9F371261E54B9700005BDBA /* Media.swift in Sources */,
 				C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */,
 				C9877F181E48F809008D5147 /* RoomController.swift in Sources */,
 				C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */,

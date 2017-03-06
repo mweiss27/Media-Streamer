@@ -1,15 +1,18 @@
 PODS:
+  - Alamofire (4.4.0)
   - Socket.IO-Client-Swift (8.2.0)
   - Toaster (2.0.3)
 
 DEPENDENCIES:
+  - Alamofire (~> 4.4)
   - Socket.IO-Client-Swift (~> 8.2.0)
   - Toaster (~> 2.0)
 
 SPEC CHECKSUMS:
+  Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   Socket.IO-Client-Swift: 900cf511777045c80d1ce1f11f71261e87765dd1
   Toaster: 77c0b03d78e680bbbab0071c9c7ee392b0034010
 
-PODFILE CHECKSUM: a8359e809d39d4921b1a7469d1cf79845e996e0d
+PODFILE CHECKSUM: a09d93cd55af2f51d7eb73b0fdce0ad0b33f9c56
 
 COCOAPODS: 1.2.0
