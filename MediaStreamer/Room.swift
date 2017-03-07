@@ -16,7 +16,7 @@ class Room {
     
     private let roomController: RoomController
     let id: Int
-    var users: [Int: (String, String)]
+    private var users: [(String, String)]
     let queue: MediaQueue
     
     static var currentRoom: Room?
@@ -24,17 +24,70 @@ class Room {
     init(roomController: RoomController, id: Int!) {
         self.roomController = roomController
         self.id = id
-        self.users = [:]
+        self.users = []
         self.queue = MediaQueue()
         Room.currentRoom = self
+    }
+    
+    func addUser(sid: String!, name: String!) -> Bool! {
+        var found = false
+        if self.users.count > 0 {
+            for i in 0..<self.users.count {
+                let tuple = self.users[i]
+                if sid == tuple.0 {
+                    found = true
+                    break
+                }
+            }
+        }
+        if !found {
+            print("addUser success -- \(sid)")
+            self.users.append((sid, name))
+            return true
+        }
+        print("addUser fail -- \(sid)")
+        return false
+    }
+    
+    func removeUser(sid: String!) -> Bool! {
+        var current: Int = -1
+        if self.users.count > 0 {
+            for i in 0..<self.users.count {
+                if self.users[i].0 == sid {
+                    current = i
+                }
+            }
+        }
+        if current >= 0 {
+            print("removeUser success -- \(sid)")
+            self.users.remove(at: current)
+            return true
+        }
+        print("removeUser fail -- \(sid)")
+        return false
+    }
+    
+    func getUser(index: Int) -> (String, String)? {
+        if index >= 0 && index < self.numUsers() {
+            return self.users[index]
+        }
+        return nil
+    }
+    
+    func numUsers() -> Int! {
+        return self.users.count
+    }
+    
+    func clearUsers() {
+        self.users.removeAll()
     }
     
     func canInvokePlay() -> Bool {
         var firstSid: String? = nil
         var lowestInt: Int = Int.max
         for i in 0..<self.users.count {
-            let cur = self.users[i]?.0
-            let cur_i = (cur?.hashValue)!
+            let cur = (self.users[i]).0
+            let cur_i = cur.hashValue
             if firstSid == nil || cur_i < lowestInt {
                 firstSid = cur
                 lowestInt = cur_i
@@ -43,21 +96,7 @@ class Room {
         return firstSid == self.mySid
     }
     
-    func requestConnectedUsers(callback: (_ error: Error, _ data: Any) -> Void) {
-        
-        //TODO: Request asynchronously, invoke callback with result, or error
-        //Assuming error == nil --> data == nil
-        
-    }
-    
-    func requestCurrentMediaQueue(callback: (_ error: Error, _ data: Any) -> Void) {
-        
-        //TODO: Request asynchronously, invoke callback with result, or error
-        //Assuming error == nil --> data == nil
-        
-    }
-    
-    func addToMediaQueue(song: SpotifySong) {
+    func addToMediaQueue(song: SpotifySong, allowPlay: Bool) {
         let id = song.id
         let timestamp = Helper.currentTimeMillis() //Use time to synchronize order
         
@@ -71,11 +110,11 @@ class Room {
         print("Player is logged in? " + SpotifyApp.player.loggedIn.description)
         print("Player is initialized? " + SpotifyApp.player.initialized.description)
         
-        if self.queue.currentMedia == nil && self.queue.count > 0 {
+        if allowPlay && self.queue.currentMedia == nil && self.queue.count > 0 {
             
             if self.canInvokePlay() {
                 print("I'm the first SID. Invoking play")
-                self.playNextSong(startTime: 0.0, true)
+                !self.playNextSong(startTime: 0.0, true)
             }
             else {
                 print("I'm not the first SID. Not invoking play")
@@ -83,15 +122,23 @@ class Room {
         }
     }
     
-    func removeFromMediaQueue(song: SpotifySong) {
+    func removeFromMediaQueue(song: SpotifySong!) {
         let id = song.id
         
-        if self.queue.remove(song) {
-            Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
+        self.removeFromMediaQueue(id: id)
+    }
+    
+    func removeFromMediaQueue(id: String!) {
+        for item in self.queue.array {
+            if item.id == id {
+                if self.queue.remove(item) {
+                    Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
+                    
+                    print("Queue:")
+                    self.queue.printContents()
+                }
+            }
         }
-        
-        print("Queue:")
-        self.queue.printContents()
     }
     
     func playNextSong(startTime: Double, _ broadcast: Bool!) -> Bool {
@@ -105,6 +152,8 @@ class Room {
             print("[ERROR] Player is not initialized")
             return false
         }
+        
+        let previousSong = self.queue.currentMedia
         
         if !self.queue.isEmpty {
             print("Queue is not empty, getting the next item and playing")
@@ -120,7 +169,7 @@ class Room {
                 if broadcast {
                     print("Broadcasting 'play'")
                     let now = Helper.currentTimeMillis()
-                    SocketIOManager.emit("play", [self.id, Int(now)], { (error) in
+                    SocketIOManager.emit("play", [(self.queue.currentMedia?.id)!, Int(now)], { (error) in
                         if let error = error {
                             print("Error on emit: \(error)")
                             return
@@ -130,6 +179,9 @@ class Room {
                         //RoomController will be listening for client_play.
                         //It will include sid, and we can filter out our own requests
                         
+                        if previousSong != nil {
+                            SocketIOManager.emit("remove_queue", [previousSong!.id], { error in })
+                        }
                     })
                 }
                 else {
@@ -142,6 +194,13 @@ class Room {
         else {
             print("Queue is empty!")
             self.pause(false)
+            
+            if broadcast {
+                if previousSong != nil {
+                    //Others will get a 'client_remove' for the current song
+                    SocketIOManager.emit("remove_queue", [previousSong!.id], { error in })
+                }
+            }
             
             self.queue.currentMedia = nil
             self.roomController.currentSongName.text = ""

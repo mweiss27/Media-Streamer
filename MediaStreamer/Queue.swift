@@ -10,7 +10,7 @@ import Foundation
 
 class Queue<T: Equatable> {
     
-    fileprivate var array = [T]()
+    var array = [T]()
     
     private let semaphore: DispatchSemaphore = DispatchSemaphore(value: 0)
     
@@ -82,4 +82,6 @@ class Queue<T: Equatable> {
     public var front: T? {
         return array.first
     }
+    
+    
 }

@@ -70,7 +70,15 @@ class SpotifyPlayer: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.roomController?.spotifyPlayer = self
         print("PlayerController.viewDidAppear")
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.isMovingFromParentViewController {
+            print("Player is going away")
+            self.roomController?.spotifyPlayer = nil
+        }
     }
     
     @IBAction func pausePlayClicked(_ sender: Any) {
@@ -125,7 +133,15 @@ class SpotifyPlayer: UIViewController {
                 let realPosition = self.progressSlider.value * Float((metadata?.currentTrack?.duration)!)
                 print("Playback position changed: \(self.progressSlider.value)")
                 
-                self.roomController?.room?.seek(to: Double(realPosition))
+                let now = Helper.currentTimeMillis()
+                let scrubTime = Double(realPosition)
+                print("emitting playback: \(scrubTime)")
+                SocketIOManager.emit("change playback", [ Int(now), scrubTime ], { (error) in
+                    if error != nil {
+                        Helper.alert(view: self, title: "Failed to set playback time", message: "An error occurred while updating the playback time.")
+                        return
+                    }
+                })
                 
             }
             self.dragging = false

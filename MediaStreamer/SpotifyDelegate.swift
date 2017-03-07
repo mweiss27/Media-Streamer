@@ -99,7 +99,9 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
         //We always have 1 song in our actual Spotify Queue -- the current song
         if event == SPPlaybackNotifyAudioDeliveryDone {
             if self.roomController.room?.queue.front != nil {
-                let nextSong = self.roomController.room?.queue.dequeue()
+                if (self.roomController.room?.canInvokePlay())! {
+                    self.roomController.room?.playNextSong(startTime: 0.0, true)
+                }
                 
             }
         }
@@ -118,51 +120,56 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     
     private var lastImageURI: String?
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChange metadata: SPTPlaybackMetadata!) {
-        if let meta = metadata {
-            print("MetaData changed")
-            if let currentTrack = meta.currentTrack {
-                let songName = currentTrack.name
-                let artist = currentTrack.artistName
-                
-                self.info[MPMediaItemPropertyTitle] = songName
-                self.info[MPMediaItemPropertyArtist] = artist
-                self.info[MPMediaItemPropertyPlaybackDuration] = metadata.currentTrack?.duration
-                self.info[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
-                
-                let curImageURI = metadata.currentTrack?.albumCoverArtURL
-                if self.lastImageURI != curImageURI {
-                    self.lastImageURI = curImageURI
-                    URLSession.shared.dataTask(with: URL(string: curImageURI!)!) {
-                        (data, response, error) in
-                        if error != nil {
-                            print("Error on dataTask: \(error)")
-                            self.lastImageURI = nil
-                            return
-                        }
-                        let image = UIImage(data: data!)
-                        print("[2] No error. Setting image!")
-                        let artwork = MPMediaItemArtwork.init(boundsSize: image!.size, requestHandler: { (size) -> UIImage in
-                            return image!
-                        })
-                        self.info[MPMediaItemPropertyArtwork] = artwork
-                        self.infoCenter.nowPlayingInfo = self.roomController?.spotifyDelegate?.info
-                        }.resume()
+        if self.roomController.room?.queue.currentMedia != nil {
+            if let meta = metadata {
+                print("MetaData changed")
+                if let currentTrack = meta.currentTrack {
+                    let songName = currentTrack.name
+                    let artist = currentTrack.artistName
                     
-                }
-                
-                self.infoCenter.nowPlayingInfo = self.info
-                
-                
-                self.roomController.currentSongName.text = songName
-                self.roomController.currentArtistName.text = artist
-                
-                if let player = self.spotifyPlayer {
-                    player.songName.text = songName
-                    player.artistName.text = artist
-                    player.setImage(currentTrack.albumCoverArtURL)
-                }
-                else {
-                    print("No SpotifyPlayer set")
+                    self.info[MPMediaItemPropertyTitle] = songName
+                    self.info[MPMediaItemPropertyArtist] = artist
+                    self.info[MPMediaItemPropertyPlaybackDuration] = metadata.currentTrack?.duration
+                    self.info[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
+                    
+                    let curImageURI = metadata.currentTrack?.albumCoverArtURL
+                    if self.lastImageURI != curImageURI {
+                        self.lastImageURI = curImageURI
+                        URLSession.shared.dataTask(with: URL(string: curImageURI!)!) {
+                            (data, response, error) in
+                            if error != nil {
+                                print("Error on dataTask: \(error)")
+                                self.lastImageURI = nil
+                                return
+                            }
+                            
+                            if self.roomController.room?.queue.currentMedia != nil {
+                                let image = UIImage(data: data!)
+                                print("[2] No error. Setting image!")
+                                let artwork = MPMediaItemArtwork.init(boundsSize: image!.size, requestHandler: { (size) -> UIImage in
+                                    return image!
+                                })
+                                self.info[MPMediaItemPropertyArtwork] = artwork
+                                self.infoCenter.nowPlayingInfo = self.roomController?.spotifyDelegate?.info
+                            }
+                            }.resume()
+                        
+                    }
+                    
+                    self.infoCenter.nowPlayingInfo = self.info
+                    
+                    
+                    self.roomController.currentSongName.text = songName
+                    self.roomController.currentArtistName.text = artist
+                    
+                    if let player = self.spotifyPlayer {
+                        player.songName.text = songName
+                        player.artistName.text = artist
+                        player.setImage(currentTrack.albumCoverArtURL)
+                    }
+                    else {
+                        print("No SpotifyPlayer set")
+                    }
                 }
             }
         }
@@ -174,10 +181,9 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                 let val = Float(position/duration)
                 self.roomController.currentPlaybackTime.progress = val
                 if let player = self.spotifyPlayer {
-                    player.progressSlider.value = val
-                }
-                if val >= 1.0 {
-                    print("SONG FINISHED?")
+                    if !player.dragging {
+                        player.progressSlider.value = val
+                    }
                 }
             }
         }

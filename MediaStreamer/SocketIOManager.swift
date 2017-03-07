@@ -11,7 +11,7 @@ import SocketIO
 
 class SocketIOManager: NSObject {
     
-    static let host = "http://f43613d0.ngrok.io"
+    static let host = "http://192.168.1.16:80"
     
     //Add accessor methods to interface with the socket.
     private static var socket: SocketIOClient = SocketIOClient(socketURL: URL(string: host)!)

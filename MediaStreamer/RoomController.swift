@@ -17,6 +17,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var room: Room?
     let defaults = UserDefaults()
+    var spotifyPlayer: SpotifyPlayer? = nil
     
     public var spotifyDelegate: SpotifyDelegate?
     
@@ -112,6 +113,41 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("RoomController.viewDidAppear")
     }
     
+    private func initQueue() {
+        Alamofire.request(SocketIOManager.host + "/get_queue?roomNum=" + String(describing: (self.room?.id)!)).responseJSON { response in
+            print("Raw result: \(response.result.value)")
+            if let json = response.result.value as? [String: Any] {
+                print("json result: \(json)")
+                if let queue = json["queue"] as? [[AnyObject]] {
+                    print("queue result: \(queue)")
+                    
+                    for info in queue {
+                        let _playing = info[0] as! String
+                        let _uri = info[1] as! String
+                        let _request_time = info[2] as! String
+                        let _playback_time = info[3] as! String
+                        
+                        
+                        let song = SpotifySong(id: _uri)
+                        self.room?.addToMediaQueue(song: song, allowPlay: false)
+                        if _playing == "True" {
+                            
+                            let dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
+                            print("Song was added \(dt)ms ago.")
+                            let time = Double(_playback_time)! + Double(dt/1000.0)
+                            print("Need to scrub to \(time)s")
+                            
+                            self.room?.playNextSong(startTime: time, false)
+                        }
+                    }
+                }
+                else {
+                    print("users is not [[AnyObject]]: \(Mirror(reflecting: (json["queue"])!).subjectType)")
+                }
+            }
+        }
+    }
+    
     private func initUserTable() {
         currentUsersTable.delegate = self
         currentUsersTable.dataSource = self
@@ -120,37 +156,51 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         addUserListener()
         
-        Alamofire.request(SocketIOManager.host + "/get_users?roomNum=" + String(describing: (self.room?.id)!)).responseJSON { response in
-            print("Raw result: \(response.result.value)")
-            if let json = response.result.value as? [String: Any] {
-                print("json result: \(json)")
-                if let users = json["users"] as? [[String]] {
-                    print("users result: \(users)")
-                    for info in users {
-                        let sid = info[0]
-                        let name = info[1]
-                        self.addUserToTable(sid, name)
-                    }
-                }
-                else {
-                    print("users is not [String]: \(Mirror(reflecting: (json["users"])!).subjectType)")
-                }
-            }
-        }
         
         SocketIOManager.emit("request sid", []) { (error) in
             if error == nil {
                 SocketIOManager.once("sid_response", callback: { (data, ack) in
                     if let sid = data[0] as? String {
                         self.room?.mySid = sid
+                        print("Emitting enter room")
+                        SocketIOManager.emit("enter room", [(self.room?.id)!, self.defaults.string(forKey: "displayName") ?? "Anonymous"], { error in
+                            if let error = error {
+                                Helper.alert(view: self, title: "Failed to contact server", message: "Failed to identify with the server [2]")
+                                self.navigationController?.popViewController(animated: true)
+                                return
+                            }
+                            
+                            Alamofire.request(SocketIOManager.host + "/get_users?roomNum=" + String(describing: (self.room?.id)!)).responseJSON { response in
+                                print("Raw result: \(response.result.value)")
+                                if let json = response.result.value as? [String: Any] {
+                                    print("json result: \(json)")
+                                    if let users = json["users"] as? [[String]] {
+                                        print("users result: \(users)")
+                                        for info in users {
+                                            let sid = info[0]
+                                            let name = info[1]
+                                            print("Adding a user who was already here -- \(name) -- \(sid)")
+                                            self.addUserToTable(sid, name)
+                                        }
+                                    }
+                                    else {
+                                        print("users is not [String]: \(Mirror(reflecting: (json["users"])!).subjectType)")
+                                    }
+                                }
+                            }
+                            
+                            
+                        })
+                    }
+                    else {
+                        Helper.alert(view: self, title: "Failed to contact server", message: "Failed to identify with the server [1]")
+                        self.navigationController?.popViewController(animated: true)
                     }
                 })
             }
         }
         
-        print("Emitting enter room")
-        SocketIOManager.emit("enter room", [(self.room?.id)!, self.defaults.string(forKey: "displayName") ?? "Anonymous"], { error in
-        })
+        
     }
     
     private func initGestures() {
@@ -213,6 +263,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
                 self.onLogin = nil
                 self.onError = nil
+                print("We're logged in. Initializing queue")
+                self.initQueue()
             }
             self.onError = { (error: Error?) in
                 print("self.onError")
@@ -230,22 +282,36 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             SpotifyApp.loginToPlayer()
         }
         else {
+            print("Player is already logged in")
             self.spotifyLoading.stopAnimating()
             self.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
             self.spotifyButton.addTarget(self, action: #selector(self.spotifyButtonClickedAuthed(_:)), for: .touchUpInside)
             self.spotifyButton.isEnabled = true
+            
+            if self.isMovingToParentViewController {
+                self.initQueue()
+            }
+            else {
+                print("viewDidAppear, but we aren't joining the room")
+            }
         }
     }
     
     // Return number of rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (self.room?.users.count)!
+        return (self.room?.numUsers())!
     }
     
     // Populate table
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath as IndexPath)
-        cell.textLabel?.text = self.room?.users[indexPath.item]?.1
+        let tuple = self.room?.getUser(index: indexPath.item)
+        if tuple != nil {
+            cell.textLabel?.text = tuple!.1
+        }
+        else {
+            cell.textLabel?.text = "Unknown"
+        }
         return cell
     }
     
@@ -326,7 +392,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             self.removeUserListener()
-            SocketIOManager.emit("leave room", [String(self.room!.id)], nil)
+            SocketIOManager.emit("leave room", [], nil)
             self.defaults.removeObject(forKey: "currRoom")
         }
     }
@@ -363,16 +429,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func addUserToTable(_ sid: String!, _ name: String!) {
-        var found = false
-        for i in (self.room?.users.keys)! {
-            let tuple = self.room?.users[i]
-            if tuple?.0 == sid {
-                found = true
-                break
-            }
-        }
-        if !found {
-            self.room?.users[(self.room?.users.count)!] = (sid, name)
+        if (self.room?.addUser(sid: sid, name: name))! {
             self.currentUsersTable.reloadData()
         }
     }
@@ -382,6 +439,10 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         SocketIOManager.off("remove user")
         SocketIOManager.off("connect")
         SocketIOManager.off("client_add")
+        SocketIOManager.off("client_pause")
+        SocketIOManager.off("client_play")
+        SocketIOManager.off("client_resume")
+        SocketIOManager.off("client_playback")
         
     }
     
@@ -391,7 +452,13 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("add user response: \(data)")
             if let values = data[0] as? [String] {
                 let sid = values[0], name = values[1]
-                self.addUserToTable(sid, name)
+                if sid != self.room?.mySid {
+                    print("add user received, it's not me -- \(name) -- \(sid)")
+                    self.addUserToTable(sid, name)
+                }
+                else {
+                    print("add user, but it's me. Ignoring")
+                }
             }
             else {
                 print("Invalid data line: \(data[0]) -- (\(data.count))")
@@ -402,15 +469,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         SocketIOManager.on("remove user") {[weak self] data, ack in
             print("remove user -- \(data)")
             if let sidRemoving = data[0] as? String {
-                for i in 0..<(self?.room?.users.count)! {
-                    if let sidHave = self?.room?.users[i]?.0 {
-                        if sidHave == sidRemoving {
-                            print("Found a matching SID in our room. Removing it")
-                            self?.room?.users.removeValue(forKey: i)
-                            self?.currentUsersTable.reloadData()
-                            break
-                        }
-                    }
+                if (self?.room?.removeUser(sid: sidRemoving))! {
+                    self?.currentUsersTable.reloadData()
                 }
             }
             else {
@@ -420,7 +480,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         print("Registering connect")
         SocketIOManager.on("connect") {[weak self] data, ack in
-            self?.room?.users.removeAll()
+            self?.room?.clearUsers()
             let defaults = UserDefaults()
             let currRoom = defaults.string(forKey: "currRoom")
             if currRoom != nil{
@@ -437,7 +497,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         SocketIOManager.on("client_add") {[weak self] data, ack in
             print("client_add received: \(data)")
             if let id = data[0] as? String {
-                self?.room?.addToMediaQueue(song: SpotifySong(id: id))
+                self?.room?.addToMediaQueue(song: SpotifySong(id: id), allowPlay: true)
             }
         }
         
@@ -449,12 +509,38 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let requestTime = info[2]
                 let dt = Double(Helper.currentTimeMillis() - Int64(requestTime)!) / 1000.0
                 if sid != self?.room?.mySid {
-                    self?.room?.playNextSong(startTime: dt, false)
                     print("Valid client_play: \(sid) -- \(songId) -- \(requestTime)")
+                    self?.room?.playNextSong(startTime: dt, false)
                 }
                 else {
                     print("This is our play request. Ignoring")
                 }
+            }
+        }
+        
+        SocketIOManager.on("client_remove") { [weak self] data, ack in
+            print("client_remove: \(data)")
+            if let info = data[0] as? [String] {
+                let sid = info[0]
+                let songId = info[1]
+                print("Removing \(songId) from queue")
+                self?.room?.removeFromMediaQueue(id: songId)
+                if let current = self?.room?.queue.currentMedia {
+                    if (current.id)! == songId {
+                        print("We removed the current song.")
+                        //false because someone else triggered this remove, they should call the play as well
+                        if !(self?.room?.playNextSong(startTime: 0.0, false))! {
+                            self?.spotifyPlayer?.performSegue(withIdentifier: "unwindToRoom", sender: self)
+                        }
+                    }
+                    print("Current song is not what we're removing: C: \(current.id!) -- R: \(songId)")
+                }
+                else {
+                    print("Current song is nil")
+                }
+            }
+            else {
+                print("info is not a [String] -- \(Mirror(reflecting: data[0]).subjectType)")
             }
         }
         
@@ -472,8 +558,35 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let playbackTime = info[1]
                 let requestTime = info[2]
                 let dt = Double(Helper.currentTimeMillis() - Int64(requestTime)!) / 1000.0
-                self?.room?.resume(false)
-                self?.room?.seek(to: Double(playbackTime)! + dt)
+                if self?.room?.queue.currentMedia != nil {
+                    self?.room?.resume(false)
+                    self?.room?.seek(to: Double(playbackTime)! + dt)
+                }
+                else {
+                    self?.room?.playNextSong(startTime: Double(playbackTime)! + dt, false)
+                }
+            }
+            else {
+                print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")
+            }
+        }
+        
+        print("Registering client_playback")
+        SocketIOManager.on("client_playback") { [weak self] data, ack in
+            print("client_playback")
+            if let info = data[0] as? [String] {
+                let request_time = Double(info[0])!
+                let time = Double(info[1])!
+                let now = Double(Helper.currentTimeMillis())
+                
+                
+                let dt = (now - request_time) / 1000.0
+                print("Received playback: \(time) -- dt: \(dt)")
+                self?.room?.seek(to: time + dt)
+                
+            }
+            else {
+                print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")
             }
         }
         
