@@ -114,11 +114,14 @@ class Room {
             
             if self.canInvokePlay() {
                 print("I'm the first SID. Invoking play")
-                !self.playNextSong(startTime: 0.0, true)
+                self.playNextSong(startTime: 0.0, true)
             }
             else {
-                print("I'm not the first SID. Not invoking play")
+                print("I'm not the first SID. Not invoking play. Someone should signal us")
             }
+        }
+        else {
+            print("Either !allowPlay, current is nil, or count is 0: \(allowPlay), \(self.queue.currentMedia), \(self.queue.count)")
         }
     }
     
@@ -160,8 +163,9 @@ class Room {
             self.queue.currentMedia = self.queue.dequeue()
             
             print("Next Media: \(self.queue.currentMedia!.id)")
+            print("Invoking play(\(startTime))")
             self.queue.currentMedia?.play(startTime, callback: { (error) in
-                if let error = error {
+                if error != nil {
                     Helper.alert(view: self.roomController, title: "Error on Playback", message: "An error occurred while trying to play your song.")
                     return
                 }

@@ -185,6 +185,9 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                         player.progressSlider.value = val
                     }
                 }
+                
+                print("Actual: \(position) -- Expected: \(self.roomController.room?.queue.currentMedia?.playback_time)")
+                
             }
         }
     }

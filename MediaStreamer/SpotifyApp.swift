@@ -12,8 +12,9 @@ class SpotifyApp {
     
     static let instance = SpotifyApp.init()
     
-    static let audioController: SPTCoreAudioController = SPTCoreAudioController()
     static let player: SPTAudioStreamingController = SPTAudioStreamingController.sharedInstance()
+    
+    
     
     /**
      @note: Asynchronous. Listen for:

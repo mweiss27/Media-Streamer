@@ -499,6 +499,9 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if let id = data[0] as? String {
                 self?.room?.addToMediaQueue(song: SpotifySong(id: id), allowPlay: true)
             }
+            else {
+                print("No id attached with client_add")
+            }
         }
         
         print("Registering client_play")
@@ -507,10 +510,22 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let sid = info[0]
                 let songId = info[1]
                 let requestTime = info[2]
-                let dt = Double(Helper.currentTimeMillis() - Int64(requestTime)!) / 1000.0
+                let now = Helper.currentTimeMillis()
+                print("client_play received: \(sid) -- \(songId) -- \(requestTime)")
+                print("Now: \(now)")
+                
+                var dt = Double(now - Int64(requestTime)!) / 1000.0
+                if dt < 0 {
+                    print("[ERROR] dt is subzero! \(dt)")
+                    dt = 0.0
+                }
                 if sid != self?.room?.mySid {
                     print("Valid client_play: \(sid) -- \(songId) -- \(requestTime)")
+                    print("startTime: dt=\(dt)")
                     self?.room?.playNextSong(startTime: dt, false)
+                    
+                    self?.room?.queue.currentMedia?.playback_time = dt
+                    self?.room?.queue.currentMedia?.request_time = Double(requestTime)
                 }
                 else {
                     print("This is our play request. Ignoring")
@@ -565,6 +580,9 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 else {
                     self?.room?.playNextSong(startTime: Double(playbackTime)! + dt, false)
                 }
+                
+                self?.room?.queue.currentMedia?.playback_time = Double(playbackTime)! + dt
+                self?.room?.queue.currentMedia?.request_time = Double(requestTime)
             }
             else {
                 print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")
@@ -584,6 +602,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print("Received playback: \(time) -- dt: \(dt)")
                 self?.room?.seek(to: time + dt)
                 
+                self?.room?.queue.currentMedia?.playback_time = time + dt
+                self?.room?.queue.currentMedia?.request_time = request_time
             }
             else {
                 print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")

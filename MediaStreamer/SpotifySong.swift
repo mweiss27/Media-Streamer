@@ -12,14 +12,18 @@ class SpotifySong: Equatable {
     
     var id: String!
     
+    var playback_time: Double?
+    var request_time: Double?
+    
     init(id: String!) {
         self.id = id
     }
     
     func play(_ startTime: Double, callback: @escaping (String?) -> Void) {
-        print("Playing SpotifySong: \(self.id)")
+        print("Playing SpotifySong: \(self.id) -- \(startTime)")
         print("Initialized? \(SpotifyApp.player.initialized)")
         SpotifyApp.player.playSpotifyURI(self.id, startingWith: 0, startingWithPosition: startTime) { (error) in
+            print("playSpotifyURI callback")
             if error != nil {
                 print("Error on Spotify.playSpotifyURI: \(error?.localizedDescription)")
             }
@@ -28,6 +32,8 @@ class SpotifySong: Equatable {
             }
             callback(error?.localizedDescription)
         }
+        
+        print("Play returned")
     }
     
     func setPlaybackTime(time: Double!) {
