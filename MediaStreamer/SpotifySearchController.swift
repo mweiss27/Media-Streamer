@@ -22,7 +22,9 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var searchResults: UIView!
     @IBOutlet weak var searchHeader: UILabel!
     @IBOutlet weak var searchField: UITextField!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
+    @IBOutlet weak var searchScroll: UIScrollView!
     private var playlists: [SPTPartialPlaylist]?
     
     override func viewDidLoad() {
@@ -31,6 +33,12 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         
         (self.searchResults.superview as! UIScrollView).delegate = self
         self.searchField.addTarget(self, action: #selector(self.textFieldDidChange(textField:)), for: .editingChanged)
+        
+        let button = self.createLogoutButton()
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: button)
+        
+        self.loadingIndicator.isHidden = true
         
         self.initPlaylists()
         print("SpotifySearchController is displayed")
@@ -46,12 +54,73 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
          */
     }
     
+    private func createLogoutButton() -> UIButton {
+        let button = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 26, height: 22))
+        button.setImage(UIImage.init(named: "logoutButton"), for: .normal)
+        button.addTarget(self, action: #selector(self.logout), for: .touchUpInside)
+        
+        return button
+    }
+    
+    @objc private func logout() {
+        let alert = UIAlertController(title: "Logout", message: "Are you sure you want to logout of Spotify?", preferredStyle: UIAlertControllerStyle.alert)
+        
+        alert.addAction(UIAlertAction(title: "Logout", style: UIAlertActionStyle.default, handler: { action in
+            
+            if let playbackState = SpotifyApp.player.playbackState {
+                SpotifyApp.player.setIsPlaying(false, callback: { error in
+                    if error != nil {
+                        Helper.alert(view: self, title: "Error", message: "An error occurred while attempting to logout.")
+                        return
+                    }
+                    
+                    self.callLogout()
+                })
+            }
+            else {
+                self.callLogout()
+            }
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func callLogout() {
+        self.roomController?.onLogout = {
+            
+            self.navigationController?.popViewController(animated: true)
+            SpotifyApp.saveSession(session: nil)
+            self.roomController?.spotifyButton.removeTarget(nil, action: nil, for: .allEvents)
+            self.roomController?.spotifyButton.addTarget(self.roomController!, action: #selector(self.roomController?.spotifyButtonClickedNotAuthed(_:)), for: .touchUpInside)
+            
+            self.roomController?.room?.currentSong = nil
+            
+            self.roomController?.currentSongName.text = ""
+            self.roomController?.currentArtistName.text = ""
+            self.roomController?.currentPlaybackTime.progress = 0.0
+            
+            self.roomController?.onLogout = nil
+        }
+        
+        self.roomController?.onError = { error in
+            Helper.alert(view: self, title: "Error", message: "An error occurred while attempting to logout.")
+            self.roomController?.onError = nil
+        }
+        
+        SpotifyApp.player.logout()
+    }
+    
     @IBOutlet weak var returnToPlaylists: UIButton!
     func textFieldDidChange(textField: UITextField) {
         let now = Helper.currentTimeMillis()
         
         Helper.removeAllSubviews(view: self.searchResults)
+        self.searchScroll.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
+        
         self.searchResultsHeightConstraint.constant = 0
+        self.loadingIndicator.isHidden = false
         
         if self.searchWaiting {
             searchAt = now + 1000
@@ -75,6 +144,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                 if let text = textField.text {
                     if text.characters.count > 0 {
                         SPTSearch.perform(withQuery: text, queryType: SPTSearchQueryType.queryTypeTrack, accessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
+                            self.loadingIndicator.isHidden = true
                             if error != nil {
                                 print("Error on SPTSearch.perform: \(error?.localizedDescription)")
                                 return
@@ -96,8 +166,14 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                     else {
                         self.searchResult = nil
                         DispatchQueue.main.sync {
+                            self.loadingIndicator.isHidden = true
                             self.buildPlaylists()
                         }
+                    }
+                }
+                else {
+                    DispatchQueue.main.sync {
+                        self.loadingIndicator.isHidden = true
                     }
                 }
                 
@@ -111,7 +187,10 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     
     func initPlaylists() {
         print("PlaylistController.initPlaylists")
+        
+        self.loadingIndicator.isHidden = false
         SPTUser.requestCurrentUser(withAccessToken: SPTAuth.defaultInstance().session.accessToken) { (error, obj) in
+            self.loadingIndicator.isHidden = true
             if error != nil {
                 print("Error on requesetCurrentUser: \(error?.localizedDescription)")
                 return
@@ -125,7 +204,10 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                     
                     print("Currently logged in as: \(user.displayName)")
                     
+                    print("Requesting user playlists")
+                    self.loadingIndicator.isHidden = false
                     SPTPlaylistList.playlists(forUser: user.canonicalUserName, withAccessToken: accessToken, callback: { (error, playlists) in
+                        self.loadingIndicator.isHidden = true
                         if error != nil {
                             print("Error on .playlists: \(error?.localizedDescription)")
                             return
@@ -163,6 +245,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     private func buildPlaylists() {
         print("PlaylistsController.buildPlaylists")
         Helper.removeAllSubviews(view: self.searchResults)
+        self.searchScroll.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
         
         self.searchResultsHeightConstraint.constant = 0
         self.searchHeader.text = Constants.BrowseSpotifyLibrary
@@ -195,9 +278,9 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
             print("Playlist Tapped: \(source.playlistName!)")
             
             if let partial = source.partialPlaylist {
-                self.background.async {
-                    self.enterPlaylist(partial: partial)
-                }
+                print(">>enterPlaylist")
+                self.enterPlaylist(partial: partial)
+                print("<<enterPlaylist")
             }
             else {
                 print("nil partial")
@@ -211,6 +294,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     }
     
     private func enterPlaylist(partial: SPTPartialPlaylist!) {
+        
         SPTPlaylistSnapshot.playlist(withURI: partial.playableUri, accessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
             if error != nil {
                 print("Error on SPTPlaylistSnapshot.playlist: \(error?.localizedDescription)")
@@ -221,6 +305,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                 
                 print("Wiping all subviews")
                 Helper.removeAllSubviews(view: self.searchResults)
+                self.searchScroll.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
                 
                 self.searchResultsHeightConstraint.constant = 0
                 self.searchHeader.text = Constants.BrowseSpotifyLibrary
@@ -273,7 +358,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     func songClicked(_ sender: UITapGestureRecognizer) {
         if let source = sender.view as? SpotifyTrackView {
             print("songClicked: \(source.song!)")
-            SocketIOManager.emit("add_queue", [(source.song?.playableUri.absoluteString)!], nil)
+            SocketIOManager.emit("request_add", [(source.song?.playableUri.absoluteString)!], nil)
         }
         else {
             print("[ERROR] source is nil or not SpotifyTrackView: \(sender.view)")

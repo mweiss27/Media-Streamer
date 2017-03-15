@@ -11,7 +11,9 @@ import Foundation
 class Constants {
     
     static let clientID = "2da635f7c6224a24b10cd8c2566b4e8b"
-    static let redirectURL = "mediastreamerspotifyauth://callback"
+    
+    static let SpotifyRedirectURI = "mediastreamer-osu://auth"
+    
     static let requestedScopes = [
         SPTAuthStreamingScope,
         SPTAuthPlaylistReadPrivateScope,
@@ -31,6 +33,7 @@ class Constants {
     static let LogintoPlaylists: String = "login_to_playlists"
     static let PlaylistToSongs: String = "playlist_to_songs"
     static let SongsToPlayer: String = "songs_to_player"
+    static let UnwindToRoom: String = "unwindToRoom"
     
     
     static let BrowseSpotifyLibrary: String = "Search the Spotify library"

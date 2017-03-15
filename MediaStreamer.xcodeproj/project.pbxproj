@@ -13,6 +13,7 @@
 		946F7DF21E4F774F0046DB58 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 946F7DF11E4F774F0046DB58 /* libsqlite3.0.tbd */; };
 		946F7DF41E4F78700046DB58 /* data.db in Resources */ = {isa = PBXBuildFile; fileRef = 946F7DF31E4F78700046DB58 /* data.db */; };
 		C90A4E621E689D0800D5ED6D /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C90A4E5A1E689B1D00D5ED6D /* MediaPlayer.framework */; };
+		C91443681E78C9950096AE51 /* RoomControllerLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91443671E78C9950096AE51 /* RoomControllerLogic.swift */; };
 		C935E7471E3BAC7900571F0F /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */; };
 		C9439D481E3295AF007446B0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D471E3295AF007446B0 /* AppDelegate.swift */; };
 		C9439D4A1E3295AF007446B0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9439D491E3295AF007446B0 /* ViewController.swift */; };
@@ -45,8 +46,6 @@
 		C99288BB1E54C36300140CF2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288BA1E54C36300140CF2 /* User.swift */; };
 		C99288DB1E55068000140CF2 /* SpotifyPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99288DA1E55068000140CF2 /* SpotifyPlayer.swift */; };
 		C9F3711F1E54B7C20005BDBA /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F3711E1E54B7C20005BDBA /* Room.swift */; };
-		C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371201E54B8A80005BDBA /* MediaQueue.swift */; };
-		C9F371241E54B9540005BDBA /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371231E54B9540005BDBA /* Queue.swift */; };
 		C9F371291E54BAF00005BDBA /* SpotifySong.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F371281E54BAF00005BDBA /* SpotifySong.swift */; };
 		DDD40F8A86D03B3617FDF820 /* Pods_MediaStreamer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14CF1C6DD1A6CB3C7145C3 /* Pods_MediaStreamer.framework */; };
 /* End PBXBuildFile section */
@@ -74,6 +73,7 @@
 		C90A4E5C1E689B4A00D5ED6D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		C90A4E5D1E689B4A00D5ED6D /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
 		C90A4E5E1E689B4A00D5ED6D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
+		C91443671E78C9950096AE51 /* RoomControllerLogic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomControllerLogic.swift; sourceTree = "<group>"; };
 		C935E7461E3BAC7900571F0F /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
 		C9439D441E3295AF007446B0 /* MediaStreamer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediaStreamer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9439D471E3295AF007446B0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -113,8 +113,6 @@
 		C99288C21E54F28200140CF2 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		C99288DA1E55068000140CF2 /* SpotifyPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyPlayer.swift; sourceTree = "<group>"; };
 		C9F3711E1E54B7C20005BDBA /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
-		C9F371201E54B8A80005BDBA /* MediaQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaQueue.swift; sourceTree = "<group>"; };
-		C9F371231E54B9540005BDBA /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Queue.swift; sourceTree = "<group>"; };
 		C9F371281E54BAF00005BDBA /* SpotifySong.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifySong.swift; sourceTree = "<group>"; };
 		F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MediaStreamer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MediaStreamer/Pods-MediaStreamer.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -152,6 +150,14 @@
 				F38263614FDE16C3513EBB6A /* Pods-MediaStreamer.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		C91443661E78C9820096AE51 /* ViewControllerLogic */ = {
+			isa = PBXGroup;
+			children = (
+				C91443671E78C9950096AE51 /* RoomControllerLogic.swift */,
+			);
+			name = ViewControllerLogic;
 			sourceTree = "<group>";
 		};
 		C9439D3B1E3295AF007446B0 = {
@@ -291,7 +297,6 @@
 			children = (
 				C9F371271E54BACF0005BDBA /* Media */,
 				C9F3711E1E54B7C20005BDBA /* Room.swift */,
-				C9F371201E54B8A80005BDBA /* MediaQueue.swift */,
 				C99288BA1E54C36300140CF2 /* User.swift */,
 			);
 			name = Models;
@@ -300,11 +305,11 @@
 		C9F371221E54B94B0005BDBA /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				C91443661E78C9820096AE51 /* ViewControllerLogic */,
 				946F7DE11E4F6C220046DB58 /* SocketIOManager.swift */,
 				C987AE591E3EEBF900355688 /* SpotifyApp.swift */,
 				C9877F101E43FA44008D5147 /* Helper.swift */,
 				C987AE511E3E49F800355688 /* Constants.swift */,
-				C9F371231E54B9540005BDBA /* Queue.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -512,9 +517,7 @@
 				C99288DB1E55068000140CF2 /* SpotifyPlayer.swift in Sources */,
 				C9877F211E49C361008D5147 /* SpotifyTrackView.swift in Sources */,
 				C987AE621E3F0A3200355688 /* PlayerController.swift in Sources */,
-				C9F371241E54B9540005BDBA /* Queue.swift in Sources */,
 				C9877F111E43FA44008D5147 /* Helper.swift in Sources */,
-				C9F371211E54B8A80005BDBA /* MediaQueue.swift in Sources */,
 				C9877F251E4A4C83008D5147 /* SpotifyPlaylistView.swift in Sources */,
 				C98347611E601CD70010CC65 /* SpotifyDelegate.swift in Sources */,
 				C9877F161E48F7A8008D5147 /* HomeController.swift in Sources */,
@@ -523,6 +526,7 @@
 				C9877F0F1E43CD07008D5147 /* UISongView.swift in Sources */,
 				C9877F1D1E492401008D5147 /* SpotifySearchController.swift in Sources */,
 				C9877F231E4A3923008D5147 /* SpotifySongsController.swift in Sources */,
+				C91443681E78C9950096AE51 /* RoomControllerLogic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -66,7 +66,7 @@ class ViewController: UIViewController {
         }
         else {
             let loginURL = SPTAuth.loginURL(forClientId: Constants.clientID,
-                                            withRedirectURL: URL(string: Constants.redirectURL),
+                                            withRedirectURL: URL(string: Constants.SpotifyRedirectURI),
                                             scopes: Constants.requestedScopes,
                                             responseType: "code")
             

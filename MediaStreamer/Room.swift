@@ -16,8 +16,13 @@ class Room {
     
     private let roomController: RoomController
     let id: Int
+    
+    //(sid, name)
     private var users: [(String, String)]
-    let queue: MediaQueue
+    
+    //Only used for displaying, not using for managing playback anymore
+    var currentQueue: [SpotifySong] = []
+    var currentSong: SpotifySong? = nil
     
     static var currentRoom: Room?
     
@@ -25,7 +30,6 @@ class Room {
         self.roomController = roomController
         self.id = id
         self.users = []
-        self.queue = MediaQueue()
         Room.currentRoom = self
     }
     
@@ -96,33 +100,13 @@ class Room {
         return firstSid == self.mySid
     }
     
-    func addToMediaQueue(song: SpotifySong, allowPlay: Bool) {
-        let id = song.id
-        let timestamp = Helper.currentTimeMillis() //Use time to synchronize order
-        
-        self.queue.enqueue(song)
-        
+    func addSong(song: SpotifySong) {
         Toast(text: "Song Added", delay: 0, duration: 0.5).show()
-        
-        print("Queue:")
-        self.queue.printContents()
         
         print("Player is logged in? " + SpotifyApp.player.loggedIn.description)
         print("Player is initialized? " + SpotifyApp.player.initialized.description)
         
-        if allowPlay && self.queue.currentMedia == nil && self.queue.count > 0 {
-            
-            if self.canInvokePlay() {
-                print("I'm the first SID. Invoking play")
-                self.playNextSong(startTime: 0.0, true)
-            }
-            else {
-                print("I'm not the first SID. Not invoking play. Someone should signal us")
-            }
-        }
-        else {
-            print("Either !allowPlay, current is nil, or count is 0: \(allowPlay), \(self.queue.currentMedia), \(self.queue.count)")
-        }
+        self.currentQueue.append(song)
     }
     
     func removeFromMediaQueue(song: SpotifySong!) {
@@ -132,19 +116,16 @@ class Room {
     }
     
     func removeFromMediaQueue(id: String!) {
-        for item in self.queue.array {
-            if item.id == id {
-                if self.queue.remove(item) {
-                    Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
-                    
-                    print("Queue:")
-                    self.queue.printContents()
-                }
+        for i in 0..<self.currentQueue.count {
+            if self.currentQueue[i].id == id {
+                self.currentQueue.remove(at: i)
+                Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
+                break
             }
         }
     }
     
-    func playNextSong(startTime: Double, _ broadcast: Bool!) -> Bool {
+    func playSong(_ id: String, _ startTime: Double) -> Bool {
         
         if !SpotifyApp.player.loggedIn {
             print("[ERROR] Player is not logged in")
@@ -156,102 +137,58 @@ class Room {
             return false
         }
         
-        let previousSong = self.queue.currentMedia
+        for i in 0..<self.currentQueue.count {
+            let item = self.currentQueue[i]
+            if item.id == id {
+                print("Found the song in the queue to play!")
+                item.play(startTime, callback: { (error) in
+                    if error != nil {
+                        Helper.alert(view: self.roomController, title: "Error on Playback", message: "An error occurred while attempting to play a song.")
+                    }
+                    else {
+                        self.currentSong = item
+                    }
+                })
+            }
+        }
         
-        if !self.queue.isEmpty {
-            print("Queue is not empty, getting the next item and playing")
-            self.queue.currentMedia = self.queue.dequeue()
-            
-            print("Next Media: \(self.queue.currentMedia!.id)")
-            print("Invoking play(\(startTime))")
-            self.queue.currentMedia?.play(startTime, callback: { (error) in
-                if error != nil {
-                    Helper.alert(view: self.roomController, title: "Error on Playback", message: "An error occurred while trying to play your song.")
+        return false
+    }
+    
+    func setPlaying(_ playing: Bool, callback: @escaping (String?) -> Void) {
+        if self.currentSong != nil {
+            if let playback = SpotifyApp.player.playbackState {
+                if playback.isPlaying == playing {
+                    print("Requesting setPlaying, but that state is already the current")
+                    callback(nil)
                     return
                 }
-                
-                if broadcast {
-                    print("Broadcasting 'play'")
-                    let now = Helper.currentTimeMillis()
-                    SocketIOManager.emit("play", [(self.queue.currentMedia?.id)!, Int(now)], { (error) in
-                        if let error = error {
-                            print("Error on emit: \(error)")
-                            return
-                        }
-                        
-                        //We don't have to do anything
-                        //RoomController will be listening for client_play.
-                        //It will include sid, and we can filter out our own requests
-                        
-                        if previousSong != nil {
-                            SocketIOManager.emit("remove_queue", [previousSong!.id], { error in })
-                        }
-                    })
+            }
+            SpotifyApp.player.setIsPlaying(playing) { (error) in
+                if let error = error {
+                    print("Error on setIsPlaying false: \(error.localizedDescription)")
+                    Helper.alert(view: self.roomController, title: "Failed to \(playing ? "resume" : "pause")", message: "An error occurred while trying to \(playing ? "resume" : "pause") the song")
                 }
                 else {
-                    print("Not broadcasting 'play'")
+                    print("Room.setPlaying success")
                 }
-                
+                callback(error?.localizedDescription)
+            }
+        }
+    }
+    
+    func seek(to: Double!, callback: @escaping (String?) -> Void) {
+        if self.currentSong != nil {
+            self.currentSong?.seek(to: to, callback: { error in
+                if error != nil {
+                    print("Error on seek(to: \(to)): \(error)")
+                    Helper.alert(view: self.roomController, title: "Error on scrub", message: "An error occurred while attempting to scrub the song playback.")
+                }
+                else {
+                    print("Room.seek success")
+                }
+                callback(error)
             })
-            return true
-        }
-        else {
-            print("Queue is empty!")
-            self.pause(false)
-            
-            if broadcast {
-                if previousSong != nil {
-                    //Others will get a 'client_remove' for the current song
-                    SocketIOManager.emit("remove_queue", [previousSong!.id], { error in })
-                }
-            }
-            
-            self.queue.currentMedia = nil
-            self.roomController.currentSongName.text = ""
-            self.roomController.currentArtistName.text = ""
-            self.roomController.currentPlaybackTime.progress = 0.0
-            
-            return false
-        }
-    }
-    
-    func pause(_ broadcast: Bool) {
-        if self.queue.currentMedia != nil {
-            SpotifyApp.player.setIsPlaying(false) { (error) in
-                if let error = error {
-                    print("Error on setIsPlaying false: \(error.localizedDescription)")
-                    Helper.alert(view: self.roomController, title: "Failed to Pause", message: "An error occurred while trying to pause the song")
-                    return
-                }
-                if broadcast {
-                    SocketIOManager.emit("pause", [], { (error) in
-                    })
-                }
-            }
-        }
-    }
-    
-    func resume(_ broadcast: Bool) {
-        if self.queue.currentMedia != nil {
-            SpotifyApp.player.setIsPlaying(true) { (error) in
-                if let error = error {
-                    print("Error on setIsPlaying false: \(error.localizedDescription)")
-                    Helper.alert(view: self.roomController, title: "Failed to Pause", message: "An error occurred while trying to pause the song")
-                    return
-                }
-                if broadcast {
-                    let currentPlaybackTime = SpotifyApp.player.playbackState.position
-                    let now = Helper.currentTimeMillis()
-                    SocketIOManager.emit("resume", [ Double(currentPlaybackTime), Int(now) ], { (error) in
-                    })
-                }
-            }
-        }
-    }
-    
-    func seek(to: Double!) {
-        if let currentMedia = self.queue.currentMedia {
-            currentMedia.setPlaybackTime(time: to)
         }
     }
     

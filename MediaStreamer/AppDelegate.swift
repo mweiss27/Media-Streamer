@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print("Application init")
         
-        SPTAuth.defaultInstance().redirectURL = URL(string: Constants.redirectURL)
+        SPTAuth.defaultInstance().redirectURL = URL(string: Constants.SpotifyRedirectURI)
         SPTAuth.defaultInstance().clientID = Constants.clientID
         SPTAuth.defaultInstance().requestedScopes = Constants.requestedScopes
         SPTAuth.defaultInstance().tokenSwapURL = URL(string: Constants.tokenSwapURL)
@@ -44,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if error != nil {
                     print("Error on handleAuthCallback: " + error!.localizedDescription)
                     print("Session is probably nil? \(session)")
+                    Helper.alert(view: self.roomController!, title: "Authentication Failed", message: "An error occurred while attempting to login to Spotify.")
                 }
                 else {
                     print("No error, we were able to handle!")

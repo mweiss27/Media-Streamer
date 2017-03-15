@@ -22,23 +22,14 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var displayNameField: UILabel!
     @IBOutlet weak var roomTableView: UITableView!
     
+    var roomsDirty: Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         let displayName = defaults.string(forKey: "displayName")
         if displayName != nil{
             displayNameField.text = "Display Name: " + displayName!
-        }
-        
-        // Init rooms table
-        let data = db.query(sql: "SELECT * FROM Room ORDER BY DisplayName ASC")
-        if data.count > 0 {
-            for i in 0...data.count-1 {
-                print("Room[\(i)]: \(data[i]) -- \(data[i]["DisplayName"])) -- \(data[i]["RoomNum"])")
-                if let rName = data[i]["DisplayName"] as? String, let rNum = data[i]["RoomNum"] {
-                    rooms.append( [ rName, String(describing: rNum) ] )
-                }
-            }
         }
         
         roomTableView.delegate = self;
@@ -53,6 +44,22 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidAppear(animated)
         
         print("Requested Scopes: \(SPTAuth.defaultInstance().requestedScopes)")
+        
+            rooms = []
+            // Init rooms table
+            let data = db.query(sql: "SELECT * FROM Room ORDER BY DisplayName ASC")
+            if data.count > 0 {
+                for i in 0...data.count-1 {
+                    print("Room[\(i)]: \(data[i]) -- \(data[i]["DisplayName"])) -- \(data[i]["RoomNum"])")
+                    if let rName = data[i]["DisplayName"] as? String, let rNum = data[i]["RoomNum"] {
+                        print("Appending room")
+                        rooms.append( [ rName, String(describing: rNum) ] )
+                    }
+                }
+            }
+            self.roomTableView.reloadData()
+            
+            roomsDirty = false
         
         print("HomeController is displayed")
     }
@@ -136,7 +143,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler:{ action in
             
-            let displayName = self.createAddTextField.text!
+            let displayName = self.createAddTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)
             let roomNum = Int(arc4random_uniform(999999))
             
             let overlay = Helper.loading(self.navigationController?.view, "Joining room...")
@@ -200,6 +207,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
             
+            self.db.execute(sql: "UPDATE Room SET DisplayName=? WHERE RoomNum=?", parameters: [roomName, roomId])
             self.performSegue(withIdentifier: Constants.ENTER_ROOM, sender: [roomName, roomId] )
             
         })
@@ -233,16 +241,11 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
-        if let button = sender as? UIButton {
-            let roomTitle = button.currentTitle
-            if let dest = segue.destination as? RoomController {
-                dest.navigationItem.title = roomTitle
-            }
-        }
         if segue.identifier == Constants.ENTER_ROOM {
             if let dest = segue.destination as? RoomController {
                 if let info = sender as? [String] {
                     if info.count >= 2 {
+                        dest.homeController = self
                         dest.navigationItem.title = info[0]
                         dest.room = Room(roomController: dest, id: Int(info[1]))
                     }

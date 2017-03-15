@@ -15,9 +15,13 @@ import Alamofire
 
 class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    var homeController: HomeController?
+    
     var room: Room?
     let defaults = UserDefaults()
     var spotifyPlayer: SpotifyPlayer? = nil
+    
+    private var logic: RoomControllerLogic?
     
     public var spotifyDelegate: SpotifyDelegate?
     
@@ -36,6 +40,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.logic = RoomControllerLogic(self)
         print(">>RoomController.viewDidLoad")
         // Do any additional setup after loading the view, typically from a nib.
         
@@ -69,7 +74,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let session = SPTAuth.defaultInstance().session
         if session != nil {
-            
+            print("session exists. Checking if our session is valid.")
             if !(session?.isValid())! {
                 //Exists, but not valid. Try to renew it
                 self.spotifyLoading.startAnimating()
@@ -105,12 +110,47 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             else {
                 //exists, and is valid. Login!
+                print("Session is valid. Calling login")
                 self.loginToPlayer()
             }
             
         }
         
         print("RoomController.viewDidAppear")
+    }
+    
+    // Only permit 30 characters in text fields
+    var createAddTextField : UITextField!
+    func createTextFieldDidChange(_ textField: UITextField) {
+        if (createAddTextField.text!.characters.count > 30) {
+            textField.deleteBackward()
+        }
+    }
+    
+    @IBAction func requestChangeRoomName(_ sender: Any) {
+        let alert = UIAlertController(title: "Change Room Name", message: "Enter new room name:", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addTextField(configurationHandler: self.configurationTextField)
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler:{ action in
+            SocketIOManager.emit("request_display_change", [self.createAddTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)], { error in
+                if error != nil {
+                    Helper.alert(view: self, title: "Network error", message: "An error occurred while attempting to communicate with the server.")
+                    return
+                }
+            })
+            //self.navigationItem.title.text = self.createAddTextField.text!
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    // Setup text fields for alerts
+    func configurationTextField(textField: UITextField!)
+    {
+        
+        self.createAddTextField = textField!
+        self.createAddTextField.autocapitalizationType = UITextAutocapitalizationType.words
+        self.createAddTextField.addTarget(self, action: #selector(createTextFieldDidChange(_:)), for: .editingChanged)
+        
     }
     
     private func initQueue() {
@@ -128,8 +168,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         let _playback_time = info[3] as! String
                         
                         
-                        let song = SpotifySong(id: _uri)
-                        self.room?.addToMediaQueue(song: song, allowPlay: false)
+                        let song = SpotifySong(_uri)
+                        self.room?.addSong(song: song)
                         if _playing == "True" {
                             
                             let dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
@@ -137,7 +177,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             let time = Double(_playback_time)! + Double(dt/1000.0)
                             print("Need to scrub to \(time)s")
                             
-                            self.room?.playNextSong(startTime: time, false)
+                            self.room?.playSong(_uri, time)
                         }
                     }
                 }
@@ -229,7 +269,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         else {
             let loginURL = SPTAuth.loginURL(forClientId: Constants.clientID,
-                                            withRedirectURL: URL(string: Constants.redirectURL),
+                                            withRedirectURL: URL(string: Constants.SpotifyRedirectURI),
                                             scopes: Constants.requestedScopes,
                                             responseType: "code")
             
@@ -289,6 +329,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.spotifyButton.isEnabled = true
             
             if self.isMovingToParentViewController {
+                print("isMovingToParentViewController")
                 self.initQueue()
             }
             else {
@@ -403,8 +444,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func currentPlayingTouched() {
         print("Tapped currentPlaying")
-        if self.room?.queue.currentMedia != nil || (self.room?.queue.count)! > 0 {
-            print("We're currently playing a SpotifySong. Transitioning to SpotifyPlayer")
+        if self.room?.currentSong != nil {
+            print("We're currently playing a song. Transitioning to SpotifyPlayer")
             self.performSegue(withIdentifier: "room_to_player", sender: self)
         }
         else {
@@ -415,12 +456,8 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func currentPlayingSwiped(_ gesture: UISwipeGestureRecognizer) {
         //left means next
         if gesture.direction == .left {
-            if self.room?.queue.currentMedia != nil {
-                if !(self.room?.playNextSong(startTime: 0.0, true))! {
-                    self.currentSongName.text = ""
-                    self.currentArtistName.text = ""
-                    self.currentPlaybackTime.progress = 0
-                }
+            if self.room?.currentSong != nil {
+                self.requestNext()
             }
         }
         else if gesture.direction == .up {
@@ -439,14 +476,17 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         SocketIOManager.off("remove user")
         SocketIOManager.off("connect")
         SocketIOManager.off("client_add")
-        SocketIOManager.off("client_pause")
         SocketIOManager.off("client_play")
+        SocketIOManager.off("client_remove")
+        SocketIOManager.off("client_pause")
         SocketIOManager.off("client_resume")
-        SocketIOManager.off("client_playback")
-        
+        SocketIOManager.off("client_stop")
+        SocketIOManager.off("client_scrub")
+        SocketIOManager.off("client_change_display")
     }
     
-    func addUserListener(){
+    func addUserListener() {
+        
         print("Registering add user")
         SocketIOManager.on("add user", callback: { (data, ack) in
             print("add user response: \(data)")
@@ -466,7 +506,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         })
         
         print("Registering remove user")
-        SocketIOManager.on("remove user") {[weak self] data, ack in
+        SocketIOManager.on("remove user", callback: {[weak self] data, ack in
             print("remove user -- \(data)")
             if let sidRemoving = data[0] as? String {
                 if (self?.room?.removeUser(sid: sidRemoving))! {
@@ -476,10 +516,11 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             else {
                 print("invalid data param")
             }
-        }
+        })
         
         print("Registering connect")
-        SocketIOManager.on("connect") {[weak self] data, ack in
+        SocketIOManager.on("connect", callback: {[weak self] data, ack in
+            print("connect")
             self?.room?.clearUsers()
             let defaults = UserDefaults()
             let currRoom = defaults.string(forKey: "currRoom")
@@ -491,125 +532,232 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     SocketIOManager.emit("enter room", [currRoom!, "Anonymous"], nil)
                 }
             }
-        }
+        })
         
         print("Registering client_add")
-        SocketIOManager.on("client_add") {[weak self] data, ack in
+        SocketIOManager.on("client_add", callback: {[weak self] data, ack in
             print("client_add received: \(data)")
-            if let id = data[0] as? String {
-                self?.room?.addToMediaQueue(song: SpotifySong(id: id), allowPlay: true)
+            if let info = data[0] as? [String] {
+                if let id = info[0] as? String {
+                    self?.room?.addSong(song: SpotifySong(id))
+                }
+                else {
+                    print("No id attached with client_add")
+                }
             }
             else {
-                print("No id attached with client_add")
+                print("Invalid data. Expected a [String]")
             }
-        }
+        })
         
         print("Registering client_play")
-        SocketIOManager.on("client_play") {[weak self] data, ack in
+        SocketIOManager.on("client_play", callback: {[weak self] data, ack in
+            print("client_play")
             if let info = data[0] as? [String] {
-                let sid = info[0]
-                let songId = info[1]
-                let requestTime = info[2]
-                let now = Helper.currentTimeMillis()
-                print("client_play received: \(sid) -- \(songId) -- \(requestTime)")
-                print("Now: \(now)")
-                
-                var dt = Double(now - Int64(requestTime)!) / 1000.0
-                if dt < 0 {
-                    print("[ERROR] dt is subzero! \(dt)")
-                    dt = 0.0
-                }
-                if sid != self?.room?.mySid {
-                    print("Valid client_play: \(sid) -- \(songId) -- \(requestTime)")
-                    print("startTime: dt=\(dt)")
-                    self?.room?.playNextSong(startTime: dt, false)
+                if info.count >= 2 {
+                    let songId = info[0]
+                    let startTime = info[1]
+                    let now = Helper.currentTimeMillis()
+                    print("client_play received: \(songId) -- \(startTime)")
+                    print("Now: \(now)")
                     
-                    self?.room?.queue.currentMedia?.playback_time = dt
-                    self?.room?.queue.currentMedia?.request_time = Double(requestTime)
+                    var dt = Double(now - Int64(startTime)!) / 1000.0
+                    if dt < 0 {
+                        print("[ERROR] dt is subzero! \(dt)")
+                        dt = 0.0
+                    }
+                    print("Valid client_play: \(songId) -- \(startTime)")
+                    print("startTime: dt=\(dt)")
+                    
+                    self?.room?.playSong(songId, dt)
                 }
                 else {
-                    print("This is our play request. Ignoring")
+                    print("[ERROR] info.count is not >= 2")
                 }
             }
-        }
+            else {
+                print("[ERROR] data is not a [String]")
+            }
+        })
         
-        SocketIOManager.on("client_remove") { [weak self] data, ack in
+        SocketIOManager.on("client_remove", callback: { [weak self] data, ack in
             print("client_remove: \(data)")
             if let info = data[0] as? [String] {
-                let sid = info[0]
-                let songId = info[1]
+                let songId = info[0]
                 print("Removing \(songId) from queue")
                 self?.room?.removeFromMediaQueue(id: songId)
-                if let current = self?.room?.queue.currentMedia {
-                    if (current.id)! == songId {
-                        print("We removed the current song.")
-                        //false because someone else triggered this remove, they should call the play as well
-                        if !(self?.room?.playNextSong(startTime: 0.0, false))! {
-                            self?.spotifyPlayer?.performSegue(withIdentifier: "unwindToRoom", sender: self)
-                        }
-                    }
-                    print("Current song is not what we're removing: C: \(current.id!) -- R: \(songId)")
-                }
-                else {
-                    print("Current song is nil")
-                }
             }
             else {
                 print("info is not a [String] -- \(Mirror(reflecting: data[0]).subjectType)")
             }
-        }
+        })
         
         print("Registering client_pause")
-        SocketIOManager.on("client_pause") { [weak self] data, ack in
+        SocketIOManager.on("client_pause", callback: { [weak self] data, ack in
             print("client_pause received")
-            self?.room?.pause(false)
-        }
+            self?.room?.setPlaying(false, callback: { error in
+                if error == nil {
+                    print("client_pause success")
+                }
+            })
+        })
         
         print("Registering client_resume")
-        SocketIOManager.on("client_resume") { [weak self] data, ack in
+        SocketIOManager.on("client_resume", callback: { [weak self] data, ack in
             print("client_resume received")
             if let info = data[0] as? [String] {
-                let sid = info[0]
-                let playbackTime = info[1]
-                let requestTime = info[2]
-                let dt = Double(Helper.currentTimeMillis() - Int64(requestTime)!) / 1000.0
-                if self?.room?.queue.currentMedia != nil {
-                    self?.room?.resume(false)
-                    self?.room?.seek(to: Double(playbackTime)! + dt)
-                }
-                else {
-                    self?.room?.playNextSong(startTime: Double(playbackTime)! + dt, false)
+                if info.count > 0 {
+                    let songId = info[0]
+                    let resume_time = info[1]
+                    let responseTime = info[2]
+                    let dt = Double(Helper.currentTimeMillis() - Int64(responseTime)!) / 1000.0
+                    if self?.room?.currentSong != nil {
+                        self?.room?.setPlaying(true, callback: { error in
+                            if error == nil {
+                                self?.room?.seek(to: Double(resume_time)! + dt - 1, callback: { error in
+                                    print("client_resume success")
+                                })
+                            }
+                        })
+                    }
+                    else {
+                        self?.room?.playSong(songId, Double(resume_time)! + dt)
+                    }
                 }
                 
-                self?.room?.queue.currentMedia?.playback_time = Double(playbackTime)! + dt
-                self?.room?.queue.currentMedia?.request_time = Double(requestTime)
             }
             else {
                 print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")
             }
-        }
+        })
         
-        print("Registering client_playback")
-        SocketIOManager.on("client_playback") { [weak self] data, ack in
-            print("client_playback")
+        print("Registering client_stop")
+        SocketIOManager.on("client_stop", callback: { [weak self] data, ack in
+            print("client_stop")
+            
+            if self?.room?.currentSong != nil {
+                SpotifyApp.player.setIsPlaying(false, callback: { error in
+                    if error != nil {
+                        Helper.alert(view: self, title: "Error while stopping", message: "An error occurred while attempting to stop the player.")
+                    }
+                })
+            }
+            
+            self?.room?.currentSong = nil
+            self?.room?.currentQueue = []
+            
+            self?.currentSongName.text = ""
+            self?.currentArtistName.text = ""
+            self?.currentPlaybackTime.progress = 0.0
+            
+            if let player = self?.spotifyPlayer {
+                player.performSegue(withIdentifier: Constants.UnwindToRoom, sender: player)
+            }
+        })
+        
+        print("Registering client_scrub")
+        SocketIOManager.on("client_scrub", callback: { [weak self] data, ack in
+            print("client_scrub")
             if let info = data[0] as? [String] {
-                let request_time = Double(info[0])!
-                let time = Double(info[1])!
+                let scrub_time = Double(info[0])!
+                let response_time = Double(info[1])!
                 let now = Double(Helper.currentTimeMillis())
                 
                 
-                let dt = (now - request_time) / 1000.0
+                let dt = (now - response_time) / 1000.0
                 print("Received playback: \(time) -- dt: \(dt)")
-                self?.room?.seek(to: time + dt)
-                
-                self?.room?.queue.currentMedia?.playback_time = time + dt
-                self?.room?.queue.currentMedia?.request_time = request_time
+                self?.room?.seek(to: scrub_time + dt, callback: { error in
+                    if error != nil {
+                        print("error on client_playback seek")
+                    }
+                })
             }
             else {
                 print("Invalid info. Expected [String]. Got: \(Mirror(reflecting: data[0]).subjectType)")
             }
-        }
+        })
         
+        print("Registering client_change_display. HomeController: \(self.homeController)")
+        SocketIOManager.on("client_change_display", callback: { data, ack in
+            if let info = data[0] as? [String] {
+                let newName = info[0]
+                self.navigationItem.title = newName
+
+                
+                let result = self.homeController?.db.execute(sql: "UPDATE Room SET DisplayName=? WHERE RoomNum=?", parameters: [newName, (self.room?.id)!])
+                
+                if result != 0 {
+                    print("Result: \(result)")
+                    Toast.init(text: "Room name changed", delay: 0, duration: 1.5).show()
+                }
+                else {
+                    print("nil result")
+                    Toast.init(text: "Failed to change room name", delay: 0, duration: 1.5).show()
+                }
+            }
+            else {
+                print("info is not a [String]")
+            }
+        })
+        
+    }
+    
+    func requestNext() {
+        //Expects a response of 'client_play' or 'client_stop'
+        SocketIOManager.emit("request_next", [], { error in
+            if error != nil {
+                Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
+                return
+            }
+            
+        })
+    }
+    
+    func requestPause() {
+        //Expects a response of 'client_pause'
+        SocketIOManager.emit("request_pause", [], { error in
+            if error != nil {
+                Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
+                return
+            }
+        })
+    }
+    
+    func requestResume() {
+        //Expects a response of 'client_resume'
+        if let playback = SpotifyApp.player.playbackState {
+            let resume_time = playback.position
+            SocketIOManager.emit("request_resume", [resume_time], { error in
+                if error != nil {
+                    Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
+                    return
+                }
+            })
+        }
+    }
+    
+    func requestRemove(_ song: SpotifySong) {
+        SocketIOManager.emit("request_remove", [song.id], { error in
+            if error != nil {
+                Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
+                return
+            }
+        })
+    }
+    
+    func requestScrub(_ to: Double) {
+        //Expects a response of 'client_scrub'
+        SocketIOManager.emit("request_scrub", [to], { error in
+            if error != nil {
+                Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
+                return
+            }
+        })
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        print("didReceiveMemoryWarning")
     }
     
 }

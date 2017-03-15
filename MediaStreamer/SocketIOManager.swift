@@ -12,6 +12,7 @@ import SocketIO
 class SocketIOManager: NSObject {
     
     static let host = "http://75.188.54.41:45555"
+    //static let host = "http://192.168.1.16:80"
     
     //Add accessor methods to interface with the socket.
     private static var socket: SocketIOClient = SocketIOClient(socketURL: URL(string: host)!)

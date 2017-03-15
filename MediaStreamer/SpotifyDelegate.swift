@@ -31,11 +31,11 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     }
     
     @objc private func play() {
-        self.roomController.room?.resume(true)
+        self.roomController.requestResume()
     }
     
     @objc private func pause() {
-        self.roomController.room?.pause(true)
+        self.roomController.requestPause()
     }
     
     @objc private func pausePlay() {
@@ -48,9 +48,7 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     }
     
     @objc private func next() {
-        if self.roomController.room?.queue.currentMedia != nil {
-            self.roomController.room?.playNextSong(startTime: 0.0, true)
-        }
+        self.roomController.requestNext()
     }
     
     func audioStreamingDidLogin(_ audioStreaming: SPTAudioStreamingController!) {
@@ -62,6 +60,12 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didReceiveError error: Error!) {
         if self.roomController.onError != nil {
             self.roomController.onError!(error)
+        }
+    }
+    
+    func audioStreamingDidLogout(_ audioStreaming: SPTAudioStreamingController!) {
+        if self.roomController.onLogout != nil {
+            self.roomController.onLogout!()
         }
     }
     
@@ -98,11 +102,8 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
         //This event is called when the current playlist reaches the end.
         //We always have 1 song in our actual Spotify Queue -- the current song
         if event == SPPlaybackNotifyAudioDeliveryDone {
-            if self.roomController.room?.queue.front != nil {
-                if (self.roomController.room?.canInvokePlay())! {
-                    self.roomController.room?.playNextSong(startTime: 0.0, true)
-                }
-                
+            if (self.roomController.room?.canInvokePlay())! {
+                self.roomController.requestNext()
             }
         }
     }
@@ -120,7 +121,7 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     
     private var lastImageURI: String?
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChange metadata: SPTPlaybackMetadata!) {
-        if self.roomController.room?.queue.currentMedia != nil {
+        if self.roomController.room?.currentSong != nil {
             if let meta = metadata {
                 print("MetaData changed")
                 if let currentTrack = meta.currentTrack {
@@ -143,7 +144,7 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                                 return
                             }
                             
-                            if self.roomController.room?.queue.currentMedia != nil {
+                            if self.roomController.room?.currentSong != nil {
                                 let image = UIImage(data: data!)
                                 print("[2] No error. Setting image!")
                                 let artwork = MPMediaItemArtwork.init(boundsSize: image!.size, requestHandler: { (size) -> UIImage in
@@ -176,7 +177,7 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
     }
     
     func audioStreaming(_ audioStreaming: SPTAudioStreamingController!, didChangePosition position: TimeInterval) {
-        if self.roomController.room?.queue.currentMedia != nil {
+        if self.roomController.room?.currentSong != nil {
             if let duration = audioStreaming.metadata.currentTrack?.duration {
                 let val = Float(position/duration)
                 self.roomController.currentPlaybackTime.progress = val
@@ -186,7 +187,11 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                     }
                 }
                 
-                print("Actual: \(position) -- Expected: \(self.roomController.room?.queue.currentMedia?.playback_time)")
+//                if let currentSong = self.roomController.room?.currentSong {
+//                    let dt = Double(Helper.currentTimeMillis()) - (currentSong.request_time!)!
+//                    let expected = (self.roomController.room?.currentSong?.playback_time)! + (dt / 1000.0)
+//                    //print("Actual: \(position) -- Expected: \(expected)")
+//                }
                 
             }
         }

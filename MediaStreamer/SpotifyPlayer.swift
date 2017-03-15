@@ -60,7 +60,7 @@ class SpotifyPlayer: UIViewController {
     
     @objc private func swipeGesture(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .down {
-            self.performSegue(withIdentifier: "unwindToRoom", sender: self)
+            self.performSegue(withIdentifier: Constants.UnwindToRoom, sender: self)
         }
             //Swiping left implies going right
         else if gesture.direction == .left {
@@ -83,21 +83,16 @@ class SpotifyPlayer: UIViewController {
     
     @IBAction func pausePlayClicked(_ sender: Any) {
         if SpotifyApp.player.playbackState.isPlaying {
-            self.roomController?.room?.pause(true)
+            self.roomController?.requestPause()
         }
         else {
-            self.roomController?.room?.resume(true)
+            self.roomController?.requestResume()
         }
     }
     
     @IBAction func nextClicked(_ sender: Any?) {
         print("nextClicked")
-        if !(self.roomController?.room?.playNextSong(startTime: 0.0, true))! {
-            self.roomController?.currentSongName.text = ""
-            self.roomController?.currentArtistName.text = ""
-            self.roomController?.currentPlaybackTime.progress = 0
-            self.performSegue(withIdentifier: "unwindToRoom", sender: self)
-        }
+        self.roomController?.requestNext()
     }
     
     func setImage(_ url: String!) {
@@ -136,13 +131,7 @@ class SpotifyPlayer: UIViewController {
                 let now = Helper.currentTimeMillis()
                 let scrubTime = Double(realPosition)
                 print("emitting playback: \(scrubTime)")
-                SocketIOManager.emit("change playback", [ Int(now), scrubTime ], { (error) in
-                    if error != nil {
-                        Helper.alert(view: self, title: "Failed to set playback time", message: "An error occurred while updating the playback time.")
-                        return
-                    }
-                })
-                
+                self.roomController?.requestScrub(scrubTime)
             }
             self.dragging = false
         }

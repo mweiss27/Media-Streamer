@@ -25,8 +25,15 @@ class SpotifyApp {
         if !player.loggedIn {
             DispatchQueue.main.async {
                 do {
-                    try player.start(withClientId: Constants.clientID)
-                    player.login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+                    
+                    if !player.initialized {
+                        print("Calling start")
+                        try player.start(withClientId: Constants.clientID)
+                    }
+                    if !player.loggedIn {
+                        print("Start finished. Calling login")
+                        player.login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+                    }
                     print("login returned")
                 } catch let error {
                     print("Error on player.start: \(error.localizedDescription)")
@@ -68,19 +75,19 @@ class SpotifyApp {
     }
     
     public static func saveSession(session: SPTSession?) {
-        var sess = session
-        print("Saving an SPTSession")
-        if sess == nil {
-            sess = SPTSession()
-        }
+        print("Saving an SPTSession: \(session)")
         
         let userDefaults = UserDefaults.standard
-        let sessionData = NSKeyedArchiver.archivedData(withRootObject: sess!)
-        
-        userDefaults.set(sessionData, forKey: "SpotifySession")
+        if session == nil {
+            userDefaults.removeObject(forKey: "SpotifySession")
+        }
+        else {
+            let sessionData = NSKeyedArchiver.archivedData(withRootObject: session!)
+            
+            userDefaults.set(sessionData, forKey: "SpotifySession")
+        }
         userDefaults.synchronize()
-        
-        SPTAuth.defaultInstance().session = sess
+        SPTAuth.defaultInstance().session = session
         print("Save success")
     }
     

@@ -245,6 +245,11 @@
                     </view>
                     <navigationItem key="navigationItem" title="Title" id="Lgm-re-OMH">
                         <barButtonItem key="backBarButtonItem" title="Room" id="lWU-rX-hzC"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="ebd-Fz-xS2">
+                            <connections>
+                                <action selector="requestChangeRoomName:" destination="7ad-dJ-CfE" id="UZy-eU-UmJ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="currentArtistName" destination="ND2-0W-BM5" id="fva-C0-12A"/>
@@ -300,6 +305,13 @@
                                     <action selector="returnToPlaylistsClicked:" destination="kW9-RY-MeL" eventType="touchUpInside" id="ks6-YY-XQL"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="93e-Vg-FqY" userLabel="loadingIndicator">
+                                <rect key="frame" x="150" y="242" width="20" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="1wM-4C-B3A"/>
+                                    <constraint firstAttribute="height" constant="20" id="UXh-Cl-0mX"/>
+                                </constraints>
+                            </activityIndicatorView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LKT-vc-Dbc">
                                 <rect key="frame" x="16" y="67" width="288" height="429"/>
                                 <subviews>
@@ -323,10 +335,12 @@
                         <constraints>
                             <constraint firstItem="LKT-vc-Dbc" firstAttribute="top" secondItem="HJC-j0-otQ" secondAttribute="bottom" id="9Rj-Y2-h2O"/>
                             <constraint firstItem="HJC-j0-otQ" firstAttribute="top" secondItem="v4A-BG-Do9" secondAttribute="bottom" constant="2" id="Fny-OQ-Uju"/>
+                            <constraint firstItem="93e-Vg-FqY" firstAttribute="centerX" secondItem="tz4-Xu-bYU" secondAttribute="centerX" id="P4b-k1-25O"/>
                             <constraint firstItem="v4A-BG-Do9" firstAttribute="top" secondItem="4n3-hr-v0c" secondAttribute="bottom" constant="8" id="Qp2-NB-s8c"/>
                             <constraint firstItem="LKT-vc-Dbc" firstAttribute="leading" secondItem="HJC-j0-otQ" secondAttribute="leading" id="TUY-KI-9yE"/>
                             <constraint firstAttribute="trailingMargin" secondItem="HJC-j0-otQ" secondAttribute="trailing" constant="16" id="g9m-BL-AVw"/>
                             <constraint firstItem="HQw-hL-c2i" firstAttribute="top" secondItem="LKT-vc-Dbc" secondAttribute="bottom" constant="8" id="inr-G3-1Os"/>
+                            <constraint firstItem="93e-Vg-FqY" firstAttribute="centerY" secondItem="tz4-Xu-bYU" secondAttribute="centerY" id="ju9-Ih-bOq"/>
                             <constraint firstItem="HJC-j0-otQ" firstAttribute="leading" secondItem="tz4-Xu-bYU" secondAttribute="leadingMargin" id="lnN-x7-vZV"/>
                             <constraint firstItem="v4A-BG-Do9" firstAttribute="trailing" secondItem="tz4-Xu-bYU" secondAttribute="trailingMargin" id="lq9-Y8-gqa"/>
                             <constraint firstItem="v4A-BG-Do9" firstAttribute="leading" secondItem="tz4-Xu-bYU" secondAttribute="leadingMargin" id="qCG-Pq-HLQ"/>
@@ -336,16 +350,18 @@
                     <tabBarItem key="tabBarItem" title="Search" image="searchIcon" id="Glo-Gn-7dY"/>
                     <navigationItem key="navigationItem" title="Spotify Browser" id="8To-rO-Mdg"/>
                     <connections>
+                        <outlet property="loadingIndicator" destination="93e-Vg-FqY" id="DEI-Ld-yZh"/>
                         <outlet property="returnToPlaylists" destination="OtI-78-mJX" id="oQ9-zi-gr5"/>
                         <outlet property="searchField" destination="v4A-BG-Do9" id="ls0-rE-ojF"/>
                         <outlet property="searchHeader" destination="HJC-j0-otQ" id="eWD-IF-0wK"/>
                         <outlet property="searchResults" destination="qst-YB-beN" id="sjB-GG-OIZ"/>
                         <outlet property="searchResultsHeightConstraint" destination="kn1-ox-t7k" id="5qI-0H-VMi"/>
+                        <outlet property="searchScroll" destination="LKT-vc-Dbc" id="GGG-Qp-s7w"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xZq-vh-U5K" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="215" y="1101"/>
+            <point key="canvasLocation" x="213.75" y="1100.7042253521126"/>
         </scene>
         <!--Spotify Player-->
         <scene sceneID="cLd-4J-3SA">
