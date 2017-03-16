@@ -162,6 +162,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if let queue = json["queue"] as? [[AnyObject]] {
                     print("queue result: \(queue)")
                     
+                    var playing = false
                     for info in queue {
                         let _playing = info[0] as! String
                         let _uri = info[1] as! String
@@ -171,7 +172,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         
                         let song = SpotifySong(_uri)
                         self.room?.addSong(song: song)
-                        if _playing == "True" {
+                        if !playing && _playing == "True" {
                             
                             let dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
                             print("Song was added \(dt)ms ago.")
@@ -179,6 +180,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             print("Need to scrub to \(time)s")
                             
                             self.room?.playSong(_uri, time)
+                            playing = true
                         }
                     }
                 }
