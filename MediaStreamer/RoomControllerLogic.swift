@@ -160,13 +160,20 @@ class RoomControllerLogic {
                     let songId = info[0]
                     let resume_time = info[1]
                     let responseTime = info[2]
-                    let dt = Double(Helper.currentTimeMillis() - Int64(responseTime)!) / 1000.0
+                    var dt = Double(Helper.currentTimeMillis() - Int64(responseTime)!)
+                    if dt < 0 {
+                        dt = 0
+                    }
+                    dt = dt / 1000.0
                     if self?.roomController.room?.currentSong != nil {
                         self?.roomController.room?.setPlaying(true, callback: { error in
                             if error == nil {
                                 self?.roomController.room?.seek(to: Double(resume_time)! + dt - 1, callback: { error in
                                     print("client_resume success")
                                 })
+                            }
+                            else {
+                                print("error on SetPlaying: \(error)")
                             }
                         })
                     }

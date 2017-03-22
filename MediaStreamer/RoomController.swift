@@ -185,12 +185,14 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         let _request_time = info[3] as! String
                         let _playback_time = info[4] as! String
                         
-                        
                         let song = SpotifySong(_uri, _name)
                         self.room?.addSong(song: song)
                         if !playing && _playing == "True" {
                             
-                            let dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
+                            var dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
+                            if dt < 0 {
+                                dt = 0
+                            }
                             print("Song was added \(dt)ms ago.")
                             let time = Double(_playback_time)! + Double(dt/1000.0)
                             print("Need to scrub to \(time)s")
