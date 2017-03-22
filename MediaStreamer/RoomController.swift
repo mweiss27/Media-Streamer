@@ -133,7 +133,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addTextField(configurationHandler: self.configurationTextField)
         alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler:{ action in
-            SocketIOManager.emit("request_display_change", [self.createAddTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)], { error in
+            SocketIOManager.emit("request_display_change", [self.createAddTextField.text!.trimmingCharacters(in: CharacterSet.whitespaces)], true, { error in
                 if error != nil {
                     Helper.alert(view: self, title: "Network error", message: "An error occurred while attempting to communicate with the server.")
                     return
@@ -197,13 +197,13 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         currentUsersTable.register(UITableViewCell.self, forCellReuseIdentifier: "userCell")
         currentUsersTable.allowsSelection = false
         
-        SocketIOManager.emit("request sid", []) { (error) in
+        SocketIOManager.emit("request sid", [], false, { error in
             if error == nil {
                 SocketIOManager.once("sid_response", callback: { (data, ack) in
                     if let sid = data[0] as? String {
                         self.room?.mySid = sid
                         print("Emitting enter room")
-                        SocketIOManager.emit("enter room", [(self.room?.id)!, self.defaults.string(forKey: "displayName") ?? "Anonymous"], { error in
+                        SocketIOManager.emit("enter room", [(self.room?.id)!, self.defaults.string(forKey: "displayName") ?? "Anonymous"], false, { error in
                             if let error = error {
                                 Helper.alert(view: self, title: "Failed to contact server", message: "Failed to identify with the server [2]")
                                 self.navigationController?.popViewController(animated: true)
@@ -238,9 +238,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     }
                 })
             }
-        }
-        
-        
+        })
     }
     
     private func initGestures() {
@@ -433,7 +431,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
             
             self.logic?.cleanupSocket()
-            SocketIOManager.emit("leave room", [], nil)
+            SocketIOManager.emit("leave room", [], false, nil)
             self.defaults.removeObject(forKey: "currRoom")
         }
     }
@@ -473,7 +471,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestNext() {
         //Expects a response of 'client_play' or 'client_stop'
-        SocketIOManager.emit("request_next", [], { error in
+        SocketIOManager.emit("request_next", [], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return
@@ -484,7 +482,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestPause() {
         //Expects a response of 'client_pause'
-        SocketIOManager.emit("request_pause", [], { error in
+        SocketIOManager.emit("request_pause", [], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return
@@ -496,7 +494,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //Expects a response of 'client_resume'
         if let playback = SpotifyApp.player.playbackState {
             let resume_time = playback.position
-            SocketIOManager.emit("request_resume", [resume_time], { error in
+            SocketIOManager.emit("request_resume", [resume_time], true, { error in
                 if error != nil {
                     Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                     return
@@ -506,7 +504,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func requestRemove(_ song: SpotifySong) {
-        SocketIOManager.emit("request_remove", [song.id], { error in
+        SocketIOManager.emit("request_remove", [song.id], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return
@@ -516,7 +514,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestScrub(_ to: Double) {
         //Expects a response of 'client_scrub'
-        SocketIOManager.emit("request_scrub", [to], { error in
+        SocketIOManager.emit("request_scrub", [to], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return

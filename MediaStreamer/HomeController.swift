@@ -26,6 +26,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
         let displayName = defaults.string(forKey: "displayName")
         if displayName != nil{

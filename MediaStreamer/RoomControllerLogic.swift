@@ -73,9 +73,9 @@ class RoomControllerLogic {
             if currRoom != nil{
                 let nickname = defaults.string(forKey: "displayName")
                 if nickname != nil{
-                    SocketIOManager.emit("enter room", [currRoom!, nickname!], nil)
+                    SocketIOManager.emit("enter room", [currRoom!, nickname!], false, nil)
                 }else{
-                    SocketIOManager.emit("enter room", [currRoom!, "Anonymous"], nil)
+                    SocketIOManager.emit("enter room", [currRoom!, "Anonymous"], false, nil)
                 }
             }
         })

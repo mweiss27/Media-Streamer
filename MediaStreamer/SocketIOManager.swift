@@ -29,7 +29,14 @@ class SocketIOManager: NSObject {
         socket.once(event, callback: callback)
     }
     
-    static func emit(_ event: String!, _ items: [SocketData], _ completion: ((String?) -> Void)?) {
+    static func emit(_ event: String!, _ items: [SocketData], _ load: Bool, _ completion: ((String?) -> Void)?) {
+        
+        var overlay: UIView? = nil
+        if load {
+            print("Showing loading indiciator for socket emit")
+            overlay = Helper.loading(UIApplication.shared
+                .keyWindow?.subviews.last, "Contacting server...")
+        }
         
         //Not connected? Let's connect and then emit
         if socket.status != .connected {
@@ -44,7 +51,9 @@ class SocketIOManager: NSObject {
                     if evt.event == "connect" {
                         socket.onAny({evt in})
                         print("We connected. Emitting our message")
-                        socket.emit(event, items)
+                        socket.emitWithAck(event, items).timingOut(after: 1, callback: { data in
+                            overlay?.removeFromSuperview()
+                        })
                         print("Calling completion: \(completion)")
                         completion?(nil)
                         
@@ -65,7 +74,9 @@ class SocketIOManager: NSObject {
         }
         else {
             print("We're connected. Emitting our message")
-            socket.emit(event, items)
+            socket.emitWithAck(event, items).timingOut(after: 1, callback: { data in
+                overlay?.removeFromSuperview()
+            })
             completion?(nil)
         }
     }
@@ -74,7 +85,7 @@ class SocketIOManager: NSObject {
         
         var gotResponse = false
         
-        emit("join room", [roomNum], { error in
+        emit("join room", [roomNum], false, { error in
             if error == nil {
                 once("join reply") { data, ack in
                     print("join reply: \(data)")
@@ -122,7 +133,7 @@ class SocketIOManager: NSObject {
         
         var gotResponse = false
         
-        emit("create room", [displayName, id], { error in
+        emit("create room", [displayName, id], false, { error in
             if error == nil {
                 once("create reply") { data, ack in
                     print("create reply: \(data)")
