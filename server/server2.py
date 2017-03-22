@@ -77,6 +77,7 @@ def requestNext(sid, data):
 				sio.emit("client_remove", result, room=str(roomNum))
 				loge("client_remove", result, roomNum)
 				#Don't return, we need to emit a play
+				return 1
 			else:
 				print("[ERROR] request_next called but there is no current song -- len(queue) == 0")
 
@@ -85,7 +86,7 @@ def requestNext(sid, data):
 
 				sio.emit("client_stop", [], room=str(roomNum))
 				loge("client_stop", [], roomNum)
-				return
+				return 1
 
 			if len(queue.queue) > 0:
 				item = queue.queue.pop(0)
@@ -105,11 +106,13 @@ def requestNext(sid, data):
 
 				sio.emit("client_stop", [], room=str(roomNum))
 				loge("client_stop", [], roomNum)
+			return 1
 
 		else:
 			print("[ERROR] roomNum not in room2queue: " + str(roomNum))
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+	return 0
 
 #data: [ id ]
 #responses: [ client_add(id), client_play(id, time) ]
@@ -138,6 +141,7 @@ def requestAdd(sid, data):
 						
 						sio.emit("client_play", result, room=str(roomNum))
 						loge("client_play", result, roomNum)
+					return 1
 
 				else:
 					print("[ERROR] queue.add returned False: " + str(addRes))
@@ -145,6 +149,7 @@ def requestAdd(sid, data):
 			print("[ERROR] len(data) is not > 0")
 	else:
 		print("[ERROR] sid is not in sid2user")
+	return 0
 
 #data: [ id ]
 #responses: [ client_remove(id) ]
@@ -171,16 +176,16 @@ def requestRremove(sid, data):
 
 						sio.emit("client_stop", [], room=str(roomNum))
 						loge("client_stop", [], room)
+					return 1
 				else:
 					print("[ERROR] roomNum not in room2queue")
 			else:
 				print("[ERROR] provided id is None")
 		else:
 			print("[ERROR] [data] is empty")
-
-
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+	return 0
 
 
 #data: [ ]
@@ -196,11 +201,14 @@ def requestPause(sid, data):
 
 			Room = rooms[roomNum]
 			Room.pause()
-
+			time.sleep(2)
 			sio.emit("client_pause", [], room=str(roomNum))
 			loge("client_pause", [], roomNum)
+
+			return 1
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+		return 0
 
 #data: [ resume_time ]
 #responses: [ client_resume(currentSongId, resume_time, response_time) ]
@@ -223,12 +231,14 @@ def requestResume(sid, data):
 
 				sio.emit("client_resume", result, room=str(roomNum))
 				loge("client_resume", result, roomNum)
+				return 1
 			else:
 				print("[ERROR] roomNum not in room2queue")
 		else:
 			print("[ERROR] len(data) is not > 0")
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+	return 0
 
 #data: [scrub_time]
 #responses: [ client_scrub(scrub_time, time) ]
@@ -244,10 +254,12 @@ def requestScrub(sid, data):
 			result = [str(scrub_time), str(currentTimeMillis())]
 			sio.emit("client_scrub", result, room=str(roomNum))
 			loge("client_scrub", result, roomNum)
+			return 1
 		else:
 			print("[ERROR] [data] is empty")
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+	return 0
 
 
 
@@ -567,6 +579,7 @@ if __name__ == '__main__':
 	# wrap Flask application with socketio's middleware
 	app = socketio.Middleware(sio, app)
 
+	print("Attempting to start server on " + str((address, port)))
 	# deploy as an eventlet WSGI server
 	eventlet.wsgi.server(eventlet.listen((address, port)), app)
 
