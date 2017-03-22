@@ -96,21 +96,23 @@ class SpotifyPlayer: UIViewController {
     }
     
     func setImage(_ url: String!) {
-        if self.lastImageURL != url {
-            self.lastImageURL = url
-            URLSession.shared.dataTask(with: URL(string: url)!) {
-                (data, response, error) in
-                if error != nil {
-                    print("Error on dataTask: \(error)")
-                    self.lastImageURL = nil
-                    return
-                }
-                let image = UIImage(data: data!)
-                print("No error. Setting image!")
-                DispatchQueue.main.async {
-                    self.albumArt.image = image!
-                }
-                }.resume()
+        if self.albumArt != nil {
+            if self.lastImageURL != url {
+                self.lastImageURL = url
+                URLSession.shared.dataTask(with: URL(string: url)!) {
+                    (data, response, error) in
+                    if error != nil {
+                        print("Error on dataTask: \(error)")
+                        self.lastImageURL = nil
+                        return
+                    }
+                    let image = UIImage(data: data!)
+                    print("No error. Setting image!")
+                    DispatchQueue.main.async {
+                        self.albumArt?.image = image!
+                    }
+                    }.resume()
+            }
         }
     }
     

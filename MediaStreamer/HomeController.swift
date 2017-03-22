@@ -73,7 +73,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // Populate table
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "customcell", for: indexPath as IndexPath)
-        cell.textLabel?.text = "\(rooms[indexPath.item][0]) (\(rooms[indexPath.item][1]))"
+        cell.textLabel?.text = "\(rooms[indexPath.item][0])"
         return cell
     }
     
@@ -248,7 +248,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     if info.count >= 2 {
                         dest.homeController = self
                         dest.navigationItem.title = info[0]
-                        dest.room = Room(roomController: dest, id: Int(info[1]))
+                        dest.room = Room(roomController: dest, id: Int(info[1]), name: info[0])
                     }
                 }
             }

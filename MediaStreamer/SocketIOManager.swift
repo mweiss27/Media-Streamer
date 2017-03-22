@@ -11,8 +11,9 @@ import SocketIO
 
 class SocketIOManager: NSObject {
     
-    static let host = "http://75.188.54.41:45555"
-    //static let host = "http://192.168.1.16:80"
+    //static let host = "http://75.188.54.41:45555"
+    static let host = "http://172.28.15.153:45555"
+    
     
     //Add accessor methods to interface with the socket.
     private static var socket: SocketIOClient = SocketIOClient(socketURL: URL(string: host)!)
@@ -34,8 +35,7 @@ class SocketIOManager: NSObject {
         var overlay: UIView? = nil
         if load {
             print("Showing loading indiciator for socket emit")
-            overlay = Helper.loading(UIApplication.shared
-                .keyWindow?.subviews.last, "Contacting server...")
+            overlay = Helper.loading(Helper.getCurrentViewController()?.view, "Contacting server...")
         }
         
         //Not connected? Let's connect and then emit
@@ -53,6 +53,24 @@ class SocketIOManager: NSObject {
                         print("We connected. Emitting our message")
                         socket.emitWithAck(event, items).timingOut(after: 1, callback: { data in
                             overlay?.removeFromSuperview()
+                            if let info = data as? [Any] {
+                                if info.count > 0 {
+                                    if let msg = info[0] as? Any {
+                                        if let str = msg as? String {
+                                            if str == "NO ACK" {
+                                                Helper.alert(view: Helper.getCurrentViewController(), title: "Network Error", message: "An error occurred while attempting to contact the server.")
+                                                return
+                                            }
+                                        }
+                                        else if let val = msg as? Int {
+                                            if val == 0 {
+                                                Helper.alert(view: Helper.getCurrentViewController(), title: "Internal Error", message: "An internal error occurred in the server.")
+                                                return
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         })
                         print("Calling completion: \(completion)")
                         completion?(nil)
@@ -76,6 +94,25 @@ class SocketIOManager: NSObject {
             print("We're connected. Emitting our message")
             socket.emitWithAck(event, items).timingOut(after: 1, callback: { data in
                 overlay?.removeFromSuperview()
+                if let info = data as? [Any] {
+                    if info.count > 0 {
+                        if let msg = info[0] as? Any {
+                            if let str = msg as? String {
+                                if str == "NO ACK" {
+                                    Helper.alert(view: Helper.getCurrentViewController(), title: "Network Error", message: "An error occurred while attempting to contact the server.")
+                                    return
+                                }
+                            }
+                            else if let val = msg as? Int {
+                                if val == 0 {
+                                    Helper.alert(view: UIApplication.shared
+                                        .keyWindow?.rootViewController, title: "Internal Error", message: "An internal error occurred in the server.")
+                                    return
+                                }
+                            }
+                        }
+                    }
+                }
             })
             completion?(nil)
         }

@@ -112,7 +112,7 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
         print("Spotify.didChangePlaybackStatus: \(isPlaying)")
         
         if let player = self.spotifyPlayer {
-            player.pausePlay.setImage(UIImage(named: isPlaying ? "pauseButton" : "playButton"), for: .normal)
+            player.pausePlay?.setImage(UIImage(named: isPlaying ? "pauseButton" : "playButton"), for: .normal)
         }
         else {
             print("No SpotifyPlayer set")
@@ -164,8 +164,8 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                     self.roomController.currentArtistName.text = artist
                     
                     if let player = self.spotifyPlayer {
-                        player.songName.text = songName
-                        player.artistName.text = artist
+                        player.songName?.text = songName
+                        player.artistName?.text = artist
                         player.setImage(currentTrack.albumCoverArtURL)
                     }
                     else {
@@ -183,15 +183,15 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
                 self.roomController.currentPlaybackTime.progress = val
                 if let player = self.spotifyPlayer {
                     if !player.dragging {
-                        player.progressSlider.value = val
+                        player.progressSlider?.value = val
                     }
                 }
                 
-//                if let currentSong = self.roomController.room?.currentSong {
-//                    let dt = Double(Helper.currentTimeMillis()) - (currentSong.request_time!)!
-//                    let expected = (self.roomController.room?.currentSong?.playback_time)! + (dt / 1000.0)
-//                    //print("Actual: \(position) -- Expected: \(expected)")
-//                }
+                //                if let currentSong = self.roomController.room?.currentSong {
+                //                    let dt = Double(Helper.currentTimeMillis()) - (currentSong.request_time!)!
+                //                    let expected = (self.roomController.room?.currentSong?.playback_time)! + (dt / 1000.0)
+                //                    //print("Actual: \(position) -- Expected: \(expected)")
+                //                }
                 
             }
         }

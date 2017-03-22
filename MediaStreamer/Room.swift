@@ -16,6 +16,7 @@ class Room {
     
     private let roomController: RoomController
     let id: Int
+    let name: String
     
     //(sid, name)
     private var users: [(String, String)]
@@ -26,9 +27,10 @@ class Room {
     
     static var currentRoom: Room?
     
-    init(roomController: RoomController, id: Int!) {
+    init(roomController: RoomController, id: Int!, name: String!) {
         self.roomController = roomController
         self.id = id
+        self.name = name
         self.users = []
         Room.currentRoom = self
     }

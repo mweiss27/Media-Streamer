@@ -25,6 +25,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     public var spotifyDelegate: SpotifyDelegate?
     
+    @IBOutlet weak var inviteButton: UIButton!
     @IBOutlet weak var currentSongName: UILabel!
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var spotifyLoading: UIActivityIndicatorView!
@@ -54,6 +55,10 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.spotifyDelegate = SpotifyDelegate(self)
         SpotifyApp.player.delegate = self.spotifyDelegate!
         SpotifyApp.player.playbackDelegate = self.spotifyDelegate!
+        
+        self.spotifyPlayer = self.storyboard?.instantiateViewController(withIdentifier: "spotify_player") as? SpotifyPlayer
+        self.spotifyPlayer?.roomController = self
+        self.spotifyDelegate?.spotifyPlayer = self.spotifyPlayer
         
         let session = SpotifyApp.restoreSession()
         if session == nil {
@@ -141,6 +146,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
             })
             //self.navigationItem.title.text = self.createAddTextField.text!
         }))
+        self.createAddTextField.text = self.room?.name
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -362,55 +368,51 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 dest.roomController = self
             }
         }
-        else if identifier == "room_to_player" {
-            print("Preparing for room_to_player")
-            if let dest = segue.destination as? SpotifyPlayer {
-                dest.roomController = self
-                
-                if let metadata = SpotifyApp.player.metadata {
-                    if let currentTrack = metadata.currentTrack {
-                        if dest.songName != nil {
-                            print("Setting songName")
-                            dest.songName.text = currentTrack.name
+    }
+    
+    private func preparePlayer() {
+        if let dest = self.spotifyPlayer {
+            if let metadata = SpotifyApp.player.metadata {
+                if let currentTrack = metadata.currentTrack {
+                    if dest.songName != nil {
+                        print("Setting songName")
+                        dest.songName.text = currentTrack.name
+                    }
+                    else {
+                        print("Caching songName")
+                        dest._songName = currentTrack.name
+                    }
+                    
+                    if dest.artistName != nil {
+                        print("Setting artistName")
+                        dest.artistName.text = currentTrack.artistName
+                    }
+                    else {
+                        print("Caching artistName")
+                        dest._artistName = currentTrack.artistName
+                    }
+                    
+                    if dest.albumArt != nil {
+                        print("Setting albumArt")
+                        dest.setImage(currentTrack.albumCoverArtURL)
+                    }
+                    else {
+                        print("Caching imageURL")
+                        dest._imageURL = currentTrack.albumCoverArtURL
+                    }
+                    
+                    
+                    if let playbackState = SpotifyApp.player.playbackState {
+                        if dest.pausePlay != nil {
+                            print("Setting isPlaying")
+                            dest.pausePlay.setImage(UIImage(named:playbackState.isPlaying ? "pauseButton" : "playButton"), for: .normal)
                         }
                         else {
-                            print("Caching songName")
-                            dest._songName = currentTrack.name
-                        }
-                        
-                        if dest.artistName != nil {
-                            print("Setting artistName")
-                            dest.artistName.text = currentTrack.artistName
-                        }
-                        else {
-                            print("Caching artistName")
-                            dest._artistName = currentTrack.artistName
-                        }
-                        
-                        if dest.albumArt != nil {
-                            print("Setting albumArt")
-                            dest.setImage(currentTrack.albumCoverArtURL)
-                        }
-                        else {
-                            print("Caching imageURL")
-                            dest._imageURL = currentTrack.albumCoverArtURL
-                        }
-                        
-                        
-                        if let playbackState = SpotifyApp.player.playbackState {
-                            if dest.pausePlay != nil {
-                                print("Setting isPlaying")
-                                dest.pausePlay.setImage(UIImage(named:playbackState.isPlaying ? "pauseButton" : "playButton"), for: .normal)
-                            }
-                            else {
-                                print("Caching isPlaying")
-                                dest._isPlaying = playbackState.isPlaying
-                            }
+                            print("Caching isPlaying")
+                            dest._isPlaying = playbackState.isPlaying
                         }
                     }
                 }
-                
-                self.spotifyDelegate?.spotifyPlayer = dest
             }
         }
     }
@@ -440,15 +442,31 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("RoomController.unwind")
     }
     
+    
+    @IBAction func inviteButtonClicked(_ sender: Any) {
+        self.promptInvite()
+    }
+    
     func currentPlayingTouched() {
         print("Tapped currentPlaying")
         if self.room?.currentSong != nil {
             print("We're currently playing a song. Transitioning to SpotifyPlayer")
-            self.performSegue(withIdentifier: "room_to_player", sender: self)
+            self.preparePlayer()
+            self.present(self.spotifyPlayer!, animated: true, completion: {})
+            //self.performSegue(withIdentifier: "room_to_player", sender: self)
         }
         else {
             Toast(text: "The queue is currently empty", delay: 0, duration: 0.5).show()
         }
+    }
+    
+    func promptInvite() {
+        let alert = UIAlertController(title: "Invite Code", message: "Send your room number to a friend", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addTextField(configurationHandler: self.configurationTextField)
+        alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
+        
+        self.createAddTextField.text = String(describing: (self.room?.id)!)
+        self.present(alert, animated: true, completion: nil)
     }
     
     @objc func currentPlayingSwiped(_ gesture: UISwipeGestureRecognizer) {

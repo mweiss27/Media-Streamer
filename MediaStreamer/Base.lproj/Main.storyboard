@@ -160,6 +160,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KQ6-uQ-8bL">
                                 <rect key="frame" x="267" y="72" width="37" height="30"/>
                                 <state key="normal" title="Invite"/>
+                                <connections>
+                                    <action selector="inviteButtonClicked:" destination="7ad-dJ-CfE" eventType="touchUpInside" id="vU5-BE-kCL"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Here now:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Hg-2f-mhu">
                                 <rect key="frame" x="16" y="72" width="78" height="30"/>
@@ -257,6 +260,7 @@
                         <outlet property="currentPlaying" destination="wgw-W6-0Ok" id="Fka-g3-cQa"/>
                         <outlet property="currentSongName" destination="grb-7V-MRu" id="yYM-tj-B35"/>
                         <outlet property="currentUsersTable" destination="ks3-bh-OsV" id="jwy-pX-AZJ"/>
+                        <outlet property="inviteButton" destination="KQ6-uQ-8bL" id="N5c-qL-ri7"/>
                         <outlet property="spotifyButton" destination="KdU-cK-XeW" id="DG9-65-qsF"/>
                         <outlet property="spotifyLoading" destination="7TD-Rb-7UQ" id="O9K-eV-9LO"/>
                         <segue destination="5cS-Uk-gN8" kind="presentation" identifier="room_to_player" id="Obc-4T-goH"/>
@@ -366,7 +370,7 @@
         <!--Spotify Player-->
         <scene sceneID="cLd-4J-3SA">
             <objects>
-                <viewController useStoryboardIdentifierAsRestorationIdentifier="YES" id="5cS-Uk-gN8" customClass="SpotifyPlayer" customModule="MediaStreamer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="spotify_player" useStoryboardIdentifierAsRestorationIdentifier="YES" id="5cS-Uk-gN8" customClass="SpotifyPlayer" customModule="MediaStreamer" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Qes-II-0ho"/>
                         <viewControllerLayoutGuide type="bottom" id="ieo-VK-Mvl"/>

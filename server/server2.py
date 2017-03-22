@@ -77,7 +77,6 @@ def requestNext(sid, data):
 				sio.emit("client_remove", result, room=str(roomNum))
 				loge("client_remove", result, roomNum)
 				#Don't return, we need to emit a play
-				return 1
 			else:
 				print("[ERROR] request_next called but there is no current song -- len(queue) == 0")
 
@@ -201,14 +200,14 @@ def requestPause(sid, data):
 
 			Room = rooms[roomNum]
 			Room.pause()
-			time.sleep(2)
+
 			sio.emit("client_pause", [], room=str(roomNum))
 			loge("client_pause", [], roomNum)
 
 			return 1
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
-		return 0
+	return 0
 
 #data: [ resume_time ]
 #responses: [ client_resume(currentSongId, resume_time, response_time) ]
