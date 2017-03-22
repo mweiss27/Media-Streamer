@@ -583,6 +583,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestScrub(_ to: Double) {
         //Expects a response of 'client_scrub'
+        print("request_scrub -- \(to)")
         SocketIOManager.emit("request_scrub", [to], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")

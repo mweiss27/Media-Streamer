@@ -214,7 +214,11 @@ class RoomControllerLogic {
                 let now = Double(Helper.currentTimeMillis())
                 
                 
-                let dt = (now - response_time) / 1000.0
+                var dt = (now - response_time)
+                if dt < 0 {
+                    dt = 0
+                }
+                dt = dt / 1000.0
                 print("Received playback: \(time) -- dt: \(dt)")
                 self?.roomController.room?.seek(to: scrub_time + dt, callback: { error in
                     if error != nil {

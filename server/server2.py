@@ -421,8 +421,10 @@ def getQueue():
 		Room = rooms[roomNum]
 		Queue = room2queue[roomNum]
 
+		i = 0
 		for item in Queue.queue:
-			result.append([str(Room.playing and Room.playback_time >= 0), str(item.id), str(item.name), str(Room.response_time), str(Room.playback_time)])
+			result.append([str(Room.playing and i == 0), str(item.id), str(item.name), str(Room.response_time), str(Room.playback_time)])
+			i++
 		return jsonify(queue=result)
 	else:
 		msg = "[ERROR] roomNum not in room2queue: " + str(roomNum) + " -- " + str(room2queue)
