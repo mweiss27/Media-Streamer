@@ -181,7 +181,18 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func joinRoom(_ roomNum: String!, _ insert: Bool!) {
+        var ins = insert
         let overlay = Helper.loading(self.navigationController?.view, "Joining room...")
+        
+        if insert {
+            for room in self.rooms {
+                print("Room: \(room) -- \(roomNum)")
+                if room[1] == String(describing: roomNum!) {
+                    print("ADDING ROOM WE ALREADY HAVE")
+                    ins = false
+                }
+            }
+        }
         
         SocketIOManager.joinRoom(view: self, roomNum: roomNum, callback: { (roomId, roomName, error) in
             
@@ -196,7 +207,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 return
             }
             
-            if insert! {
+            if ins! {
                 let result = self.db.execute(sql: "INSERT INTO Room (RoomNum, DisplayName) VALUES (?,?)", parameters: [roomId, roomName])
                 if result != 0 {
                     self.rooms.append( [roomName, roomId] )

@@ -11,8 +11,8 @@ import SocketIO
 
 class SocketIOManager: NSObject {
     
-    //static let host = "http://75.188.54.41:45555"
-    static let host = "http://172.28.15.153:45555"
+    static let host = "http://75.188.54.41:45555"
+    //static let host = "http://172.28.15.153:45555"
     
     
     //Add accessor methods to interface with the socket.

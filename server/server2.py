@@ -48,14 +48,12 @@ Queue.queue: [QueueItem]
 Queue.room: int
 Queue.playing: bool
 
-Queue.add(id)
+Queue.add(id, name)
 Queue.removeFirst() -> QueueItem
 Queue.remove(id) -> QueueItem
 Queue.getQueueItem(id) -> QueueItem
 
 QueueItem.id: String
-QueueItem.start_time: double
-QueueItem.playback_time: double
 
 """
 
@@ -73,7 +71,7 @@ def requestNext(sid, data):
 			queue = room2queue[roomNum]
 			if len(queue.queue) > 0:
 				item = queue.queue.pop(0)
-				result = [item.id]
+				result = [item.id, "True"]
 				sio.emit("client_remove", result, room=str(roomNum))
 				loge("client_remove", result, roomNum)
 				#Don't return, we need to emit a play
@@ -88,7 +86,7 @@ def requestNext(sid, data):
 				return 1
 
 			if len(queue.queue) > 0:
-				item = queue.queue.pop(0)
+				item = queue.queue[0]
 
 				response_time = currentTimeMillis()
 				result = [item.id, str(response_time)]
@@ -121,13 +119,14 @@ def requestAdd(sid, data):
 	if sid in sid2user:
 		if len(data) > 0:
 			id = data[0]
-			print("RequestAdd -- " + str(sid) + " -- " + str(id))
+			name = data[1]
+			print("RequestAdd -- " + str(sid) + " -- " + str(name) + " -- " + str(id))
 			roomNum = sid2user[sid].room
 			if roomNum in room2queue:
 				Queue = room2queue[roomNum]
-				addRes = Queue.add(id)
+				addRes = Queue.add(id, name)
 				if addRes:
-					result = [id]
+					result = [id, name]
 					sio.emit("client_add", result, room=str(roomNum))
 					loge("client_add", result, roomNum)
 
@@ -153,37 +152,31 @@ def requestAdd(sid, data):
 #data: [ id ]
 #responses: [ client_remove(id) ]
 @sio.on("request_remove")
-def requestRremove(sid, data):
+def requestRemove(sid, data):
 	logr("request_remove")
 	if sid in sid2user:
+		User = sid2user[sid]
+		print("good sid")
 		if len(data) > 0:
+			print("data good")
 			id = data[0]
-			if id is not None and len(id) > 0:
-				user = sid2user[sid]
-				roomNum = user.room
-				if roomNum in room2queue:
-					queue = room2queue[roomNum].queue
-					if len(queue) > 0:
-						removedItem = queue.remove(id)
-						result = [removedItem.id]
-						sio.emit("client_remove", result, room=str(roomNum))
-						loge("client_remove", result, roomNum)
-					else:
-
-						Room = rooms[roomNum]
-						Room.pause()
-
-						sio.emit("client_stop", [], room=str(roomNum))
-						loge("client_stop", [], room)
-					return 1
-				else:
-					print("[ERROR] roomNum not in room2queue")
+			Queue = room2queue[User.room]
+			tuple = Queue.remove(id)
+			index = tuple[1]
+			if index >= 0:
+				result = [id, "False"]
+				sio.emit("client_remove", result, str(User.room))
+				loge("client_remove", result, str(User.room))
+				return 1
 			else:
-				print("[ERROR] provided id is None")
+				print("[ERROR] Attempted to remove a song that isn't in the queue")
+				return 0
+
 		else:
 			print("[ERROR] [data] is empty")
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
+	print("ACK 0")
 	return 0
 
 
@@ -349,12 +342,14 @@ def join(sid, data):
 			roomName = row[0]
 			sio.emit("join reply", roomName, room=sid)
 			loge("join reply", roomName, sid)
+			return 1
 		if not found:
 			print("invalid room number")
 			sio.emit("join reply", "nil", room=sid)
 			loge("join reply", "nil", sid)
 	else:
 		print("[ERROR] len(data) is not > 0")
+	return 0
 
 @sio.on('create room')
 def createRoom(sid, data):
@@ -368,8 +363,10 @@ def createRoom(sid, data):
 		sio.emit("create reply", "1", room=sid)
 		loge("create reply", "1", sid)
 		print("Room Created")
+		return 1
 	else:
 		print("[ERROR] len(data) is not > 1")
+	return 0
 	
 @sio.on('enter room')
 def enterRoom(sid, data):
@@ -396,6 +393,8 @@ def enterRoom(sid, data):
 		if roomNum not in rooms:
 			rooms[int(roomNum)] = Room(int(roomNum))
 		rooms[roomNum].count += 1
+		return 1
+	return 0
 	
 @app.route('/get_users', methods=['GET'])
 def getUsers():
@@ -423,7 +422,7 @@ def getQueue():
 		Queue = room2queue[roomNum]
 
 		for item in Queue.queue:
-			result.append([str(Room.playing and Room.playback_time >= 0), str(item.id), str(Room.response_time), str(Room.playback_time)])
+			result.append([str(Room.playing and Room.playback_time >= 0), str(item.id), str(item.name), str(Room.response_time), str(Room.playback_time)])
 		return jsonify(queue=result)
 	else:
 		msg = "[ERROR] roomNum not in room2queue: " + str(roomNum) + " -- " + str(room2queue)
@@ -465,12 +464,14 @@ def requestSid(sid, data):
 	logr("request sid")
 	sio.emit('sid_response', sid, room=sid)
 	loge("sid_response", sid, sid)
+	return 1
 
 @sio.on('leave room')
 def leave_room(sid, data):
 	logr("leave room")
 	print("LEAVE ROOM -- " + str(sid))
 	leave(sid)
+	return 1
 	
 
 @sio.on('disconnect')
@@ -478,6 +479,7 @@ def disconnect(sid):
 	logr("disconnect")
 	print("Disconnect -- " + str(sid))
 	leave(sid)
+	return 1
 
 def leave(sid):
 	if sid in sid2user:
@@ -539,9 +541,9 @@ class Queue:
 		self.queue = []
 		self.room = room
 		
-	def add(self, id):
+	def add(self, id, name):
 		current = len(self.queue)
-		self.queue.append(QueueItem(id))
+		self.queue.append(QueueItem(id, name))
 		if len(self.queue) > current:
 			return True
 		return False
@@ -552,14 +554,32 @@ class Queue:
 		return None
 
 	def remove(self, id):
+		print("Queue.remove")
 		itemToPop = None
+		index = -1
 		for item in self.queue:
+			index+=1
 			if item.id == id:
 				itemToPop = item
 				break
 		if itemToPop is not None:
 			self.queue.remove(itemToPop)
-		return itemToPop
+		print("Queue.remove exit: " + str((itemToPop, index)))
+		return (itemToPop, index)
+
+	def find(self, id):
+		print("Queue.find")
+		found = None
+		index = -1
+		i = -1
+		for item in self.queue:
+			i+=1
+			if item.id == id:
+				index = i
+				found = item
+				break
+		print("Queue.find exit: " + str((found, index)))
+		return (found, index)
 
 	def getQueueItem(self, id):
 		for item in self.queue:
@@ -569,10 +589,9 @@ class Queue:
 
 class QueueItem:
 
-	def __init__(self, id):
+	def __init__(self, id, name):
 		self.id = id
-		self.start_time = -1
-		self.playback_time = -1
+		self.name = name
 
 if __name__ == '__main__':
 	# wrap Flask application with socketio's middleware

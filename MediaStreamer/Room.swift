@@ -109,22 +109,41 @@ class Room {
         print("Player is initialized? " + SpotifyApp.player.initialized.description)
         
         self.currentQueue.append(song)
+        self.roomController.currentQueueTable.reloadData()
+    }
+    
+    func dumpQueue() {
+        print("Current Queue:")
+        for i in 0..<self.currentQueue.count {
+            print("Queue[\(i)] -- \(self.currentQueue[i].id)")
+        }
     }
     
     func removeFromMediaQueue(song: SpotifySong!) {
         let id = song.id
         
         self.removeFromMediaQueue(id: id)
+        self.roomController.currentQueueTable.reloadData()
+    }
+    
+    func removeFromMediaQueue(id: String!, startIndex: Int!) {
+        print("remove called -- \(id) -- \(startIndex)")
+        self.dumpQueue()
+        if self.currentQueue.count >= startIndex {
+            for i in startIndex..<self.currentQueue.count {
+                if self.currentQueue[i].id == id {
+                    print("Found song in queue. Removing")
+                    self.currentQueue.remove(at: i)
+                    self.roomController.currentQueueTable.reloadData()
+                    Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
+                    break
+                }
+            }
+        }
     }
     
     func removeFromMediaQueue(id: String!) {
-        for i in 0..<self.currentQueue.count {
-            if self.currentQueue[i].id == id {
-                self.currentQueue.remove(at: i)
-                Toast(text: "Song Removed", delay: 0, duration: 0.5).show()
-                break
-            }
-        }
+        self.removeFromMediaQueue(id: id, startIndex: 0)
     }
     
     func playSong(_ id: String, _ startTime: Double) -> Bool {

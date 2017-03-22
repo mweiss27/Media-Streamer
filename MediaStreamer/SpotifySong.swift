@@ -11,12 +11,14 @@ import Foundation
 class SpotifySong: Equatable {
     
     var id: String!
+    var name: String!
     
     var playback_time: Double?
     var request_time: Double?
     
-    init(_ id: String!) {
+    init(_ id: String!, _ name: String!) {
         self.id = id
+        self.name = name
     }
     
     func play(_ startTime: Double, callback: @escaping (String?) -> Void) {

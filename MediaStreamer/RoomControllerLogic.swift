@@ -84,11 +84,13 @@ class RoomControllerLogic {
         SocketIOManager.on("client_add", callback: {[weak self] data, ack in
             print("client_add received: \(data)")
             if let info = data[0] as? [String] {
-                if let id = info[0] as? String {
-                    self?.roomController.room?.addSong(song: SpotifySong(id))
+                if info.count >= 2 {
+                    let id = info[0]
+                    let name = info[1]
+                    self?.roomController.room?.addSong(song: SpotifySong(id, name))
                 }
                 else {
-                    print("No id attached with client_add")
+                    print("[ERROR] client_add has invalid params: \(info)")
                 }
             }
             else {
@@ -130,8 +132,10 @@ class RoomControllerLogic {
             print("client_remove: \(data)")
             if let info = data[0] as? [String] {
                 let songId = info[0]
+                let removeFirst = info[1]
                 print("Removing \(songId) from queue")
-                self?.roomController.room?.removeFromMediaQueue(id: songId)
+                let startIndex = (removeFirst == "True") ? 0 : 1
+                self?.roomController.room?.removeFromMediaQueue(id: songId, startIndex: startIndex)
             }
             else {
                 print("info is not a [String] -- \(Mirror(reflecting: data[0]).subjectType)")

@@ -13,7 +13,7 @@ import AVFoundation
 import AudioToolbox
 import Alamofire
 
-class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
     var homeController: HomeController?
     
@@ -25,12 +25,17 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     public var spotifyDelegate: SpotifyDelegate?
     
+    private var queueVisible = false
+    @IBOutlet weak var queueButton: UIButton!
+    
     @IBOutlet weak var inviteButton: UIButton!
     @IBOutlet weak var currentSongName: UILabel!
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var spotifyLoading: UIActivityIndicatorView!
     @IBOutlet weak var currentUsersTable: UITableView!
+    @IBOutlet weak var currentQueueTable: UITableView!
     
+    @IBOutlet weak var hereNow: UILabel!
     @IBOutlet weak var currentPlaying: UIView!
     @IBOutlet weak var currentArtistName: UILabel!
     @IBOutlet weak var currentPlaybackTime: UIProgressView!
@@ -70,6 +75,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.logic?.setupSocket()
         self.initUserTable()
+        self.initQueueTable()
         self.initGestures()
         
         print("<<RoomController.viewDidLoad")
@@ -153,11 +159,14 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // Setup text fields for alerts
     func configurationTextField(textField: UITextField!)
     {
-        
         self.createAddTextField = textField!
         self.createAddTextField.autocapitalizationType = UITextAutocapitalizationType.words
         self.createAddTextField.addTarget(self, action: #selector(createTextFieldDidChange(_:)), for: .editingChanged)
         
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return false
     }
     
     private func initQueue() {
@@ -172,11 +181,12 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     for info in queue {
                         let _playing = info[0] as! String
                         let _uri = info[1] as! String
-                        let _request_time = info[2] as! String
-                        let _playback_time = info[3] as! String
+                        let _name = info[2] as! String
+                        let _request_time = info[3] as! String
+                        let _playback_time = info[4] as! String
                         
                         
-                        let song = SpotifySong(_uri)
+                        let song = SpotifySong(_uri, _name)
                         self.room?.addSong(song: song)
                         if !playing && _playing == "True" {
                             
@@ -195,6 +205,12 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
+    }
+    
+    private func initQueueTable() {
+        self.currentQueueTable.delegate = self
+        self.currentQueueTable.dataSource = self
+        self.currentQueueTable.register(UITableViewCell.self, forCellReuseIdentifier: "queueCell")
     }
     
     private func initUserTable() {
@@ -342,22 +358,56 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    // Allow rows to be deleted
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return tableView == self.currentQueueTable
+    }
+    
+    // Delete a row
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if tableView == self.currentQueueTable {
+            if (editingStyle == UITableViewCellEditingStyle.delete) {
+                print("Attempting to delete QueueItem #\(indexPath.item + 1)")
+                let song = self.room?.currentQueue[indexPath.item + 1]
+                self.requestRemove(song!)
+                self.currentQueueTable.deselectRow(at: indexPath, animated: true)
+            }
+        }
+    }
+    
     // Return number of rows in table
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (self.room?.numUsers())!
+        if tableView == self.currentUsersTable {
+            return (self.room?.numUsers())!
+        }
+        else {
+            return (self.room?.currentQueue.count)! - 1
+        }
     }
     
     // Populate table
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath as IndexPath)
-        let tuple = self.room?.getUser(index: indexPath.item)
-        if tuple != nil {
-            cell.textLabel?.text = tuple!.1
+        if tableView == self.currentUsersTable {
+            print("populate, users")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath as IndexPath)
+            let tuple = self.room?.getUser(index: indexPath.item)
+            print("User at \(indexPath.item) -- \(tuple)")
+            if tuple != nil {
+                cell.textLabel?.text = tuple!.1
+            }
+            else {
+                cell.textLabel?.text = "Unknown"
+            }
+            return cell
         }
         else {
-            cell.textLabel?.text = "Unknown"
+            print("Populate, not users!")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "queueCell", for: indexPath as IndexPath)
+            let song = self.room?.currentQueue[indexPath.item + 1]
+            print("Song at \(indexPath.item) -- \(song?.name)")
+            cell.textLabel?.text = song?.name
+            return cell
         }
-        return cell
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -466,6 +516,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
         
         self.createAddTextField.text = String(describing: (self.room?.id)!)
+        self.createAddTextField.delegate = self
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -538,6 +589,26 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 return
             }
         })
+    }
+    
+    
+    @IBAction func queueButtonClicked(_ sender: Any) {
+        print("QUEUE")
+        if self.queueVisible {
+            //BACK TO NORMAL
+            self.hereNow.text = "Here Now:"
+            self.inviteButton.isHidden = false
+            self.currentUsersTable.isHidden = false
+            self.currentQueueTable.isHidden = true
+        }
+        else {
+            //TO QUEUE
+            self.hereNow.text = "Current Queue:"
+            self.inviteButton.isHidden = true
+            self.currentUsersTable.isHidden = true
+            self.currentQueueTable.isHidden = false
+        }
+        self.queueVisible = !self.queueVisible
     }
     
     override func didReceiveMemoryWarning() {

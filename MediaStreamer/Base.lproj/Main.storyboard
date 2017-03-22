@@ -173,20 +173,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ks3-bh-OsV">
-                                <rect key="frame" x="0.0" y="112" width="320" height="338"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="userCell" id="MHR-03-yFY">
-                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MHR-03-yFY" id="tZ8-CX-gwX">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wgw-W6-0Ok">
                                 <rect key="frame" x="0.0" y="450" width="320" height="54"/>
                                 <subviews>
@@ -226,6 +212,45 @@
                                     <constraint firstItem="grb-7V-MRu" firstAttribute="leading" secondItem="wgw-W6-0Ok" secondAttribute="leading" constant="8" id="xs7-50-uCt"/>
                                 </constraints>
                             </view>
+                            <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="yzu-8l-LLU" userLabel="Current Queue Table">
+                                <rect key="frame" x="0.0" y="110" width="320" height="340"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="queueCell" id="ApD-fJ-F1d">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ApD-fJ-F1d" id="kYT-HT-HHj">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ks3-bh-OsV">
+                                <rect key="frame" x="0.0" y="110" width="320" height="340"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="userCell" id="MHR-03-yFY">
+                                        <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MHR-03-yFY" id="tZ8-CX-gwX">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <button opaque="NO" contentMode="top" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lpr-45-fXA" userLabel="Queue">
+                                <rect key="frame" x="288" y="426" width="16" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="J95-1p-bcv"/>
+                                    <constraint firstAttribute="width" constant="16" id="wcF-Lm-UGz"/>
+                                </constraints>
+                                <state key="normal" title="Button" image="queueIcon"/>
+                                <connections>
+                                    <action selector="queueButtonClicked:" destination="7ad-dJ-CfE" eventType="touchUpInside" id="Q6a-WA-esn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -233,16 +258,22 @@
                             <constraint firstItem="JMa-4e-XsR" firstAttribute="trailing" secondItem="sUk-e0-DZD" secondAttribute="trailingMargin" id="3T9-pT-E5r"/>
                             <constraint firstItem="wgw-W6-0Ok" firstAttribute="centerX" secondItem="sUk-e0-DZD" secondAttribute="centerX" id="4U8-bh-xzO"/>
                             <constraint firstItem="JMa-4e-XsR" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leadingMargin" id="KJs-2m-dRv"/>
+                            <constraint firstItem="yzu-8l-LLU" firstAttribute="top" secondItem="2Hg-2f-mhu" secondAttribute="bottom" constant="8" id="KNd-gU-5ex"/>
+                            <constraint firstAttribute="trailing" secondItem="yzu-8l-LLU" secondAttribute="trailing" id="Lfn-gF-7JT"/>
                             <constraint firstItem="KQ6-uQ-8bL" firstAttribute="trailing" secondItem="sUk-e0-DZD" secondAttribute="trailingMargin" id="OZ2-EO-aPa"/>
-                            <constraint firstItem="qqP-SX-epN" firstAttribute="top" secondItem="ks3-bh-OsV" secondAttribute="bottom" constant="54" id="QgI-RD-j8e"/>
-                            <constraint firstItem="ks3-bh-OsV" firstAttribute="top" secondItem="KQ6-uQ-8bL" secondAttribute="bottom" constant="10" id="X6C-7T-NI6"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="lpr-45-fXA" secondAttribute="trailing" id="S5N-8x-qyf"/>
+                            <constraint firstItem="wgw-W6-0Ok" firstAttribute="top" secondItem="ks3-bh-OsV" secondAttribute="bottom" id="SBY-8k-cF9"/>
                             <constraint firstItem="2Hg-2f-mhu" firstAttribute="top" secondItem="JMa-4e-XsR" secondAttribute="bottom" constant="17" id="Xgd-II-eww"/>
+                            <constraint firstItem="wgw-W6-0Ok" firstAttribute="top" secondItem="yzu-8l-LLU" secondAttribute="bottom" id="Y17-6b-Y22"/>
+                            <constraint firstItem="yzu-8l-LLU" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leading" id="abb-o8-gZ6"/>
+                            <constraint firstItem="ks3-bh-OsV" firstAttribute="top" secondItem="2Hg-2f-mhu" secondAttribute="bottom" constant="8" id="c1Q-Ja-ZLA"/>
                             <constraint firstItem="wgw-W6-0Ok" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leadingMargin" constant="-16" id="eeP-Fd-1qm"/>
+                            <constraint firstAttribute="trailing" secondItem="ks3-bh-OsV" secondAttribute="trailing" id="kDp-7i-wS9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="wgw-W6-0Ok" secondAttribute="trailing" constant="-16" id="l9h-yE-4km"/>
+                            <constraint firstItem="ks3-bh-OsV" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leading" id="lzO-lE-LRR"/>
                             <constraint firstItem="2Hg-2f-mhu" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leadingMargin" id="o31-G3-Wzo"/>
                             <constraint firstItem="JMa-4e-XsR" firstAttribute="top" secondItem="rAs-WJ-bSQ" secondAttribute="bottom" id="paY-hG-5Zx"/>
-                            <constraint firstAttribute="trailing" secondItem="ks3-bh-OsV" secondAttribute="trailing" id="qZB-cu-9aD"/>
-                            <constraint firstItem="ks3-bh-OsV" firstAttribute="leading" secondItem="sUk-e0-DZD" secondAttribute="leading" id="reb-y3-j2b"/>
+                            <constraint firstItem="wgw-W6-0Ok" firstAttribute="top" secondItem="lpr-45-fXA" secondAttribute="bottom" constant="8" id="phm-Gs-Iok"/>
                             <constraint firstItem="qqP-SX-epN" firstAttribute="top" secondItem="wgw-W6-0Ok" secondAttribute="bottom" id="sc1-yz-u2G"/>
                         </constraints>
                     </view>
@@ -258,9 +289,12 @@
                         <outlet property="currentArtistName" destination="ND2-0W-BM5" id="fva-C0-12A"/>
                         <outlet property="currentPlaybackTime" destination="4Zf-uL-obm" id="bA9-YN-W0p"/>
                         <outlet property="currentPlaying" destination="wgw-W6-0Ok" id="Fka-g3-cQa"/>
+                        <outlet property="currentQueueTable" destination="yzu-8l-LLU" id="nfy-GD-hOX"/>
                         <outlet property="currentSongName" destination="grb-7V-MRu" id="yYM-tj-B35"/>
                         <outlet property="currentUsersTable" destination="ks3-bh-OsV" id="jwy-pX-AZJ"/>
+                        <outlet property="hereNow" destination="2Hg-2f-mhu" id="L0s-F3-Izd"/>
                         <outlet property="inviteButton" destination="KQ6-uQ-8bL" id="N5c-qL-ri7"/>
+                        <outlet property="queueButton" destination="lpr-45-fXA" id="ayf-wY-rq0"/>
                         <outlet property="spotifyButton" destination="KdU-cK-XeW" id="DG9-65-qsF"/>
                         <outlet property="spotifyLoading" destination="7TD-Rb-7UQ" id="O9K-eV-9LO"/>
                         <segue destination="5cS-Uk-gN8" kind="presentation" identifier="room_to_player" id="Obc-4T-goH"/>
@@ -471,6 +505,7 @@
         <image name="arrowDown" width="64" height="64"/>
         <image name="nextButton" width="64" height="64"/>
         <image name="playButton" width="64" height="64"/>
+        <image name="queueIcon" width="128" height="128"/>
         <image name="searchIcon" width="16" height="16"/>
         <image name="spotify_icon" width="354" height="354"/>
     </resources>
