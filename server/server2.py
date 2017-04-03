@@ -120,11 +120,12 @@ def requestAdd(sid, data):
 		if len(data) > 0:
 			id = data[0]
 			name = data[1]
+			artist = data[2]
 			print("RequestAdd -- " + str(sid) + " -- " + str(name) + " -- " + str(id))
 			roomNum = sid2user[sid].room
 			if roomNum in room2queue:
 				Queue = room2queue[roomNum]
-				addRes = Queue.add(id, name)
+				addRes = Queue.add(id, name, artist)
 				if addRes:
 					result = [id, name]
 					sio.emit("client_add", result, room=str(roomNum))
@@ -423,7 +424,7 @@ def getQueue():
 
 		i = 0
 		for item in Queue.queue:
-			result.append([str(Room.playing and i == 0), str(item.id), str(item.name), str(Room.response_time), str(Room.playback_time)])
+			result.append([str(Room.playing and i == 0), str(item.id), str(item.name), str(item.artist), str(Room.response_time), str(Room.playback_time)])
 			i+=1
 		return jsonify(queue=result)
 	else:
@@ -543,9 +544,9 @@ class Queue:
 		self.queue = []
 		self.room = room
 		
-	def add(self, id, name):
+	def add(self, id, name, artist):
 		current = len(self.queue)
-		self.queue.append(QueueItem(id, name))
+		self.queue.append(QueueItem(id, name, artist))
 		if len(self.queue) > current:
 			return True
 		return False
@@ -591,9 +592,10 @@ class Queue:
 
 class QueueItem:
 
-	def __init__(self, id, name):
+	def __init__(self, id, name, artist):
 		self.id = id
 		self.name = name
+		self.artist = artist
 
 if __name__ == '__main__':
 	# wrap Flask application with socketio's middleware

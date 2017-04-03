@@ -29,7 +29,6 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var queueButton: UIButton!
     
     @IBOutlet weak var inviteButton: UIButton!
-    @IBOutlet weak var currentSongName: UILabel!
     @IBOutlet weak var spotifyButton: UIButton!
     @IBOutlet weak var spotifyLoading: UIActivityIndicatorView!
     @IBOutlet weak var currentUsersTable: UITableView!
@@ -37,6 +36,7 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBOutlet weak var hereNow: UILabel!
     @IBOutlet weak var currentPlaying: UIView!
+    @IBOutlet weak var currentSongName: UILabel!
     @IBOutlet weak var currentArtistName: UILabel!
     @IBOutlet weak var currentPlaybackTime: UIProgressView!
     
@@ -182,23 +182,33 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         let _playing = info[0] as! String
                         let _uri = info[1] as! String
                         let _name = info[2] as! String
-                        let _request_time = info[3] as! String
-                        let _playback_time = info[4] as! String
+                        let _artist = info[3] as! String
+                        let _request_time = info[4] as! String
+                        let _playback_time = info[5] as! String
                         
                         let song = SpotifySong(_uri, _name)
                         self.room?.addSong(song: song)
+                        
+                        var dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
+                        if dt < 0 {
+                            dt = 0
+                        }
+                        let time = Double(_playback_time)! + Double(dt/1000.0)
+                        
                         if !playing && _playing == "True" {
                             
-                            var dt = Double(Helper.currentTimeMillis() - Int64(_request_time)!)
-                            if dt < 0 {
-                                dt = 0
-                            }
+                            
                             print("Song was added \(dt)ms ago.")
-                            let time = Double(_playback_time)! + Double(dt/1000.0)
                             print("Need to scrub to \(time)s")
                             
                             self.room?.playSong(_uri, time)
                             playing = true
+                        }
+                        else if self.room?.currentQueue.count == 1 {
+                            //First song added, but it looks like the room is paused
+                            self.currentSongName.text = _name
+                            self.currentArtistName.text = _artist
+                            self.currentPlaybackTime.progress = 0.33
                         }
                     }
                 }
@@ -252,8 +262,6 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                                     }
                                 }
                             }
-                            
-                            
                         })
                     }
                     else {
