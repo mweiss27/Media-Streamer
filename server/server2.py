@@ -90,7 +90,7 @@ def requestNext(sid, data):
 				if len(queue.queue) > 0:
 					item = queue.queue[0]
 
-					result = [item.id, response_time]
+					result = [item.id, str(response_time)]
 
 					Room = rooms[roomNum]
 					Room.play(0, response_time)
@@ -137,7 +137,7 @@ def requestAdd(sid, data):
 
 					if len(Queue.queue) == 1:
 						print("This is the only song in the queue now. Sending a client_play")
-						result = [id, response_time]
+						result = [id, str(response_time)]
 						Room = rooms[roomNum]
 						Room.play(0, response_time)
 						
@@ -247,8 +247,8 @@ def requestScrub(sid, data):
 		if len(data) >= 2:
 			scrub_time = data[0]
 			response_time = data[1]
-			
-			result = [str(scrub_time), response_time]
+
+			result = [str(scrub_time), str(response_time)]
 			sio.emit("client_scrub", result, room=str(roomNum))
 			loge("client_scrub", result, roomNum)
 			return 1
