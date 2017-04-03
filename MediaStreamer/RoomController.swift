@@ -206,9 +206,10 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         }
                         else if self.room?.currentQueue.count == 1 {
                             //First song added, but it looks like the room is paused
-                            self.currentSongName.text = _name
-                            self.currentArtistName.text = _artist
-                            self.currentPlaybackTime.progress = 0.33
+                            self.displaySongName(songName: _name)
+                            self.displayArtistName(artistName: _artist)
+                            self.displayProgress(progress: 0.33)
+                            self.room?.currentSong = SpotifySong.init(_uri, _name)
                         }
                     }
                 }
@@ -432,35 +433,12 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     private func preparePlayer() {
         if let dest = self.spotifyPlayer {
+            
             if let metadata = SpotifyApp.player.metadata {
                 if let currentTrack = metadata.currentTrack {
-                    if dest.songName != nil {
-                        print("Setting songName")
-                        dest.songName.text = currentTrack.name
-                    }
-                    else {
-                        print("Caching songName")
-                        dest._songName = currentTrack.name
-                    }
-                    
-                    if dest.artistName != nil {
-                        print("Setting artistName")
-                        dest.artistName.text = currentTrack.artistName
-                    }
-                    else {
-                        print("Caching artistName")
-                        dest._artistName = currentTrack.artistName
-                    }
-                    
-                    if dest.albumArt != nil {
-                        print("Setting albumArt")
-                        dest.setImage(currentTrack.albumCoverArtURL)
-                    }
-                    else {
-                        print("Caching imageURL")
-                        dest._imageURL = currentTrack.albumCoverArtURL
-                    }
-                    
+                    self.displaySongName(songName: currentTrack.name)
+                    self.displayArtistName(artistName: currentTrack.artistName)
+                    self.setAlbumArtURL(url: currentTrack.albumCoverArtURL!)
                     
                     if let playbackState = SpotifyApp.player.playbackState {
                         if dest.pausePlay != nil {
@@ -548,9 +526,54 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    func displaySongName(songName: String) {
+        self.currentSongName.text = songName
+        if let player = self.spotifyPlayer {
+            if player.songName != nil {
+                player.songName.text = songName
+            }
+            else {
+                player._songName = songName
+            }
+        }
+    }
+    
+    func displayArtistName(artistName: String) {
+        self.currentArtistName.text = artistName
+        if let player = self.spotifyPlayer {
+            if player.artistName != nil {
+                player.artistName.text = artistName
+            }
+            else {
+                player._artistName = artistName
+            }
+        }
+    }
+    
+    func displayProgress(progress: Float) {
+        self.currentPlaybackTime.progress = progress
+        if let player = self.spotifyPlayer {
+            if player.progressSlider != nil {
+                player.progressSlider.value = progress
+            }
+        }
+    }
+    
+    func setAlbumArtURL(url: String) {
+        if let player = self.spotifyPlayer {
+            if player.albumArt != nil {
+                player.setImage(url)
+            }
+            else {
+                player._imageURL = url
+            }
+        }
+    }
+    
     func requestNext() {
         //Expects a response of 'client_play' or 'client_stop'
-        SocketIOManager.emit("request_next", [], true, { error in
+        let time = Helper.currentTimeMillis()
+        SocketIOManager.emit("request_next", [Int(time)], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return
@@ -571,9 +594,10 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestResume() {
         //Expects a response of 'client_resume'
+        let time = Helper.currentTimeMillis()
         if let playback = SpotifyApp.player.playbackState {
             let resume_time = playback.position
-            SocketIOManager.emit("request_resume", [resume_time], true, { error in
+            SocketIOManager.emit("request_resume", [resume_time, Int(time)], true, { error in
                 if error != nil {
                     Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                     return
@@ -593,8 +617,9 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func requestScrub(_ to: Double) {
         //Expects a response of 'client_scrub'
+        let time = Helper.currentTimeMillis()
         print("request_scrub -- \(to)")
-        SocketIOManager.emit("request_scrub", [to], true, { error in
+        SocketIOManager.emit("request_scrub", [to, Int(time)], true, { error in
             if error != nil {
                 Helper.alert(view: self, title: "Network Error", message: "An error occurred while communicating with the server.")
                 return

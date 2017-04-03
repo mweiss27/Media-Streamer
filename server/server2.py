@@ -67,46 +67,49 @@ def requestNext(sid, data):
 	if sid in sid2user:
 		user = sid2user[sid]
 		roomNum = user.room
-		if roomNum in room2queue:
-			queue = room2queue[roomNum]
-			if len(queue.queue) > 0:
-				item = queue.queue.pop(0)
-				result = [item.id, "True"]
-				sio.emit("client_remove", result, room=str(roomNum))
-				loge("client_remove", result, roomNum)
-				#Don't return, we need to emit a play
-			else:
-				print("[ERROR] request_next called but there is no current song -- len(queue) == 0")
+		if len(data) >= 1:
+			response_time = data[0]
+			if roomNum in room2queue:
+				queue = room2queue[roomNum]
+				if len(queue.queue) > 0:
+					item = queue.queue.pop(0)
+					result = [item.id, "True"]
+					sio.emit("client_remove", result, room=str(roomNum))
+					loge("client_remove", result, roomNum)
+					#Don't return, we need to emit a play
+				else:
+					print("[ERROR] request_next called but there is no current song -- len(queue) == 0")
 
-				Room = rooms[roomNum]
-				Room.pause()
+					Room = rooms[roomNum]
+					Room.pause()
 
-				sio.emit("client_stop", [], room=str(roomNum))
-				loge("client_stop", [], roomNum)
+					sio.emit("client_stop", [], room=str(roomNum))
+					loge("client_stop", [], roomNum)
+					return 1
+
+				if len(queue.queue) > 0:
+					item = queue.queue[0]
+
+					result = [item.id, response_time]
+
+					Room = rooms[roomNum]
+					Room.play(0, response_time)
+
+					sio.emit("client_play", result, room=str(roomNum))
+					loge("client_play", result, roomNum)
+				else:
+
+					Room = rooms[roomNum]
+					Room.pause()
+
+					sio.emit("client_stop", [], room=str(roomNum))
+					loge("client_stop", [], roomNum)
 				return 1
 
-			if len(queue.queue) > 0:
-				item = queue.queue[0]
-
-				response_time = currentTimeMillis()
-				result = [item.id, str(response_time)]
-
-				Room = rooms[roomNum]
-				Room.play(0, response_time)
-
-				sio.emit("client_play", result, room=str(roomNum))
-				loge("client_play", result, roomNum)
 			else:
-
-				Room = rooms[roomNum]
-				Room.pause()
-
-				sio.emit("client_stop", [], room=str(roomNum))
-				loge("client_stop", [], roomNum)
-			return 1
-
+				print("[ERROR] roomNum not in room2queue: " + str(roomNum))
 		else:
-			print("[ERROR] roomNum not in room2queue: " + str(roomNum))
+			print("[ERROR] Invalid data. len < 1")
 	else:
 		print("[ERROR] sid not in sid2user: " + str(sid))
 	return 0
@@ -121,6 +124,7 @@ def requestAdd(sid, data):
 			id = data[0]
 			name = data[1]
 			artist = data[2]
+			response_time = data[3]
 			print("RequestAdd -- " + str(sid) + " -- " + str(name) + " -- " + str(id))
 			roomNum = sid2user[sid].room
 			if roomNum in room2queue:
@@ -133,8 +137,7 @@ def requestAdd(sid, data):
 
 					if len(Queue.queue) == 1:
 						print("This is the only song in the queue now. Sending a client_play")
-						response_time = currentTimeMillis()
-						result = [id, str(response_time)]
+						result = [id, response_time]
 						Room = rooms[roomNum]
 						Room.play(0, response_time)
 						
@@ -213,10 +216,10 @@ def requestResume(sid, data):
 			user = sid2user[sid]
 			roomNum = user.room
 			resume_time = data[0]
+			response_time = data[1]
 
 			if roomNum in room2queue:
 				queue = room2queue[roomNum]
-				response_time = currentTimeMillis()
 				result = [str(queue.queue[0].id), str(resume_time), str(response_time)]
 
 				Room = rooms[roomNum]
@@ -241,10 +244,11 @@ def requestScrub(sid, data):
 	if sid in sid2user:
 		user = sid2user[sid]
 		roomNum = user.room
-		if len(data) > 0:
+		if len(data) >= 2:
 			scrub_time = data[0]
-
-			result = [str(scrub_time), str(currentTimeMillis())]
+			response_time = data[1]
+			
+			result = [str(scrub_time), response_time]
 			sio.emit("client_scrub", result, room=str(roomNum))
 			loge("client_scrub", result, roomNum)
 			return 1

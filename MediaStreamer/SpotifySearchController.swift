@@ -358,7 +358,14 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     func songClicked(_ sender: UITapGestureRecognizer) {
         if let source = sender.view as? SpotifyTrackView {
             print("songClicked: \(source.song!)")
-            SocketIOManager.emit("request_add", [(source.song?.playableUri.absoluteString)!, (source.song?.name)!, SpotifyApp.getArtist(artists: source.song?.artists)], true, nil)
+            let time = Helper.currentTimeMillis()
+            SocketIOManager.emit("request_add",
+                                 [
+                                    (source.song?.playableUri.absoluteString)!,
+                                    (source.song?.name)!,
+                                    SpotifyApp.getArtist(artists: source.song?.artists),
+                                    Int(time)
+                ], true, nil)
         }
         else {
             print("[ERROR] source is nil or not SpotifyTrackView: \(sender.view)")
