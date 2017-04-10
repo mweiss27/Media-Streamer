@@ -56,13 +56,7 @@ class SocketIOManager: NSObject {
                             if let info = data as? [Any] {
                                 if info.count > 0 {
                                     if let msg = info[0] as? Any {
-                                        if let str = msg as? String {
-                                            if str == "NO ACK" {
-                                                Helper.alert(view: Helper.getCurrentViewController(), title: "Network Error", message: "An error occurred while attempting to contact the server.")
-                                                return
-                                            }
-                                        }
-                                        else if let val = msg as? Int {
+                                        if let val = msg as? Int {
                                             if val == 0 {
                                                 Helper.alert(view: Helper.getCurrentViewController(), title: "Internal Error", message: "An internal error occurred in the server.")
                                                 return
@@ -97,13 +91,7 @@ class SocketIOManager: NSObject {
                 if let info = data as? [Any] {
                     if info.count > 0 {
                         if let msg = info[0] as? Any {
-                            if let str = msg as? String {
-                                if str == "NO ACK" {
-                                    Helper.alert(view: Helper.getCurrentViewController(), title: "Network Error", message: "An error occurred while attempting to contact the server.")
-                                    return
-                                }
-                            }
-                            else if let val = msg as? Int {
+                            if let val = msg as? Int {
                                 if val == 0 {
                                     Helper.alert(view: UIApplication.shared
                                         .keyWindow?.rootViewController, title: "Internal Error", message: "An internal error occurred in the server.")
