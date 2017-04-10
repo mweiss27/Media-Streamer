@@ -164,7 +164,7 @@ class Room {
                 print("Found the song in the queue to play!")
                 item.play(startTime, callback: { (error) in
                     if error != nil {
-                        Helper.alert(view: self.roomController, title: "Error on Playback", message: "An error occurred while attempting to play a song.")
+                        Helper.alert(title: "Error on Playback", message: "An error occurred while attempting to play a song.")
                     }
                     else {
                         self.currentSong = item
@@ -188,7 +188,7 @@ class Room {
             SpotifyApp.player.setIsPlaying(playing) { (error) in
                 if let error = error {
                     print("Error on setIsPlaying false: \(error.localizedDescription)")
-                    Helper.alert(view: self.roomController, title: "Failed to \(playing ? "resume" : "pause")", message: "An error occurred while trying to \(playing ? "resume" : "pause") the song")
+                    Helper.alert(title: "Failed to \(playing ? "resume" : "pause")", message: "An error occurred while trying to \(playing ? "resume" : "pause") the song")
                 }
                 else {
                     print("Room.setPlaying success")
@@ -203,7 +203,7 @@ class Room {
             self.currentSong?.seek(to: to, callback: { error in
                 if error != nil {
                     print("Error on seek(to: \(to)): \(error)")
-                    Helper.alert(view: self.roomController, title: "Error on scrub", message: "An error occurred while attempting to scrub the song playback.")
+                    Helper.alert(title: "Error on scrub", message: "An error occurred while attempting to scrub the song playback.")
                 }
                 else {
                     print("Room.seek success")

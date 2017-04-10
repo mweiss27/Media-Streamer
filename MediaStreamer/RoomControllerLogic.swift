@@ -195,7 +195,7 @@ class RoomControllerLogic {
             if self?.roomController.room?.currentSong != nil {
                 SpotifyApp.player.setIsPlaying(false, callback: { error in
                     if error != nil {
-                        Helper.alert(view: self?.roomController, title: "Error while stopping", message: "An error occurred while attempting to stop the player.")
+                        Helper.alert(title: "Error while stopping", message: "An error occurred while attempting to stop the player.")
                     }
                 })
             }

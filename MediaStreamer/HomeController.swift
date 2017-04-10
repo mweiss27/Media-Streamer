@@ -62,6 +62,20 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             roomsDirty = false
         
+        if self.isMovingToParentViewController {
+            if SpotifyApp.player.initialized && SpotifyApp.player.loggedIn {
+                SpotifyApp.player.setIsPlaying(false, callback: { (error) in
+                    if let error = error {
+                        print("Error on setIsPlaying false: \(error)")
+                        return
+                    }
+                })
+            }
+            
+            SocketIOManager.emit("leave room", [], false, nil)
+            self.defaults.removeObject(forKey: "currRoom")
+        }
+        
         print("HomeController is displayed")
     }
     
@@ -156,7 +170,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if let error = error {
                     print("Error on createRoom: \(error)")
                     if error != Constants.ERROR_TIMEOUT {
-                        Helper.alert(view: self, title: "Create Room Failed", message: "Invalid response from the server")
+                        Helper.alert(title: "Create Room Failed", message: "Invalid response from the server")
                     }
                     return
                 }
@@ -169,7 +183,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.roomTableView.reloadData()
                     
                 } else {
-                    Helper.alert(view: self, title: "Failed to Create Room", message: "Failed to create Room")
+                    Helper.alert(title: "Failed to Create Room", message: "Failed to create Room")
                 }
                 
             })
@@ -200,7 +214,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
             
             if let error = error {
                 if error != Constants.ERROR_TIMEOUT {
-                    Helper.alert(view: self, title: "Failed to Join Room", message: "We were not able to join the specified room.")
+                    Helper.alert(title: "Failed to Join Room", message: "We were not able to join the specified room.")
                 }
                 
                 print("Error on joinRoom: \(error)")
@@ -214,7 +228,7 @@ class HomeController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     self.roomTableView.reloadData()
                 } else {
                     print("Room join failed")
-                    Helper.alert(view: self, title: "", message: "An error occurred while adding your room locally.")
+                    Helper.alert(title: "", message: "An error occurred while adding your room locally.")
                     return
                 }
             }

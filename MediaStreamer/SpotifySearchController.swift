@@ -70,7 +70,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
             if let playbackState = SpotifyApp.player.playbackState {
                 SpotifyApp.player.setIsPlaying(false, callback: { error in
                     if error != nil {
-                        Helper.alert(view: self, title: "Error", message: "An error occurred while attempting to logout.")
+                        Helper.alert(title: "Error", message: "An error occurred while attempting to logout.")
                         return
                     }
                     
@@ -105,7 +105,7 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         }
         
         self.roomController?.onError = { error in
-            Helper.alert(view: self, title: "Error", message: "An error occurred while attempting to logout.")
+            Helper.alert(title: "Error", message: "An error occurred while attempting to logout.")
             self.roomController?.onError = nil
         }
         
@@ -147,6 +147,9 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
                             self.loadingIndicator.isHidden = true
                             if error != nil {
                                 print("Error on SPTSearch.perform: \(error?.localizedDescription)")
+                                if ((error?.localizedDescription.contains("offline"))! || (error?.localizedDescription.contains("104"))!) {
+                                    Helper.networkFail(self.navigationController!)
+                                }
                                 return
                             }
                             
@@ -192,7 +195,12 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         SPTUser.requestCurrentUser(withAccessToken: SPTAuth.defaultInstance().session.accessToken) { (error, obj) in
             self.loadingIndicator.isHidden = true
             if error != nil {
-                print("Error on requesetCurrentUser: \(error?.localizedDescription)")
+                print("Error on requestCurrentUser: \(error?.localizedDescription)")
+                
+                if (error?.localizedDescription.contains("offline"))! {
+                    Helper.networkFail(self.navigationController!)
+                }
+                
                 return
             }
             
@@ -298,6 +306,11 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
         SPTPlaylistSnapshot.playlist(withURI: partial.playableUri, accessToken: SPTAuth.defaultInstance().session.accessToken, callback: { (error, obj) in
             if error != nil {
                 print("Error on SPTPlaylistSnapshot.playlist: \(error?.localizedDescription)")
+                if (error?.localizedDescription.contains("offline"))! {
+                    if (error?.localizedDescription.contains("offline"))! {
+                        Helper.networkFail(self.navigationController!)
+                    }
+                }
                 return
             }
             if let snapshot = obj as? SPTPlaylistSnapshot {

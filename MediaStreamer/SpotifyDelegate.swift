@@ -12,6 +12,9 @@ import MediaPlayer
 
 class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPlaybackDelegate {
     
+    var playbackMonitor: Timer? = nil
+    var lastPlayback: TimeInterval? = nil
+    
     private var roomController: RoomController!
     var spotifyPlayer: SpotifyPlayer?
     
@@ -28,6 +31,33 @@ class SpotifyDelegate: NSObject, SPTAudioStreamingDelegate, SPTAudioStreamingPla
         self.commandCenter.pauseCommand.addTarget(self, action: #selector(self.pause))
         self.commandCenter.togglePlayPauseCommand.addTarget(self, action: #selector(self.pausePlay))
         self.commandCenter.nextTrackCommand.addTarget(self, action: #selector(self.next))
+        
+        self.playbackMonitor = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true, block: {_ in
+           // print("Timer running")
+            if let state = SpotifyApp.player.playbackState {
+                if state.isPlaying {
+                    if self.lastPlayback == nil {
+                       // print("Last is nil. setting to \(state.position)")
+                        self.lastPlayback = state.position
+                    }
+                    else {
+                        let current = state.position
+                        if current == self.lastPlayback! {
+                            //print("PLAYBACK IS PAUSED, BUT isPlaying == true. RiP buffer. Last: \(self.lastPlayback!) -- Current: \(current)")
+                            if self.roomController != nil && self.roomController.navigationController != nil {
+                                Helper.networkFail(self.roomController.navigationController!)
+                            }
+                        }
+                        else {
+                           // print("Last: \(self.lastPlayback!) -- Current: \(current)")
+                            self.lastPlayback = current
+                        }
+                    }
+                }
+            }
+            
+        })
+        self.playbackMonitor?.fire()
     }
     
     @objc private func play() {

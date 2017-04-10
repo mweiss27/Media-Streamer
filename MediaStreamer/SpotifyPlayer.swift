@@ -11,6 +11,8 @@ import MediaPlayer
 
 class SpotifyPlayer: UIViewController {
     
+    static var instance: SpotifyPlayer?
+    
     var roomController: RoomController?
     
     var dragging: Bool = false
@@ -27,6 +29,7 @@ class SpotifyPlayer: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        SpotifyPlayer.instance = self
         print("SpotifyPlayer.viewDidLoad")
         
         if self._songName != nil {
@@ -78,6 +81,7 @@ class SpotifyPlayer: UIViewController {
         if self.isMovingFromParentViewController {
             print("Player is going away")
             self.roomController?.spotifyPlayer = nil
+            SpotifyPlayer.instance = nil
         }
     }
     

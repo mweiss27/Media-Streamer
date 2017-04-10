@@ -38,10 +38,10 @@ class Helper {
         return Int64(nowDouble*1000)
     }
     
-    static func alert(view: UIViewController!, title: String!, message: String!) {
+    static func alert(viewController: UIViewController = Helper.getCurrentViewController()!, title: String!, message: String!) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
         alert.addAction(UIAlertAction(title: "Close", style: UIAlertActionStyle.cancel, handler:nil))
-        view.present(alert, animated: true, completion: nil)
+        viewController.present(alert, animated: true, completion: nil)
     }
     
     // Returns the most recently presented UIViewController (visible)
@@ -101,6 +101,19 @@ class Helper {
         activity.startAnimating()
         
         return overlay
+    }
+    
+    static func networkFail(_ navigationController: UINavigationController) {
+        
+        if SpotifyPlayer.instance != nil {
+            SpotifyPlayer.instance?.performSegue(withIdentifier: Constants.UnwindToRoom, sender: SpotifyPlayer.instance!)
+            navigationController.popToRootViewController(animated: false)//Pop to Home
+            Helper.alert(viewController: navigationController.viewControllers.first!, title: "Network Error", message: "Your internet connection appears to be offline.")
+        }
+        else {
+            navigationController.popToRootViewController(animated: false)//Pop to Home
+            Helper.alert(title: "Network Error", message: "Your internet connection appears to be offline.")
+        }
     }
     
 }

@@ -58,7 +58,7 @@ class SocketIOManager: NSObject {
                                     if let msg = info[0] as? Any {
                                         if let val = msg as? Int {
                                             if val == 0 {
-                                                Helper.alert(view: Helper.getCurrentViewController(), title: "Internal Error", message: "An internal error occurred in the server.")
+                                                Helper.alert(title: "Internal Error", message: "An internal error occurred in the server.")
                                                 return
                                             }
                                         }
@@ -78,6 +78,7 @@ class SocketIOManager: NSObject {
             
             //Timeout after 5 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                overlay?.removeFromSuperview()
                 if socket.status != .connected {
                     print("5 seconds passed and we didn't connect. Returning completion with error")
                     completion?(Constants.ERROR_TIMEOUT)
@@ -93,8 +94,7 @@ class SocketIOManager: NSObject {
                         if let msg = info[0] as? Any {
                             if let val = msg as? Int {
                                 if val == 0 {
-                                    Helper.alert(view: UIApplication.shared
-                                        .keyWindow?.rootViewController, title: "Internal Error", message: "An internal error occurred in the server.")
+                                    Helper.alert(title: "Internal Error", message: "An internal error occurred in the server.")
                                     return
                                 }
                             }
@@ -148,7 +148,7 @@ class SocketIOManager: NSObject {
                 
                 callback("", "", Constants.ERROR_TIMEOUT)
                 
-                Helper.alert(view: view, title: "Join Room Failed", message: "Connection to server timed out")
+                Helper.alert(title: "Join Room Failed", message: "Connection to server timed out")
                 
             }
         })
@@ -184,7 +184,7 @@ class SocketIOManager: NSObject {
                 
                 callback(Constants.ERROR_TIMEOUT)
                 
-                Helper.alert(view: view, title: "Create Room Failed", message: "Connection to server timed out")
+                Helper.alert(title: "Create Room Failed", message: "Connection to server timed out")
                 
             }
         })
