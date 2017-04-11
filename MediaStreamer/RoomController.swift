@@ -78,7 +78,28 @@ class RoomController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.initQueueTable()
         self.initGestures()
         
+        self.becomeFirstResponder()
+        
         print("<<RoomController.viewDidLoad")
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        get {
+            return true
+        }
+    }
+    
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if let state = SpotifyApp.player.playbackState {
+                if state.isPlaying {
+                    self.requestPause()
+                }
+                else {
+                    self.requestResume()
+                }
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

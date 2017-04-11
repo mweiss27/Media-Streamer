@@ -59,6 +59,47 @@ class SpotifyPlayer: UIViewController {
         
         self.albumArt.addGestureRecognizer(swipeDown)
         self.albumArt.addGestureRecognizer(swipeLeft)
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if self.isMovingToParentViewController {
+            self.roomController?.spotifyPlayer = self
+            self.roomController?.resignFirstResponder()
+            self.becomeFirstResponder()
+        }
+        print("PlayerController.viewDidAppear")
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.isMovingFromParentViewController {
+            print("Player is going away")
+            self.roomController?.spotifyPlayer = nil
+            SpotifyPlayer.instance = nil
+            self.resignFirstResponder()
+            self.roomController?.becomeFirstResponder()
+        }
+    }
+    
+    
+    override var canBecomeFirstResponder: Bool {
+        get {
+            return true
+        }
+    }
+    
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if let state = SpotifyApp.player.playbackState {
+                if state.isPlaying {
+                    self.roomController?.requestPause()
+                }
+                else {
+                    self.roomController?.requestResume()
+                }
+            }
+        }
     }
     
     @objc private func swipeGesture(_ gesture: UISwipeGestureRecognizer) {
@@ -71,19 +112,6 @@ class SpotifyPlayer: UIViewController {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.roomController?.spotifyPlayer = self
-        print("PlayerController.viewDidAppear")
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        if self.isMovingFromParentViewController {
-            print("Player is going away")
-            self.roomController?.spotifyPlayer = nil
-            SpotifyPlayer.instance = nil
-        }
-    }
     
     @IBAction func pausePlayClicked(_ sender: Any) {
         if SpotifyApp.player.playbackState.isPlaying {

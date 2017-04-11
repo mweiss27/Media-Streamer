@@ -47,11 +47,43 @@ class SpotifySearchController: UIViewController, UIScrollViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        if self.isMovingToParentViewController {
+            self.roomController?.resignFirstResponder()
+            self.becomeFirstResponder()
+        }
         print("viewDidAppear")
         
         /*
          Import ALToastView.h and call static toastInView:withText: for every new toast message you want to show, e.g in your UIViewController subclass call [ALToastView toastInView:self.view withText:@"Hello ALToastView"];
          */
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.isMovingFromParentViewController {
+            
+            self.resignFirstResponder()
+            self.roomController?.becomeFirstResponder()
+        }
+    }
+    
+    
+    override var canBecomeFirstResponder: Bool {
+        get {
+            return true
+        }
+    }
+    
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            if let state = SpotifyApp.player.playbackState {
+                if state.isPlaying {
+                    self.roomController?.requestPause()
+                }
+                else {
+                    self.roomController?.requestResume()
+                }
+            }
+        }
     }
     
     private func createLogoutButton() -> UIButton {
